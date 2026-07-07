@@ -1,0 +1,18 @@
+{
+  "app_title": "SASS Groundwater Storage — Monitoring & Outlook",
+  "series_label": "Groundwater storage anomaly (proxy, mm)",
+  "proxy_disclaimer": "Prototype estimate: GRACE total water storage minus GLDAS-modelled surface stores. Not validated against in-situ data — for trend visualisation only.",
+  "trend_title": "Trend",
+  "trend_rate_mm": "Rate (mm/yr)",
+  "trend_rate_km3": "Rate (km³/yr)",
+  "trend_mk_pvalue": "Seasonal Mann-Kendall p-value",
+  "forecast_title": "Forecast (validated horizon: ~24 months)",
+  "scenario_label": "Beyond 24 months: scenario extrapolation, lower confidence",
+  "gap_label": "GRACE / GRACE-FO inter-mission gap (interpolated)",
+  "imputed_label": "Imputed month (not observed)",
+  "freshness_grace": "GRACE through",
+  "freshness_gldas": "GLDAS through",
+  "freshness_proxy": "GWSA proxy through",
+  "map_title": "Area of interest and mascon grid (context)",
+  "language_toggle": "FR"
+}

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.nc
+notebooks/.ipynb_checkpoints/
+# Le cache Parquet EST committé (il alimente le dashboard statique — spec §8.3)
+# mais on ignore les téléchargements bruts intermédiaires :
+data/raw/

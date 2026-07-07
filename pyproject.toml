@@ -1,0 +1,40 @@
+[project]
+name = "grace-sass"
+version = "0.1.0"
+description = "Suivi et prévision du stockage des eaux souterraines du SASS à partir de GRACE/GRACE-FO (proxy GLDAS) — OSS, programme Veille et Perspectives"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Ingestion / données
+    "xarray",
+    "netcdf4",
+    "pydap",          # OPeNDAP pour GLDAS (spec §4b)
+    "rioxarray",      # découpage AOI
+    "geopandas",
+    "requests",
+    "earthaccess",    # raccourci sanctionné pour l'auth EDL (spec §4)
+    "pandas",
+    "numpy",
+    "pyarrow",        # Parquet
+    # Analyse
+    "statsmodels",    # SARIMAX + erreurs HAC + STL
+    "pymannkendall",  # MK saisonnier / Hamed-Rao
+    "prophet",
+    # statsforecast : à ajouter seulement si la recherche auto d'ordres ARIMA
+    # est retenue (spec §7.1 — pas pmdarima)
+    # Visualisation
+    "plotly",
+    "dash",           # développement local + Path B éventuel
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

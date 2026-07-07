@@ -1,0 +1,21 @@
+# CI — pytest + lint à chaque push/PR (spec §8.3).
+# ⚠️ Les PR n'ont PAS accès aux secrets : la suite de tests doit tourner
+# 100 % hors ligne (fixture Parquet committée, aucun appel réseau).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: Lint
+        run: uv run ruff check .
+      - name: Tests (hors ligne — aucun secret disponible)
+        run: uv run pytest -v

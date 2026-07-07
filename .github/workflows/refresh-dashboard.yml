@@ -1,0 +1,40 @@
+# Actualisation planifiée (Path A) — spec §8.3.
+# Vérification hebdomadaire : les nouvelles données arrivent ~mensuellement,
+# avec un décalage irrégulier (GRACE) et une latence structurelle ~3-4 mois (GLDAS).
+name: refresh-dashboard
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'          # lundi 06:00 UTC
+  workflow_dispatch: {}
+
+concurrency: { group: refresh, cancel-in-progress: false }
+permissions: { contents: write, pages: write, id-token: write }
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+
+      - name: Refresh GRACE + GLDAS, recompute proxy (append-only par source, idempotent)
+        env:
+          EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}  # principal → .netrc généré (n'expire jamais)
+          EARTHDATA_PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
+          EARTHDATA_TOKEN: ${{ secrets.EARTHDATA_TOKEN }}        # optionnel — les jetons EDL expirent après 60 jours
+        run: uv run python -m pipeline.refresh          # écrit toujours data/last_refresh.json
+
+      - name: Recompute trend + forecast, render static HTML
+        run: uv run python -m pipeline.build_dashboard   # -> docs/index.html
+
+      - name: Commit refreshed cache + dashboard
+        run: |
+          git config user.name  "grace-bot"
+          git config user.email "bot@users.noreply.github.com"
+          # last_refresh.json change à chaque run → commit "heartbeat" contre
+          # l'auto-désactivation des workflows après 60 jours d'inactivité
+          git add data/sass_series.parquet data/last_refresh.json docs/
+          git diff --staged --quiet || git commit -m "chore: refresh $(date +%F)"
+          git push

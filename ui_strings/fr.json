@@ -1,0 +1,18 @@
+{
+  "app_title": "Stock d'eau souterraine du SASS — Veille & Perspectives",
+  "series_label": "Anomalie de stock d'eau souterraine (proxy, mm)",
+  "proxy_disclaimer": "Estimation prototype : stockage total GRACE moins réserves de surface modélisées par GLDAS. Non validée par des données in situ — visualisation de tendance uniquement.",
+  "trend_title": "Tendance",
+  "trend_rate_mm": "Taux (mm/an)",
+  "trend_rate_km3": "Taux (km³/an)",
+  "trend_mk_pvalue": "Valeur p Mann-Kendall saisonnier",
+  "forecast_title": "Prévision (horizon validé : ~24 mois)",
+  "scenario_label": "Au-delà de 24 mois : extrapolation de scénario, confiance réduite",
+  "gap_label": "Lacune inter-missions GRACE / GRACE-FO (interpolée)",
+  "imputed_label": "Mois imputé (non observé)",
+  "freshness_grace": "GRACE jusqu'au",
+  "freshness_gldas": "GLDAS jusqu'au",
+  "freshness_proxy": "proxy GWSA jusqu'au",
+  "map_title": "Zone d'intérêt et grille de mascons (contexte)",
+  "language_toggle": "EN"
+}
