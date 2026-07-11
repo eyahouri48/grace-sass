@@ -14,6 +14,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = REPO_ROOT / "data"
+RAW_DIR = DATA_DIR / "raw" 
 DOCS_DIR = REPO_ROOT / "docs"          # cible du rendu statique (GitHub Pages)
 UI_STRINGS_DIR = REPO_ROOT / "ui_strings"
 
@@ -29,14 +30,21 @@ AOI_GEOJSON = REPO_ROOT / "sass.geojson"
 # Le découpage final se fait TOUJOURS sur le polygone exact, pas sur la bbox.
 BBOX_LAT = (24.0, 35.0)
 BBOX_LON = (-3.0, 19.0)                 # en convention -180/180
+BBOX_LAT_MIN, BBOX_LAT_MAX = BBOX_LAT   # pour les imports directs dans les modules
+BBOX_LON_MIN, BBOX_LON_MAX = BBOX_LON
+
 
 # ---------------------------------------------------------------------------
 # GRACE — mascon JPL RL06.3 V04, filtré CRI (spec §4a)
 # ---------------------------------------------------------------------------
 GRACE_COLLECTION = "TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4"
 GRACE_VAR = "lwe_thickness"             # cm, anomalie vs moyenne 2004–2009
-# URL réelle à résoudre via CMR en semaine 1 (Tâche 2) — laisser None ici.
-GRACE_URL: str | None = None
+GRACE_URL = (
+    "https://archive.podaac.earthdata.nasa.gov/"
+    "podaac-ops-cumulus-protected/"
+    "TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4/"
+    "GRCTellus.JPL.200204_202605.GLO.RL06.3M.MSCNv04CRI.nc"
+)
 
 # ---------------------------------------------------------------------------
 # GLDAS-2.1 Noah — flux de production principal (spec §4b)
