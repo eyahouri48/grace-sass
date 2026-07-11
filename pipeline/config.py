@@ -49,7 +49,8 @@ GRACE_URL = (
 # ---------------------------------------------------------------------------
 # GLDAS-2.1 Noah — flux de production principal (spec §4b)
 # ---------------------------------------------------------------------------
-GLDAS_OPENDAP_URL = "https://hydro1.gesdisc.eosdis.nasa.gov/dods/GLDAS_NOAH025_M.2.1"
+GLDAS_SHORT_NAME = "GLDAS_NOAH025_M"
+GLDAS_VERSION = "2.1"
 # ⚠️ Vérifier en semaine 1 : l'agrégation /dods peut renommer/minusculiser
 #    les variables par rapport aux granules natifs.
 GLDAS_COMPONENTS = [
