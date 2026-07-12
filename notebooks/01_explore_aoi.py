@@ -29,11 +29,8 @@ print(f"CRS : {aoi.crs}")
 # --- Étape 3 : Calculer la surface (CORRECTEMENT) ---
 print(f"\n=== Surface ===")
 
-# ❌ Ce qu'il ne faut PAS faire :
-fausse_surface = aoi.geometry.area.iloc[0]
-print(f"Surface FAUSSE (.area sur EPSG:4326) : {fausse_surface:.2f} degrés carrés ← inutilisable !")
 
-# ✅ Ce qu'il faut faire : projeter en équi-surface d'abord
+# Projeter en équi-surface d'abord
 aoi_proj = aoi.to_crs("ESRI:54009")  # Mollweide (projection équi-surface)
 area_m2 = aoi_proj.geometry.area.iloc[0]
 area_km2 = area_m2 / 1e6
