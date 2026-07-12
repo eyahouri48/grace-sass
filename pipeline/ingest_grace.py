@@ -82,7 +82,7 @@ def extract_twsa_basin_mean(nc_path: Path) -> pd.Series:
     ds = xr.open_dataset(nc_path)
     logger.info("Variables disponibles : %s", list(ds.data_vars))
 
-    # 2. ⚠️ PIÈGE LONGITUDE — GRACE est en 0–360°, notre AOI est en -180/180°
+    # 2. LONGITUDE GRACE est en 0–360°, notre AOI est en -180/180°
     #    Convertir GRACE en -180/180° avant tout découpage
     ds = ds.assign_coords(lon=(((ds.lon + 180) % 360) - 180)).sortby("lon")
     logger.info("Longitude convertie 0–360 → -180/180")
