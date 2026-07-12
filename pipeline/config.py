@@ -77,6 +77,12 @@ SERIES_PARQUET = DATA_DIR / f"{AQUIFER_ID}_series.parquet"
 LAST_REFRESH_JSON = DATA_DIR / "last_refresh.json"
 
 # ---------------------------------------------------------------------------
+# Prétraitement 
+# ---------------------------------------------------------------------------
+MASCON_NC_PATH = RAW_DIR / "mascon_cri.nc"   # fichier NetCDF local 
+GRACE_UNCERTAINTY_FALLBACK_MM = 15.0         # fallback si NetCDF absent (indicatif, ~1-2 cm typique)
+GAP_MIN_CONSECUTIVE = 3                      # seuil pour détecter les blocs de lacunes
+# ---------------------------------------------------------------------------
 # Statistiques / prévision
 # ---------------------------------------------------------------------------
 HAC_MAXLAGS = 12                        # erreurs Newey–West (spec §6.1)

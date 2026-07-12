@@ -10,7 +10,8 @@ import logging
 
 import pandas as pd
 
-from pipeline.config import BASELINE_END, BASELINE_START, DATA_DIR
+from pipeline.config import BASELINE_END, BASELINE_START, DATA_DIR, SERIES_PARQUET
+
 
 logger = logging.getLogger(__name__)
 
@@ -210,10 +211,11 @@ def save_proxy_parquet(
 
     C'est ce fichier (sass_series.parquet) que le dashboard lit.
     """
-    if dest is None:
-        dest = DATA_DIR / "sass_series.parquet"
 
-    # Aligner tout sur le même index (outer → NaN si une série est plus courte)
+    if dest is None:
+       dest = SERIES_PARQUET
+
+    # Aligner tout sur le même index 
     df = pd.DataFrame({
         "twsa_cm": twsa_cm,
         "gldas_anom_mm": gldas_anom_mm,
