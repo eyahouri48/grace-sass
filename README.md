@@ -6,7 +6,7 @@ la prévision (« perspectives ») du stockage des eaux souterraines du
 mascons GRACE/GRACE-FO (JPL RL06.3 V04, filtrés CRI) et d'un proxy résiduel
 GLDAS-2.1 Noah. Projet OSS, programme « Veille et Perspectives ».
 
-> ⚠️ **Estimation prototype** : `gwsa_mm ≈ TWSA − anomalie GLDAS` est une
+>  **Estimation prototype** : `gwsa_mm ≈ TWSA − anomalie GLDAS` est une
 > séparation de premier ordre, non validée par la piézométrie in situ.
 > Visualisation de tendance et démonstration méthodologique uniquement.
 
@@ -52,4 +52,4 @@ profil. En CI : secrets `EARTHDATA_USERNAME`/`EARTHDATA_PASSWORD` (principaux,
 
 - Cahier des charges : `Spécification_Technique_Stage_GRACE.docx`
 - OSS (2008), *Système aquifère du Sahara septentrional — gestion commune
-  d'un bassin transfrontalier* (lecture semaine 1)
+  d'un bassin transfrontalier* 
