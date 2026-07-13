@@ -31,7 +31,7 @@ ui_strings/          libellés bilingues EN/FR (parité testée)
 tests/               suite 100 % hors ligne (fixture Parquet committée)
 data/                cache Parquet + last_refresh.json (générés)
 docs/                dashboard statique publié sur GitHub Pages
-sass.geojson         AOI — ⚠️ PLACEHOLDER, à remplacer par le polygone OSS
+sass.geojson         AOI 
 ```
 
 ## Démarrage
