@@ -1,12 +1,11 @@
+# fichier : tests/conftest.py
 """
 conftest.py — Fixtures partagées de la suite de tests.
 
-RÈGLE (spec §8.3) : les tests tournent 100 % HORS LIGNE.
 Les PR GitHub n'ont pas accès aux secrets → aucun test ne doit toucher
 Earthdata, OPeNDAP ou toute source distante.
 """
 
-import os
 import pytest
 
 
@@ -19,8 +18,3 @@ def no_earthdata_credentials(monkeypatch):
     """
     for var in ("EARTHDATA_USERNAME", "EARTHDATA_PASSWORD", "EARTHDATA_TOKEN"):
         monkeypatch.delenv(var, raising=False)
-
-
-# Fixture de données : un petit instantané Parquet/CSV de gwsa_mm
-# (incluant quelques mois de lacune) sera committé dans tests/fixtures/
-# une fois l'ingestion réelle fonctionnelle (Tâche 15).
