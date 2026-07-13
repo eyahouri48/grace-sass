@@ -10,7 +10,6 @@ import json
 
 import numpy as np
 import pandas as pd
-import pytest
 import xarray as xr
 
 from pipeline.ingest_gldas import process_one_granule

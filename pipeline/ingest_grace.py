@@ -5,7 +5,6 @@ moyenne de bassin pondérée cos-lat → twsa_cm en Parquet."""
 import logging
 import numpy as np
 import xarray as xr
-import rioxarray         
 import geopandas as gpd
 import pandas as pd
 from pathlib import Path
@@ -50,7 +49,6 @@ def download_grace_mascon(dest: Path | None = None) -> Path:
     earthaccess.login(strategy="environment")
 
     logger.info("Téléchargement du mascon CRI depuis PO.DAAC...")
-    import requests as req
 
     session = earthaccess.get_requests_https_session()
     resp = session.get(GRACE_URL, timeout=300)

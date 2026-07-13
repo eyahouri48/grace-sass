@@ -19,9 +19,9 @@ print(f"Nombre de granules trouvés : {len(granules)}")
 for g in granules:
     title = g.get("title", "?")
     # Chercher le lien de téléchargement direct
-    links = [l["href"] for l in g.get("links", [])
-             if l.get("rel") == "http://esipfed.org/ns/fedsearch/1.1/data#"
-             and l["href"].endswith(".nc")]
+    links = [lnk["href"] for lnk in g.get("links", [])
+             if lnk.get("rel") == "http://esipfed.org/ns/fedsearch/1.1/data#"
+             and lnk["href"].endswith(".nc")]
     print(f"\nTitre : {title}")
     for link in links:
         print(f"  URL : {link}")

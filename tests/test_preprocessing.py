@@ -6,7 +6,6 @@ le drapeau is_imputed, et la détection des blocs de lacunes.
 Fixtures synthétiques, zéro réseau.
 """
 
-import numpy as np
 import pandas as pd
 import pytest
 
@@ -85,12 +84,12 @@ class TestReindexMonthly:
         result = reindex_monthly(df_with_gaps)
 
         # Mois existants → False
-        assert result.loc["2005-01-01", "is_imputed"] == False
-        assert result.loc["2005-08-01", "is_imputed"] == False
+        assert not result.loc["2005-01-01", "is_imputed"] 
+        assert not result.loc["2005-08-01", "is_imputed"] 
 
         # Mois manquants → True
-        assert result.loc["2005-04-01", "is_imputed"] == True
-        assert result.loc["2005-10-01", "is_imputed"] == True
+        assert result.loc["2005-04-01", "is_imputed"] 
+        assert result.loc["2005-10-01", "is_imputed"]
 
     def test_pas_de_perte_de_donnees(self, df_with_gaps):
         """Le nombre de valeurs non-NaN dans gwsa_mm est le même avant/après."""
@@ -122,11 +121,11 @@ class TestInterpolateGaps:
         result = interpolate_gaps(df_reindexed)
 
         # Les mois manquants restent marqués imputés
-        assert result.loc["2005-04-01", "is_imputed"] == True
-        assert result.loc["2005-05-01", "is_imputed"] == True
+        assert result.loc["2005-04-01", "is_imputed"] 
+        assert result.loc["2005-05-01", "is_imputed"] 
 
         # Les mois observés restent marqués non-imputés
-        assert result.loc["2005-01-01", "is_imputed"] == False
+        assert not result.loc["2005-01-01", "is_imputed"] 
 
     def test_interpolation_lineaire_coherente(self, df_reindexed):
         """Les valeurs interpolées sont entre les bornes.

@@ -1,4 +1,4 @@
-# GRACE/SASS — Suivi & prévision du stockage des eaux souterraines
+# GRACE/SASS : Suivi & prévision du stockage des eaux souterraines
 
 Pipeline Python reproductible + tableau de bord pour le suivi (« veille ») et
 la prévision (« perspectives ») du stockage des eaux souterraines du
@@ -51,5 +51,5 @@ profil. En CI : secrets `EARTHDATA_USERNAME`/`EARTHDATA_PASSWORD` (principaux,
 ## Références
 
 - Cahier des charges : `Spécification_Technique_Stage_GRACE.docx`
-- OSS (2008), *Système aquifère du Sahara septentrional — gestion commune
+- OSS (2008), *Système aquifère du Sahara septentrional - gestion commune
   d'un bassin transfrontalier* 

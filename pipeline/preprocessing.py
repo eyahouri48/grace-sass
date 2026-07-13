@@ -276,7 +276,7 @@ if __name__ == "__main__":
 
     # Résumé
     print(f"\n{'='*50}")
-    print(f"Prétraitement terminé")
+    print("Prétraitement terminé")
     print(f"  Mois : {len(df_final)}")
     print(f"  Imputés : {df_final['is_imputed'].sum()}")
     print(f"  Incertitude moyenne : {df_final['uncertainty_mm'].mean():.1f} mm")
