@@ -23,8 +23,7 @@ UI_STRINGS_DIR = REPO_ROOT / "ui_strings"
 # ---------------------------------------------------------------------------
 AQUIFER_ID = "sass"                     # clé du cache Parquet (extensible phase 2)
 AOI_GEOJSON = REPO_ROOT / "sass.geojson"
-# ⚠️ Le sass.geojson actuel est un PLACEHOLDER (enveloppe grossière).
-#    À remplacer par le polygone officiel OSS dès réception (spec §4).
+
 
 # Fenêtre englobante généreuse pour le premier découpage (spec §4a).
 # Le découpage final se fait TOUJOURS sur le polygone exact, pas sur la bbox.
@@ -51,7 +50,7 @@ GRACE_URL = (
 # ---------------------------------------------------------------------------
 GLDAS_SHORT_NAME = "GLDAS_NOAH025_M"
 GLDAS_VERSION = "2.1"
-# ⚠️ Vérifier en semaine 1 : l'agrégation /dods peut renommer/minusculiser
+#  Vérifier en semaine 1 : l'agrégation /dods peut renommer/minusculiser
 #    les variables par rapport aux granules natifs.
 GLDAS_COMPONENTS = [
     "SoilMoi0_10cm_inst",
@@ -67,7 +66,7 @@ GLDAS_COMPONENTS = [
 # ---------------------------------------------------------------------------
 BASELINE_START = "2004-01"
 BASELINE_END = "2009-12"
-# ⚠️ Ne jamais supposer que les 72 mois existent : on aligne GLDAS sur les
+#    Ne jamais supposer que les 72 mois existent : on aligne GLDAS sur les
 #    mois RÉELLEMENT présents dans la série GRACE à l'intérieur de la fenêtre.
 
 # ---------------------------------------------------------------------------
