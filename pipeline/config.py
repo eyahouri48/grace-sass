@@ -81,9 +81,14 @@ LAST_REFRESH_JSON = DATA_DIR / "last_refresh.json"
 MASCON_NC_PATH = RAW_DIR / "mascon_cri.nc"   # fichier NetCDF local 
 GRACE_UNCERTAINTY_FALLBACK_MM = 15.0         # fallback si NetCDF absent (indicatif, ~1-2 cm typique)
 GAP_MIN_CONSECUTIVE = 3                      # seuil pour détecter les blocs de lacunes
+
+
 # ---------------------------------------------------------------------------
 # Statistiques / prévision
 # ---------------------------------------------------------------------------
+STL_SEASONAL = 13        # fenêtre Loess saisonnière 
+STL_ROBUST = True         # résistant aux outliers (mois interpolés, événements ponctuels)
+ACF_NLAGS = 36            # 3 ans de lags — suffisant pour voir les motifs annuels
 HAC_MAXLAGS = 12                        # erreurs Newey–West (spec §6.1)
 STL_PERIOD = 12                         # saisonnalité annuelle (spec §6.2)
 CV_INITIAL = "2920 days"                # ~8 ans — validation à origine glissante
