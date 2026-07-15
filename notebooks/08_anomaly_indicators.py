@@ -4,6 +4,7 @@
 import pandas as pd
 from pipeline.indicators import compute_anomaly_indicators
 from pipeline.config import SERIES_PARQUET
+import plotly.express as px
 
 df = pd.read_parquet(SERIES_PARQUET)
 
@@ -27,8 +28,7 @@ print(f"  gwsa_mm        = {last['gwsa_mm']:.1f} mm")
 print(f"  z-score        = {last['zscore']:.2f}")
 print(f"  percentile     = {last['percentile_rank']:.1f} %")
 
-# heatmap calendaire ---
-import plotly.express as px
+
 
 zs = result["zscore"].copy()
 zs_pivot = zs.groupby([zs.index.year, zs.index.month]).first().unstack()
@@ -41,7 +41,7 @@ fig = px.imshow(
     color_continuous_midpoint=0,
     aspect="auto",
     labels={"color": "Z-score"},
-    title="Anomalie de stock d'eau souterraine du SASS — z-score mensuel (réf. 2004–2009)",
+    title="Anomalie de stock d'eau souterraine du SASS : z-score mensuel (réf. 2004–2009)",
 )
 fig.update_yaxes(title="Année", dtick=1)
 fig.update_xaxes(title="Mois", side="top")
