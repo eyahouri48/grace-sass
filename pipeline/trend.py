@@ -7,7 +7,7 @@ Sen's slope, and volume conversion (mm -> km³).
 Spec §6.1 — observed months only (is_imputed == False).
 """
 
-import numpy as np
+
 import pandas as pd
 import geopandas as gpd
 from pyproj import Geod

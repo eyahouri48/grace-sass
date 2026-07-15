@@ -59,7 +59,7 @@ def test_sen_slope_linear_series():
     # La tendance doit être 'decreasing'
     assert result["mk_trend"] == "decreasing"
     # Significatif
-    assert result["mk_h"] == True
+    assert result["mk_h"] 
 
 
 # ────────────────────────────────────────────────────────────
