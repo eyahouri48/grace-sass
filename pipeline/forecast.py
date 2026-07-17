@@ -13,6 +13,9 @@ Ce module contient :
 import pandas as pd
 from prophet import Prophet
 from prophet.diagnostics import cross_validation, performance_metrics
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+import numpy as np
 
 from pipeline.config import (
     CV_INITIAL,
@@ -206,3 +209,221 @@ def make_forecast(
     forecast = model.predict(future)
 
     return forecast
+
+
+
+# ── 5. SARIMA ────────────────────────────────────────────────────
+
+def fit_sarima(
+    gwsa_mm: pd.Series,
+    order: tuple = (2, 1, 0),
+    seasonal_order: tuple = (0, 0, 0, 12),
+) -> object:
+    """Ajuster un modèle SARIMA sur la série gwsa_mm (continue, interpolée).
+
+    Parameters
+    ----------
+    gwsa_mm : pd.Series
+        Série GWSA mensuelle CONTINUE (mois imputés inclus).
+        SARIMA ne tolère pas les trous — c'est la série interpolée.
+    order : tuple
+        (p, d, q) — ordres non saisonniers.
+    seasonal_order : tuple
+        (P, D, Q, s) — ordres saisonniers. (0,0,0,12) = pas de saisonnalité.
+
+    Returns
+    -------
+    SARIMAXResultsWrapper
+        Modèle ajusté avec .forecast() et .get_forecast() disponibles.
+    """
+    model = SARIMAX(
+        gwsa_mm,
+        order=order,
+        seasonal_order=seasonal_order,
+        enforce_stationarity=False,   # évite des erreurs numériques
+        enforce_invertibility=False,  # idem
+    )
+    results = model.fit(disp=False)  # disp=False : pas de log d'optimisation
+    return results
+
+
+def walk_forward_cv(
+    gwsa_mm: pd.Series,
+    is_imputed: pd.Series,
+    model_type: str = "sarima",
+    order: tuple = (2, 1, 0),
+    seasonal_order: tuple = (0, 0, 0, 12),
+    initial_months: int = 96,
+    step_months: int = 12,
+    horizon_months: int = 24,
+) -> pd.DataFrame:
+    """Validation croisée walk-forward pour SARIMA ou ETS.
+
+    Reproduit la même logique que la CV Prophet : fenêtre expansive,
+    avance d'un an par pli, horizon de 24 mois, scoring sur mois
+    observés uniquement.
+
+    Parameters
+    ----------
+    gwsa_mm : pd.Series
+        Série continue (interpolée) avec DatetimeIndex mensuel.
+    is_imputed : pd.Series
+        Booléen — True pour les mois interpolés.
+    model_type : str
+        "sarima" ou "ets".
+    order, seasonal_order : tuple
+        Ordres SARIMA (ignorés si model_type="ets").
+    initial_months : int
+        Fenêtre d'entraînement minimale (défaut 96 ≈ 8 ans, comme Prophet).
+    step_months : int
+        Avance entre les plis (défaut 12 ≈ 1 an).
+    horizon_months : int
+        Horizon de prévision par pli (défaut 24).
+
+    Returns
+    -------
+    pd.DataFrame
+        Colonnes : cutoff, ds, y_true, y_pred, is_obs.
+        is_obs = True si le mois est réellement observé (pas imputé).
+    """
+    results_list = []
+    n = len(gwsa_mm)
+
+    # Générer les coupures (cutoffs)
+    cutoff_indices = list(range(initial_months, n - horizon_months, step_months))
+
+    for cut_idx in cutoff_indices:
+        # Fenêtre d'entraînement : du début jusqu'au cutoff
+        train = gwsa_mm.iloc[:cut_idx].copy()
+        train.index.freq = "MS"  # forcer la fréquence mensuelle (supprime le warning statsmodels)
+        # Fenêtre de test : du cutoff au cutoff + horizon
+        test = gwsa_mm.iloc[cut_idx : cut_idx + horizon_months]
+
+        if len(test) == 0:
+            continue
+
+        # Ajuster le modèle sur la fenêtre d'entraînement
+        try:
+            if model_type == "sarima":
+                model = SARIMAX(
+                    train,
+                    order=order,
+                    seasonal_order=seasonal_order,
+                    enforce_stationarity=False,
+                    enforce_invertibility=False,
+                )
+                fit = model.fit(disp=False)
+                pred = fit.forecast(steps=len(test))
+            elif model_type == "ets":
+                model = ExponentialSmoothing(
+                    train,
+                    trend="add",
+                    seasonal=None,        # pas de saisonnalité (bassin fossile)
+                    initialization_method="estimated",
+                )
+                fit = model.fit(optimized=True)
+                pred = fit.forecast(steps=len(test))
+            else:
+                raise ValueError(f"model_type inconnu : {model_type}")
+        except Exception as e:
+            # Si un pli échoue (convergence...), on le saute
+            print(f"  ⚠ Pli cutoff={train.index[-1]:%Y-%m} échoué : {e}")
+            continue
+
+        # Collecter les résultats
+        for i, (date, y_true) in enumerate(test.items()):
+            results_list.append({
+                "cutoff": train.index[-1],
+                "ds": date,
+                "y_true": y_true,
+                "y_pred": pred.iloc[i],
+                "is_obs": not is_imputed.loc[date],
+            })
+
+    return pd.DataFrame(results_list)
+
+
+def compute_cv_metrics(
+    cv_df: pd.DataFrame,
+    observed_only: bool = True,
+) -> dict:
+    """Calculer MAE et RMSE à partir du DataFrame walk-forward.
+
+    Parameters
+    ----------
+    cv_df : pd.DataFrame
+        Sortie de walk_forward_cv(). Colonnes : y_true, y_pred, is_obs.
+    observed_only : bool
+        Si True (défaut), ne score que sur les mois observés (is_obs=True).
+
+    Returns
+    -------
+    dict
+        {"mae": float, "rmse": float, "n_obs": int}
+    """
+    if observed_only:
+        df = cv_df[cv_df["is_obs"]].copy()
+    else:
+        df = cv_df.copy()
+
+    errors = df["y_true"] - df["y_pred"]
+    mae = errors.abs().mean()
+    rmse = np.sqrt((errors ** 2).mean())
+
+    return {"mae": mae, "rmse": rmse, "n_obs": len(df)}
+
+
+# ── 6. ETS / Holt-Winters ───────────────────────────────────────
+
+def fit_ets(
+    gwsa_mm: pd.Series,
+    trend: str = "add",
+    seasonal: str = None,
+) -> object:
+    """Ajuster un modèle Holt-Winters (ETS) additif.
+
+    Parameters
+    ----------
+    gwsa_mm : pd.Series
+        Série continue (interpolée).
+    trend : str
+        "add" pour tendance additive (défaut).
+    seasonal : str or None
+        None = pas de saisonnalité (recommandé sur le SASS).
+
+    Returns
+    -------
+    HoltWintersResultsWrapper
+        Modèle ajusté.
+    """
+    model = ExponentialSmoothing(
+        gwsa_mm,
+        trend=trend,
+        seasonal=seasonal,
+        initialization_method="estimated",
+    )
+    return model.fit(optimized=True)
+
+
+# ── 7. Comparaison des modèles ──────────────────────────────────
+
+def compare_models(metrics_dict: dict) -> pd.DataFrame:
+    """Créer un tableau comparatif des modèles.
+
+    Parameters
+    ----------
+    metrics_dict : dict
+        Clé = nom du modèle, valeur = dict {"mae": ..., "rmse": ..., "n_obs": ...}
+        Ex : {"Prophet (saisonnier)": {"mae": 6.09, ...}, "SARIMA(2,1,0)": {...}}
+
+    Returns
+    -------
+    pd.DataFrame
+        Tableau trié par MAE croissante, colonnes : modèle, mae, rmse, n_obs.
+    """
+    rows = []
+    for name, m in metrics_dict.items():
+        rows.append({"modèle": name, "mae_mm": m["mae"], "rmse_mm": m["rmse"], "n_obs": m["n_obs"]})
+
+    df = pd.DataFrame(rows).sort_values("mae_mm").reset_index(drop=True)
+    return df
