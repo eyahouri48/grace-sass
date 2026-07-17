@@ -92,10 +92,15 @@ ACF_NLAGS = 36            # 3 ans de lags — suffisant pour voir les motifs ann
 HAC_MAXLAGS = 12                        # erreurs Newey–West (spec §6.1)
 STL_PERIOD = 12                         # saisonnalité annuelle (spec §6.2)
 CV_INITIAL = "2920 days"                # ~8 ans — validation à origine glissante
-CV_PERIOD = "365 days"
-CV_HORIZON = "730 days"                 # ~24 mois = horizon VALIDÉ (spec §7.3)
+CV_PERIOD  = "365 days"     # on avance l'origine d'1 an entre chaque pli
+CV_HORIZON = "730 days"     # ~24 mois — horizon validé (§7.3)
+PROPHET_CHANGEPOINT_PRIOR_SCALE = 0.05  # défaut Prophet — curseur rigidité/souplesse de la tendance
+FORECAST_HORIZON_MONTHS = 24   # horizon validé par la CV
+
 SCENARIO_HORIZON_MONTHS = 60            # extrapolation = scénario, PAS prévision
 MIN_MASCONS_PER_COUNTRY = 3             # règle §6.1 pour la subdivision pays
+
+
 
 # ---------------------------------------------------------------------------
 # Palette du dashboard (Bloc E) — limitée et intentionnelle
