@@ -2,6 +2,7 @@
 """
 Exploration — SARIMA + ETS + comparaison avec Prophet.
 
+
 Ordres SARIMA guidés par l'ACF/PACF de la Tâche 8 :
   - ARIMA(2,1,0) — PACF significative aux lags 1 et 2
   - ARIMA(1,1,0) — variante plus simple
