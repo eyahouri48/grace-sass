@@ -181,3 +181,67 @@ def get_scenario_summary(scenarios: dict) -> pd.DataFrame:
         )
 
     return pd.DataFrame(rows)
+
+
+def build_multi_scenarios(
+    gwsa_mm: pd.Series,
+    is_imputed: pd.Series,
+    validated_mae_mm: float,
+    forecast_horizon: int = FORECAST_HORIZON_MONTHS,
+    scenario_horizon: int = SCENARIO_HORIZON_MONTHS,
+) -> dict:
+    """
+    Construit 3 scénarios : central (Prophet), sécheresse, gestion renforcée.
+
+    Le scénario central est le forecast Prophet standard.
+    Les scénarios alternatifs appliquent un décalage linéaire basé sur
+    la pente de Sen (±50 %) — ce sont des what-if, PAS des prévisions.
+
+    Returns
+    -------
+    dict avec clés :
+        "central_df", "dry_df", "wet_df" : DataFrames (ds, yhat, yhat_lower, yhat_upper, zone)
+        "last_obs_date", "cutoff_date", "sen_slope_mm_yr"
+    """
+    from pipeline.trend import mann_kendall_sen
+
+    central = build_scenarios(
+        gwsa_mm=gwsa_mm,
+        validated_mae_mm=validated_mae_mm,
+        forecast_horizon=forecast_horizon,
+        scenario_horizon=scenario_horizon,
+    )
+
+    sen_result = mann_kendall_sen(gwsa_mm, is_imputed)
+    sen_slope = sen_result["sen_slope_mm_yr"]
+
+    forecast_df = central["forecast_df"].copy()
+    last_obs_date = central["last_obs_date"]
+
+    t_years = (forecast_df["ds"] - last_obs_date).dt.days / 365.25
+    perturbation_factor = 0.5
+
+    # Sécheresse : accélération de la baisse (sen_slope < 0 → delta < 0)
+    delta_dry = sen_slope * perturbation_factor * t_years
+    dry_df = forecast_df.copy()
+    dry_df["yhat"] = forecast_df["yhat"] + delta_dry
+    dry_df["yhat_upper"] = forecast_df["yhat_upper"] + delta_dry
+    dry_df["yhat_lower"] = forecast_df["yhat_lower"] + delta_dry
+
+    # Gestion renforcée : ralentissement de la baisse
+    delta_wet = -sen_slope * perturbation_factor * t_years
+    wet_df = forecast_df.copy()
+    wet_df["yhat"] = forecast_df["yhat"] + delta_wet
+    wet_df["yhat_upper"] = forecast_df["yhat_upper"] + delta_wet
+    wet_df["yhat_lower"] = forecast_df["yhat_lower"] + delta_wet
+
+    cols = ["ds", "yhat", "yhat_lower", "yhat_upper", "zone"]
+    return {
+        "central_df": forecast_df[cols].copy(),
+        "dry_df": dry_df[cols].copy(),
+        "wet_df": wet_df[cols].copy(),
+        "last_obs_date": last_obs_date,
+        "cutoff_date": central["cutoff_date"],
+        "sen_slope_mm_yr": sen_slope,
+        "validated_mae_mm": validated_mae_mm,
+    }

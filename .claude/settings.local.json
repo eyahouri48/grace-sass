@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(PYTHONIOENCODING=utf-8 python -c \"\nimport json\nwith open\\('ui_strings/en.json'\\) as f: en = json.load\\(f\\)\nwith open\\('ui_strings/fr.json'\\) as f: fr = json.load\\(f\\)\nmissing_fr = set\\(en.keys\\(\\)\\) - set\\(fr.keys\\(\\)\\)\nmissing_en = set\\(fr.keys\\(\\)\\) - set\\(en.keys\\(\\)\\)\nif missing_fr:\n    print\\(f'Missing in FR: {sorted\\(missing_fr\\)}'\\)\nif missing_en:\n    print\\(f'Missing in EN: {sorted\\(missing_en\\)}'\\)\nif not missing_fr and not missing_en:\n    print\\(f'Parity OK: {len\\(en\\)} keys in both files'\\)\n\")",
+      "Bash(PYTHONIOENCODING=utf-8 uv run pytest tests/test_translations.py -v 2>&1)",
+      "Bash(start:*)",
+      "Read(//c/Users/user/Desktop/**)",
+      "Bash(python3:*)",
+      "Bash(/c/Users/user/AppData/Local/Programs/Python/Python312/python << 'EOF'\nimport pandas as pd\nimport os\nos.chdir\\(\"/c/Users/user/Desktop/grace-sass\"\\)\n\ntry:\n    df = pd.read_parquet\\(\"data/sass_series.parquet\"\\)\n    print\\(\"Columns in sass_series.parquet:\"\\)\n    print\\(df.columns.tolist\\(\\)\\)\n    print\\(\"\\\\nData types:\"\\)\n    print\\(df.dtypes\\)\n    print\\(\"\\\\nShape:\", df.shape\\)\n    print\\(\"\\\\nFirst few rows:\"\\)\n    print\\(df.head\\(10\\)\\)\n    print\\(\"\\\\nDate range:\"\\)\n    for col in df.columns:\n        if 'date' in col.lower\\(\\) or 'time' in col.lower\\(\\):\n            print\\(f\"  {col}: {df[col].min\\(\\)} to {df[col].max\\(\\)}\"\\)\nexcept Exception as e:\n    print\\(f\"Error: {e}\"\\)\n    import traceback\n    traceback.print_exc\\(\\)\nEOF)",
+      "Bash(python:*)",
+      "Bash(grep:*)"
+    ]
+  }
+}

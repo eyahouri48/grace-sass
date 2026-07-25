@@ -1,0 +1,664 @@
+<!-- fichier : pipeline/templates/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ strings_en.dashboard_title }}</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <style>
+        :root {
+            --c-primary: {{ colors.primary }};
+            --c-primary-light: {{ colors.primary_light }};
+            --c-primary-bg: {{ colors.primary_bg }};
+            --c-alert: {{ colors.alert }};
+            --c-alert-light: {{ colors.alert_light }};
+            --c-warn: {{ colors.warn }};
+            --c-warn-light: {{ colors.warn_light }};
+            --c-positive: {{ colors.positive }};
+            --c-positive-light: {{ colors.positive_light }};
+            --c-trend: {{ colors.trend_line }};
+            --c-seasonal: {{ colors.seasonal }};
+            --c-text: {{ colors.text }};
+            --c-text-mid: {{ colors.text_mid }};
+            --c-text-light: {{ colors.text_light }};
+            --c-bg: #F5F6F8;
+            --c-card: {{ colors.bg_card }};
+            --c-border: {{ colors.border }};
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            color: var(--c-text);
+            background: var(--c-bg);
+            line-height: 1.6;
+        }
+
+        /* ── HEADER ─────────────────────────────────────── */
+        .header {
+            background: linear-gradient(135deg, var(--c-primary) 0%, #253f4f 100%);
+            color: white;
+            padding: 24px 32px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 3px solid var(--c-positive);
+        }
+        .header-left { max-width: 760px; }
+        .header .program {
+            font-size: 0.66rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            margin-bottom: 6px;
+        }
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+        .header .subtitle {
+            font-size: 0.82rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+        .header .description {
+            font-size: 0.74rem;
+            opacity: 0.55;
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+        .header-right { text-align: right; }
+        .lang-btn {
+            background: rgba(255,255,255,0.10);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 4px 14px;
+            border-radius: 2px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+        .lang-btn:hover { background: rgba(255,255,255,0.20); }
+        .freshness {
+            font-size: 0.66rem;
+            color: rgba(255,255,255,0.50);
+            line-height: 1.7;
+            margin-top: 8px;
+        }
+
+        /* ── METADATA BAR ───────────────────────────────── */
+        .metadata-bar {
+            background: var(--c-card);
+            border-bottom: 1px solid var(--c-border);
+            padding: 7px 32px;
+            font-size: 0.71rem;
+            color: var(--c-text-light);
+            letter-spacing: 0.2px;
+        }
+
+        /* ── CONTAINER ──────────────────────────────────── */
+        .container {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 24px 22px;
+        }
+
+        /* ── WARNING BANNER ─────────────────────────────── */
+        .warning-banner {
+            border-left: 3px solid var(--c-warn);
+            background: var(--c-warn-light);
+            padding: 8px 16px;
+            margin-bottom: 22px;
+            font-size: 0.77rem;
+            color: var(--c-text-mid);
+            line-height: 1.5;
+            border-radius: 0 2px 2px 0;
+        }
+        .warning-banner strong { color: var(--c-text); }
+
+        /* ── KPI CARDS ──────────────────────────────────── */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 768px) { .kpi-row { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 480px) { .kpi-row { grid-template-columns: 1fr; } }
+        .kpi-card {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            padding: 16px 18px;
+            position: relative;
+        }
+        .kpi-card .kpi-label {
+            font-size: 0.64rem;
+            color: var(--c-text-mid);
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .kpi-card .kpi-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--c-alert);
+            line-height: 1.15;
+        }
+        .kpi-card .kpi-value.neutral { color: var(--c-primary); }
+        .kpi-card .kpi-value.vigilance-high { color: var(--c-alert); }
+        .kpi-card .kpi-value.vigilance-moderate { color: var(--c-warn); }
+        .kpi-card .kpi-value.vigilance-low { color: var(--c-positive); }
+        .kpi-card .kpi-unit {
+            font-size: 0.72rem;
+            color: var(--c-text-mid);
+            margin-top: 3px;
+        }
+        .kpi-card .kpi-context {
+            font-size: 0.64rem;
+            color: var(--c-text-light);
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--c-border);
+            line-height: 1.45;
+        }
+        .kpi-sparkline {
+            position: absolute;
+            bottom: 14px;
+            right: 14px;
+            opacity: 0.25;
+        }
+        .kpi-sparkline svg { width: 58px; height: 24px; }
+
+        /* ── SECTION DIVIDERS ───────────────────────────── */
+        .section-divider {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 2.8px;
+            color: var(--c-primary);
+            font-weight: 700;
+            margin: 32px 0 14px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--c-border);
+        }
+
+        /* ── PANELS ─────────────────────────────────────── */
+        .panel {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            padding: 22px 24px;
+            margin-bottom: 16px;
+        }
+        .panel-header { margin-bottom: 14px; }
+        .panel-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--c-text);
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+        .panel-context {
+            font-size: 0.77rem;
+            color: var(--c-text-mid);
+            line-height: 1.55;
+            max-width: 720px;
+        }
+
+        /* ── GRID LAYOUTS ───────────────────────────────── */
+        .grid-3-2 {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .grid-55-45 {
+            display: grid;
+            grid-template-columns: 55fr 45fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 768px) {
+            .grid-3-2, .grid-2, .grid-55-45 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── SIDE TEXT PANELS ───────────────────────────── */
+        .side-text {
+            padding: 6px 0 0;
+        }
+        .side-text h3 {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--c-primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .side-text ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .side-text ul li {
+            font-size: 0.79rem;
+            color: var(--c-text-mid);
+            line-height: 1.55;
+            padding: 6px 0 6px 14px;
+            border-left: 2px solid var(--c-primary);
+            margin-bottom: 6px;
+        }
+
+        /* ── MINI BAR SECTION ───────────────────────────── */
+        .mini-bar-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--c-text-mid);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+            margin-bottom: 4px;
+        }
+
+        /* ── DECISION LIST ──────────────────────────────── */
+        .decision-list { list-style: none; }
+        .decision-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--c-border);
+            font-size: 0.79rem;
+            line-height: 1.6;
+        }
+        .decision-list li:last-child { border-bottom: none; }
+        .decision-list li strong {
+            display: block;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--c-primary);
+            margin-bottom: 2px;
+        }
+
+        /* ── FOOTER ─────────────────────────────────────── */
+        .footer {
+            text-align: center;
+            font-size: 0.64rem;
+            color: var(--c-text-light);
+            padding: 18px 0;
+            border-top: 1px solid var(--c-border);
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+
+        /* ── BILINGUAL TOGGLE ───────────────────────────── */
+        span.lang-en { display: inline; }
+        span.lang-fr { display: none; }
+        body.fr span.lang-en { display: none; }
+        body.fr span.lang-fr { display: inline; }
+        div.lang-en { display: block; }
+        div.lang-fr { display: none; }
+        body.fr div.lang-en { display: none; }
+        body.fr div.lang-fr { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!-- SECTION 1 — HEADER                                               -->
+<!-- ================================================================ -->
+<div class="header">
+    <div class="header-left">
+        <div class="program">
+            <span class="lang-en">{{ strings_en.header_programme }}</span>
+            <span class="lang-fr">{{ strings_fr.header_programme }}</span>
+        </div>
+        <h1>
+            <span class="lang-en">{{ strings_en.dashboard_title }}</span>
+            <span class="lang-fr">{{ strings_fr.dashboard_title }}</span>
+        </h1>
+        <div class="subtitle">
+            <span class="lang-en">{{ strings_en.dashboard_subtitle }}</span>
+            <span class="lang-fr">{{ strings_fr.dashboard_subtitle }}</span>
+        </div>
+        <div class="description">
+            <span class="lang-en">{{ strings_en.header_description }}</span>
+            <span class="lang-fr">{{ strings_fr.header_description }}</span>
+        </div>
+    </div>
+    <div class="header-right">
+        <button class="lang-btn" onclick="toggleLang()">
+            <span class="lang-en">{{ strings_en.lang_toggle }}</span>
+            <span class="lang-fr">{{ strings_fr.lang_toggle }}</span>
+        </button>
+        <div class="freshness">
+            <span class="lang-en">
+                {{ strings_en.freshness_grace }}: {{ freshness.last_grace_month }}<br>
+                {{ strings_en.freshness_gldas }}: {{ freshness.last_gldas_month }}<br>
+                {{ strings_en.freshness_proxy }}: {{ freshness.last_common_month }}
+            </span>
+            <span class="lang-fr">
+                {{ strings_fr.freshness_grace }} : {{ freshness.last_grace_month }}<br>
+                {{ strings_fr.freshness_gldas }} : {{ freshness.last_gldas_month }}<br>
+                {{ strings_fr.freshness_proxy }} : {{ freshness.last_common_month }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 2 — METADATA + WARNING                                   -->
+<!-- ================================================================ -->
+<div class="metadata-bar">
+    <span class="lang-en">{{ strings_en.metadata_text }}</span>
+    <span class="lang-fr">{{ strings_fr.metadata_text }}</span>
+</div>
+
+<div class="container">
+
+    <div class="warning-banner">
+        <span class="lang-en"><strong>{{ strings_en.proxy_warning_title }}.</strong> {{ strings_en.proxy_warning_text }}</span>
+        <span class="lang-fr"><strong>{{ strings_fr.proxy_warning_title }}.</strong> {{ strings_fr.proxy_warning_text }}</span>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- SECTION 3 — KPI CARDS                                            -->
+    <!-- ================================================================ -->
+    <div class="kpi-row">
+        <!-- KPI 1 : Derniere anomalie -->
+        <div class="kpi-card">
+            <div class="kpi-label">
+                <span class="lang-en">{{ strings_en.kpi_anomaly_label }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_anomaly_label }}</span>
+            </div>
+            <div class="kpi-value">{{ kpi_anomaly }}</div>
+            <div class="kpi-unit">
+                <span class="lang-en">{{ strings_en.kpi_anomaly_unit }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_anomaly_unit }}</span>
+            </div>
+            <div class="kpi-context">
+                <span class="lang-en">{{ strings_en.kpi_anomaly_context }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_anomaly_context }}</span>
+            </div>
+            <div class="kpi-sparkline">
+                <svg viewBox="0 0 58 24" preserveAspectRatio="none">
+                    <polyline fill="none" stroke="var(--c-alert)" stroke-width="1.5" stroke-linecap="round"
+                        points="{% for v in sparklines.gwsa_sparkline %}{{ (loop.index0 / (sparklines.gwsa_sparkline|length - 1)) * 58 }},{{ 24 - ((v - sparklines.gwsa_sparkline|min) / ((sparklines.gwsa_sparkline|max - sparklines.gwsa_sparkline|min) or 1)) * 20 - 2 }} {% endfor %}"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- KPI 2 : Tendance + volume -->
+        <div class="kpi-card">
+            <div class="kpi-label">
+                <span class="lang-en">{{ strings_en.kpi_trend_rate_label }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_label }}</span>
+            </div>
+            <div class="kpi-value">{{ kpi_trend_rate }}</div>
+            <div class="kpi-unit">
+                <span class="lang-en">{{ strings_en.kpi_trend_rate_unit }} &middot; {{ kpi_trend_vol }} {{ strings_en.kpi_trend_vol_unit }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_unit }} &middot; {{ kpi_trend_vol }} {{ strings_fr.kpi_trend_vol_unit }}</span>
+            </div>
+            <div class="kpi-context">
+                <span class="lang-en">{{ strings_en.kpi_trend_rate_context }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_context }}</span>
+            </div>
+        </div>
+
+        <!-- KPI 3 : Prevision 24 mois -->
+        <div class="kpi-card">
+            <div class="kpi-label">
+                <span class="lang-en">{{ strings_en.kpi_forecast_label }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_forecast_label }}</span>
+            </div>
+            <div class="kpi-value neutral">{{ kpi_forecast_24 }}</div>
+            <div class="kpi-unit">
+                <span class="lang-en">{{ strings_en.kpi_forecast_unit }} &middot; {{ kpi_forecast_24_delta }} mm vs. last month</span>
+                <span class="lang-fr">{{ strings_fr.kpi_forecast_unit }} &middot; {{ kpi_forecast_24_delta }} mm vs. dernier mois</span>
+            </div>
+            <div class="kpi-context">
+                <span class="lang-en">{{ strings_en.kpi_forecast_context }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_forecast_context }}</span>
+            </div>
+        </div>
+
+        <!-- KPI 4 : Signal de vigilance -->
+        <div class="kpi-card">
+            <div class="kpi-label">
+                <span class="lang-en">{{ strings_en.kpi_vigilance_label }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_vigilance_label }}</span>
+            </div>
+            <div class="kpi-value vigilance-{{ kpi_vigilance }}" style="font-size: 1.4rem;">
+                <span class="lang-en">{{ strings_en["kpi_vigilance_" + kpi_vigilance] }}</span>
+                <span class="lang-fr">{{ strings_fr["kpi_vigilance_" + kpi_vigilance] }}</span>
+            </div>
+            <div class="kpi-unit">z-score : {{ kpi_zscore }}</div>
+            <div class="kpi-context">
+                <span class="lang-en">{{ strings_en.kpi_vigilance_context }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_vigilance_context }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- SECTION 4 — 1. VEILLE : SERIE TEMPORELLE + TEXTE DECIDEUR        -->
+    <!-- ================================================================ -->
+    <div class="section-divider">
+        <span class="lang-en">{{ strings_en.section_monitoring }}</span>
+        <span class="lang-fr">{{ strings_fr.section_monitoring }}</span>
+    </div>
+
+    <div class="grid-3-2">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="lang-en">{{ strings_en.ts_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.ts_title }}</span>
+                </div>
+                <div class="panel-context">
+                    <span class="lang-en">{{ strings_en.ts_context }}</span>
+                    <span class="lang-fr">{{ strings_fr.ts_context }}</span>
+                </div>
+            </div>
+            {{ fig_timeseries | safe }}
+        </div>
+
+        <div class="panel">
+            <div class="side-text">
+                <h3>
+                    <span class="lang-en">{{ strings_en.ts_decision_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.ts_decision_title }}</span>
+                </h3>
+                <div class="lang-en">
+                    <ul>
+                        <li>{{ strings_en.ts_decision_bullet_1 }}</li>
+                        <li>{{ strings_en.ts_decision_bullet_2 }}</li>
+                        <li>{{ strings_en.ts_decision_bullet_3 }}</li>
+                        <li>{{ strings_en.ts_decision_bullet_4 }}</li>
+                    </ul>
+                </div>
+                <div class="lang-fr">
+                    <ul>
+                        <li>{{ strings_fr.ts_decision_bullet_1 }}</li>
+                        <li>{{ strings_fr.ts_decision_bullet_2 }}</li>
+                        <li>{{ strings_fr.ts_decision_bullet_3 }}</li>
+                        <li>{{ strings_fr.ts_decision_bullet_4 }}</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mini-bar-title">
+                <span class="lang-en">{{ strings_en.decision_mini_bar_title }}</span>
+                <span class="lang-fr">{{ strings_fr.decision_mini_bar_title }}</span>
+            </div>
+            {{ fig_decision_bar | safe }}
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- SECTION 5 — SCENARIOS + SIGNATURE SAISONNIERE                    -->
+    <!-- ================================================================ -->
+    <div class="grid-2">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="lang-en">{{ strings_en.scenario_multi_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.scenario_multi_title }}</span>
+                </div>
+                <div class="panel-context">
+                    <span class="lang-en">{{ strings_en.scenario_multi_context }}</span>
+                    <span class="lang-fr">{{ strings_fr.scenario_multi_context }}</span>
+                </div>
+            </div>
+            {{ fig_multi_scenario | safe }}
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="lang-en">{{ strings_en.seasonal_bar_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.seasonal_bar_title }}</span>
+                </div>
+                <div class="panel-context">
+                    <span class="lang-en">{{ strings_en.stl_amplitude }}: {{ seasonal_amplitude_mm }} mm. {{ strings_en.seasonal_bar_context }}</span>
+                    <span class="lang-fr">{{ strings_fr.stl_amplitude }} : {{ seasonal_amplitude_mm }} mm. {{ strings_fr.seasonal_bar_context }}</span>
+                </div>
+            </div>
+            {{ fig_seasonal_bar | safe }}
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- SECTION 6 — DECOMPOSITION STL + MESSAGES D'AIDE A LA DECISION    -->
+    <!-- ================================================================ -->
+    <div class="section-divider">
+        <span class="lang-en">{{ strings_en.section_analysis }}</span>
+        <span class="lang-fr">{{ strings_fr.section_analysis }}</span>
+    </div>
+
+    <div class="grid-55-45">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="lang-en">{{ strings_en.stl_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.stl_title }}</span>
+                </div>
+                <div class="panel-context">
+                    <span class="lang-en">{{ strings_en.stl_explanation }}</span>
+                    <span class="lang-fr">{{ strings_fr.stl_explanation }}</span>
+                </div>
+            </div>
+            {{ fig_stl | safe }}
+        </div>
+
+        <div class="panel">
+            <div class="panel-title" style="margin-bottom: 10px;">
+                <span class="lang-en">{{ strings_en.decision_title }}</span>
+                <span class="lang-fr">{{ strings_fr.decision_title }}</span>
+            </div>
+
+            <div class="lang-en">
+                <ul class="decision-list">
+                    <li>
+                        <strong>{{ strings_en.decision_monitoring }}</strong>
+                        {{ strings_en.decision_monitoring_text }}
+                    </li>
+                    <li>
+                        <strong>{{ strings_en.decision_anticipation }}</strong>
+                        {{ strings_en.decision_anticipation_text }}
+                    </li>
+                    <li>
+                        <strong>{{ strings_en.decision_dialogue }}</strong>
+                        {{ strings_en.decision_dialogue_text }}
+                    </li>
+                    <li>
+                        <strong>{{ strings_en.decision_capitalisation }}</strong>
+                        {{ strings_en.decision_capitalisation_text }}
+                    </li>
+                </ul>
+                <p style="font-size: 0.73rem; color: var(--c-text-light); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--c-border); line-height: 1.55;">
+                    {{ strings_en.decision_limits_inline }}
+                </p>
+                <p style="font-size: 0.73rem; color: var(--c-text-mid); margin-top: 8px; line-height: 1.55;">
+                    <strong>{{ strings_en.decision_utility_title }}.</strong> {{ strings_en.decision_utility_text }}
+                </p>
+            </div>
+
+            <div class="lang-fr">
+                <ul class="decision-list">
+                    <li>
+                        <strong>{{ strings_fr.decision_monitoring }}</strong>
+                        {{ strings_fr.decision_monitoring_text }}
+                    </li>
+                    <li>
+                        <strong>{{ strings_fr.decision_anticipation }}</strong>
+                        {{ strings_fr.decision_anticipation_text }}
+                    </li>
+                    <li>
+                        <strong>{{ strings_fr.decision_dialogue }}</strong>
+                        {{ strings_fr.decision_dialogue_text }}
+                    </li>
+                    <li>
+                        <strong>{{ strings_fr.decision_capitalisation }}</strong>
+                        {{ strings_fr.decision_capitalisation_text }}
+                    </li>
+                </ul>
+                <p style="font-size: 0.73rem; color: var(--c-text-light); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--c-border); line-height: 1.55;">
+                    {{ strings_fr.decision_limits_inline }}
+                </p>
+                <p style="font-size: 0.73rem; color: var(--c-text-mid); margin-top: 8px; line-height: 1.55;">
+                    <strong>{{ strings_fr.decision_utility_title }}.</strong> {{ strings_fr.decision_utility_text }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- SECTION 7 — CONTEXTE : CARTE SASS                                -->
+    <!-- ================================================================ -->
+    <div class="section-divider">
+        <span class="lang-en">{{ strings_en.section_context }}</span>
+        <span class="lang-fr">{{ strings_fr.section_context }}</span>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title" style="margin-bottom: 10px;">
+            <span class="lang-en">{{ strings_en.map_title }}</span>
+            <span class="lang-fr">{{ strings_fr.map_title }}</span>
+        </div>
+        {{ fig_map | safe }}
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                           -->
+    <!-- ================================================================ -->
+    <div class="footer">
+        <span class="lang-en">{{ strings_en.footer_credits }}</span>
+        <span class="lang-fr">{{ strings_fr.footer_credits }}</span>
+        <br>
+        <span class="lang-en">{{ strings_en.footer_version }}</span>
+        <span class="lang-fr">{{ strings_fr.footer_version }}</span>
+    </div>
+
+</div>
+
+<script>
+function toggleLang() {
+    document.body.classList.toggle('fr');
+}
+</script>
+</body>
+</html>

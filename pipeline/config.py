@@ -103,12 +103,46 @@ MIN_MASCONS_PER_COUNTRY = 3             # règle §6.1 pour la subdivision pays
 
 
 # ---------------------------------------------------------------------------
-# Palette du dashboard (Bloc E) — limitée et intentionnelle
+# Palette du dashboard
 # ---------------------------------------------------------------------------
+
 COLORS = {
-    "primary": "#1a4e8a",     # bleu foncé — série GWSA (donnée principale)
-    "accent": "#c0392b",      # rouge — tendance négative / alertes
-    "context": "#8a8f98",     # gris — GLDAS, mois imputés, éléments secondaires
-    "band": "#d6e4f0",        # bleu très pâle — bandes d'incertitude
-    "background": "#ffffff",
+    # ── Données principales ──
+    "primary":        "#1B3A4B",   # bleu-nuit profond — eau fossile, headers
+    "primary_light":  "#4A90A4",   # bleu oasis — prévision validée
+    "primary_bg":     "rgba(74, 144, 164, 0.10)",
+
+    # ── Alerte (tendance négative / vigilance haute) ──
+    "alert":          "#B7410E",   # rouge brique saharien — KPI négatifs
+    "alert_light":    "#F4E4DC",   # sable rosé
+
+    # ── Avertissement / extrapolation ──
+    "warn":           "#C4960C",   # ocre doré — prudence, extrapolation
+    "warn_light":     "#FDF5E1",   # crème sable
+
+    # ── Positif / gestion renforcée ──
+    "positive":       "#4E7A5B",   # vert oasis — scénario gestion
+    "positive_light": "#E0EBDF",
+
+    # ── Composantes analytiques (STL, décomposition) ──
+    "trend_line":     "#5B3256",   # aubergine sombre — tendance STL
+    "seasonal":       "#A86523",   # terre de Sienna — saisonnière STL
+    "residual":       "#7E8B92",   # gris ardoise — résidu STL
+
+    # ── Neutres ──
+    "text":           "#1A2526",   # noir chaud
+    "text_mid":       "#4D5C5E",   # gris-vert — texte secondaire
+    "text_light":     "#8B9899",   # gris sage — annotations
+    "bg_page":        "#F4F5F2",   # gris chaud très léger
+    "bg_card":        "#FFFFFF",   # blanc — fond des panneaux
+    "border":         "#D8DDD9",   # gris-vert pâle — bordures
+
+    # ── Spécifiques ──
+    "imputed":        "#A8B0AC",   # gris sage — mois interpolés
+    "gap_zone":       "#EAEEE7",   # gris chaud — lacune 2017-18
+    "extrapolation":  "#C4960C",   # ocre doré — au-delà de l'horizon validé
+
+    # ── Scénarios ──
+    "scenario_dry":   "#B7410E",   # brique — scénario sécheresse
+    "scenario_wet":   "#4E7A5B",   # oasis — scénario gestion renforcée
 }
