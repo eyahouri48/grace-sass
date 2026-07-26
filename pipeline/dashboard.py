@@ -33,15 +33,27 @@ def load_strings(lang: str = "en") -> dict:
 
 
 def load_data() -> pd.DataFrame:
-    """Charge le cache Parquet principal."""
+    """Charge le cache Parquet principal et applique le prétraitement."""
     path = config.SERIES_PARQUET
     if not path.exists():
         raise FileNotFoundError(
             f"Cache Parquet introuvable : {path}\n"
             "Lancez d'abord le pipeline d'ingestion (uv run python -m pipeline.ingest)."
         )
-    return pd.read_parquet(path)
+    df = pd.read_parquet(path)
 
+    # Tronquer au premier mois où gwsa_mm existe (GRACE démarre avril 2002)
+    first_valid = df["gwsa_mm"].first_valid_index()
+    if first_valid is not None:
+        df = df.loc[first_valid:]
+
+    # Appliquer le prétraitement si is_imputed n'existe pas encore
+    if "is_imputed" not in df.columns:
+        from pipeline.preprocessing import reindex_monthly, interpolate_gaps
+        df = reindex_monthly(df)
+        df = interpolate_gaps(df)
+
+    return df
 
 def load_freshness(df: pd.DataFrame = None) -> dict:
     """Charge last_refresh.json ou dérive les dates de fraîcheur du DataFrame."""

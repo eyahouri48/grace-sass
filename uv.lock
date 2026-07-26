@@ -871,9 +871,11 @@ dependencies = [
     { name = "pydap", version = "3.5.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "pydap", version = "3.5.10", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pymannkendall" },
+    { name = "pyproj" },
     { name = "requests" },
     { name = "rioxarray", version = "0.19.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "rioxarray", version = "0.22.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "shapely" },
     { name = "statsmodels" },
     { name = "xarray" },
 ]
@@ -899,8 +901,10 @@ requires-dist = [
     { name = "pyarrow" },
     { name = "pydap" },
     { name = "pymannkendall" },
+    { name = "pyproj" },
     { name = "requests" },
     { name = "rioxarray" },
+    { name = "shapely" },
     { name = "statsmodels" },
     { name = "xarray" },
 ]
