@@ -10,7 +10,6 @@ import pandas as pd
 from pathlib import Path
 
 from pipeline.config import (
-    GRACE_URL,
     AOI_GEOJSON,
     BBOX_LAT_MIN, BBOX_LAT_MAX,
     BBOX_LON_MIN, BBOX_LON_MAX,
