@@ -43,14 +43,21 @@ def build():
         "fig_decision_bar": make_decision_mini_bar(df, strings_en),
     }
 
-    divs = {k: pio.to_html(v, full_html=False, include_plotlyjs=False)
+    # Responsive config for all Plotly charts
+    plotly_cfg = {"responsive": True}
+    divs = {k: pio.to_html(v, full_html=False, include_plotlyjs=False,
+                            config=plotly_cfg)
             for k, v in figs.items()}
+
+    # Date de dernière mise à jour (dernier mois observé)
+    last_update_date = freshness["last_grace_month"]
 
     print("[4/5] Assemblage du HTML...")
     tpl_path = Path(__file__).parent / "templates" / "dashboard.html"
     html = Template(tpl_path.read_text(encoding="utf-8")).render(
         strings_en=strings_en, strings_fr=strings_fr,
         freshness=freshness, sparklines=sparklines,
+        last_update_date=last_update_date,
         colors=config.COLORS,
         **divs, **kpis,
     )

@@ -1,16 +1,18 @@
-<!-- fichier : pipeline/templates/dashboard.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ strings_en.dashboard_title }}</title>
+    <title>SASS - Decision-Support Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <style>
         :root {
-            --c-primary: {{ colors.primary }};
-            --c-primary-light: {{ colors.primary_light }};
-            --c-primary-bg: {{ colors.primary_bg }};
+            /* Palette globale thème Olive */
+            --c-primary: #3D4F2F;
+            --c-primary-light: #556B2F;
+            --c-primary-bg: #F4F6F0;
+            --c-primary-accent: #A3B18A;
             --c-alert: {{ colors.alert }};
             --c-alert-light: {{ colors.alert_light }};
             --c-warn: {{ colors.warn }};
@@ -29,233 +31,323 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
+        body.oss-theme {
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             color: var(--c-text);
             background: var(--c-bg);
             line-height: 1.6;
         }
 
-        /* ── HEADER ─────────────────────────────────────── */
-        .header {
-            background: linear-gradient(135deg, var(--c-primary) 0%, #253f4f 100%);
-            color: white;
-            padding: 24px 32px 20px;
+        /* ── 1. HEADER INSTITUTIONNEL SOMBRE (THEME OLIVE) ───────────── */
+        .oss-navbar {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
+            background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-light) 100%);
+            color: #fff;
+            padding: 14px 28px;
             flex-wrap: wrap;
             gap: 12px;
-            border-bottom: 3px solid var(--c-positive);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .header-left { max-width: 760px; }
-        .header .program {
-            font-size: 0.66rem;
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .oss-logo-transparent {
+            height: 56px;
+            width: auto;
+        }
+        .brand-titles { display: flex; flex-direction: column; gap: 2px; }
+        .org-subtitle {
+            font-size: 0.62rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.6;
-            margin-bottom: 6px;
+            letter-spacing: 2.5px;
+            opacity: 0.85;
+            color: #DAD7CD;
         }
-        .header h1 {
-            font-size: 1.3rem;
+        .main-title {
+            font-size: 1.15rem;
             font-weight: 700;
-            line-height: 1.35;
+            letter-spacing: 0.3px;
+            line-height: 1.3;
+            color: #FFFFFF;
         }
-        .header .subtitle {
-            font-size: 0.82rem;
-            opacity: 0.8;
-            margin-top: 4px;
+        .app-tag {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #E9EDC9;
+            font-weight: 600;
         }
-        .header .description {
-            font-size: 0.74rem;
-            opacity: 0.55;
-            margin-top: 6px;
-            line-height: 1.5;
+        .nav-status-group {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
         }
-        .header-right { text-align: right; }
-        .lang-btn {
-            background: rgba(255,255,255,0.10);
-            color: white;
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: #DAD7CD;
+        }
+        .status-label {
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.6rem;
+        }
+        .status-val { font-weight: 600; color: #FFFFFF; }
+        .badge-sync {
+            background: #8A9A5B;
+            color: #FFFFFF;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+        .btn-lang-dark {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
             border: 1px solid rgba(255,255,255,0.25);
-            padding: 4px 14px;
-            border-radius: 2px;
+            padding: 5px 14px;
+            border-radius: 3px;
             font-size: 0.78rem;
             font-weight: 600;
             cursor: pointer;
             letter-spacing: 0.5px;
+            transition: background 0.2s;
         }
-        .lang-btn:hover { background: rgba(255,255,255,0.20); }
-        .freshness {
-            font-size: 0.66rem;
-            color: rgba(255,255,255,0.50);
-            line-height: 1.7;
-            margin-top: 8px;
-        }
-
-        /* ── METADATA BAR ───────────────────────────────── */
-        .metadata-bar {
-            background: var(--c-card);
-            border-bottom: 1px solid var(--c-border);
-            padding: 7px 32px;
-            font-size: 0.71rem;
-            color: var(--c-text-light);
-            letter-spacing: 0.2px;
+        .btn-lang-dark:hover { background: rgba(255,255,255,0.22); }
+        @media (max-width: 640px) {
+            .oss-navbar { padding: 10px 16px; }
+            .main-title { font-size: 0.95rem; }
+            .oss-logo-transparent { height: 42px; }
         }
 
-        /* ── CONTAINER ──────────────────────────────────── */
-        .container {
-            max-width: 1160px;
-            margin: 0 auto;
-            padding: 24px 22px;
-        }
-
-        /* ── WARNING BANNER ─────────────────────────────── */
-        .warning-banner {
-            border-left: 3px solid var(--c-warn);
+        /* ── DISCLAIMER BANNER ─────────────────────────── */
+        .disclaimer-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
             background: var(--c-warn-light);
-            padding: 8px 16px;
-            margin-bottom: 22px;
-            font-size: 0.77rem;
+            border-bottom: 2px solid var(--c-warn);
+            padding: 10px 28px;
+            font-size: 0.75rem;
             color: var(--c-text-mid);
-            line-height: 1.5;
-            border-radius: 0 2px 2px 0;
+            line-height: 1.55;
+            flex-wrap: wrap;
         }
-        .warning-banner strong { color: var(--c-text); }
+        .disclaimer-icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .disclaimer-content { flex: 1; min-width: 300px; }
+        .disclaimer-content strong { color: var(--c-text); }
+        .disclaimer-meta {
+            font-size: 0.68rem;
+            color: var(--c-text-light);
+            margin-top: 4px;
+        }
+        .disclaimer-dates {
+            font-size: 0.68rem;
+            color: var(--c-text-light);
+            text-align: right;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
 
-        /* ── KPI CARDS ──────────────────────────────────── */
-        .kpi-row {
+        /* ── DASHBOARD CONTAINER ───────────────────────── */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 22px 24px;
+        }
+
+        /* ── 2. KPI GRID ───────────────────────────────── */
+        .kpi-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 14px;
-            margin-bottom: 28px;
+            padding: 22px 28px 0;
+            margin-bottom: 8px;
         }
-        @media (max-width: 768px) { .kpi-row { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 480px) { .kpi-row { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 520px) { .kpi-grid { grid-template-columns: 1fr; } }
         .kpi-card {
             background: var(--c-card);
             border: 1px solid var(--c-border);
-            border-radius: 3px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-            padding: 16px 18px;
-            position: relative;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            padding: 16px 18px 14px;
         }
-        .kpi-card .kpi-label {
-            font-size: 0.64rem;
+        .kpi-header-flex, .kpi-card > .kpi-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .kpi-card > .kpi-title { display: block; }
+        .kpi-title {
+            font-size: 0.68rem;
             color: var(--c-text-mid);
             text-transform: uppercase;
             letter-spacing: 0.7px;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
-        .kpi-card .kpi-value {
+        .kpi-icon { font-size: 1.1rem; opacity: 0.6; }
+        .kpi-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 10px;
+        }
+        .kpi-value {
             font-size: 2rem;
             font-weight: 800;
-            color: var(--c-alert);
-            line-height: 1.15;
+            line-height: 1.1;
         }
-        .kpi-card .kpi-value.neutral { color: var(--c-primary); }
-        .kpi-card .kpi-value.vigilance-high { color: var(--c-alert); }
-        .kpi-card .kpi-value.vigilance-moderate { color: var(--c-warn); }
-        .kpi-card .kpi-value.vigilance-low { color: var(--c-positive); }
-        .kpi-card .kpi-unit {
-            font-size: 0.72rem;
-            color: var(--c-text-mid);
-            margin-top: 3px;
-        }
-        .kpi-card .kpi-context {
-            font-size: 0.64rem;
-            color: var(--c-text-light);
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px solid var(--c-border);
-            line-height: 1.45;
-        }
+        .text-red { color: #EF4444; }
+        .text-purple { color: #805AD5; }
+        .text-blue { color: #2563EB; }
         .kpi-sparkline {
-            position: absolute;
-            bottom: 14px;
-            right: 14px;
-            opacity: 0.25;
+            flex-shrink: 0;
+            width: 80px;
+            height: 30px;
         }
-        .kpi-sparkline svg { width: 58px; height: 24px; }
-
-        /* ── SECTION DIVIDERS ───────────────────────────── */
-        .section-divider {
-            font-size: 0.62rem;
+        .kpi-gauge {
+            flex-shrink: 0;
+            width: 36px;
+            height: 18px;
+        }
+        .kpi-subtext {
+            font-size: 0.68rem;
+            color: var(--c-text-light);
+            margin-top: 8px;
+            padding-top: 7px;
+            border-top: 1px solid var(--c-border);
+            line-height: 1.4;
+        }
+        .tag-high {
+            display: inline-block;
+            background: #FED7D7;
+            color: #C53030;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2.8px;
+            letter-spacing: 0.5px;
+        }
+        .tag-moderate {
+            display: inline-block;
+            background: #FEFCBF;
+            color: #B7791F;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .tag-low {
+            display: inline-block;
+            background: #C6F6D5;
+            color: #276749;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* ── SECTION TITLES & DIVIDERS ─────────────────── */
+        .section-title {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
             color: var(--c-primary);
             font-weight: 700;
-            margin: 32px 0 14px;
+            margin: 28px 0 14px;
             padding-bottom: 6px;
             border-bottom: 1px solid var(--c-border);
         }
+        .dashboard-section { margin-bottom: 16px; }
 
-        /* ── PANELS ─────────────────────────────────────── */
-        .panel {
+        /* ── UI-CARD / PANELS ──────────────────────────── */
+        .ui-card {
             background: var(--c-card);
             border: 1px solid var(--c-border);
-            border-radius: 3px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
             padding: 22px 24px;
-            margin-bottom: 16px;
+            min-width: 0;
+            overflow: hidden;
         }
-        .panel-header { margin-bottom: 14px; }
-        .panel-title {
+        .ui-card.flex-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .ui-card h3 {
             font-size: 0.92rem;
             font-weight: 700;
             color: var(--c-text);
             line-height: 1.4;
-            margin-bottom: 5px;
+            margin-bottom: 12px;
+        }
+        .card-title-bold {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 16px;
+        }
+        .chart-box, .plotly-container, .map-wrapper {
+            min-width: 0;
+            overflow: hidden;
+            border-radius: 6px;
+        }
+        .ui-card .js-plotly-plot, .ui-card .plotly {
+            width: 100% !important;
         }
         .panel-context {
             font-size: 0.77rem;
             color: var(--c-text-mid);
             line-height: 1.55;
             max-width: 720px;
+            margin-bottom: 10px;
         }
 
         /* ── GRID LAYOUTS ───────────────────────────────── */
+        .grid-2-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
         .grid-3-2 {
             display: grid;
             grid-template-columns: 3fr 2fr;
             gap: 16px;
             margin-bottom: 16px;
         }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        .grid-55-45 {
-            display: grid;
-            grid-template-columns: 55fr 45fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
         @media (max-width: 768px) {
-            .grid-3-2, .grid-2, .grid-55-45 {
+            .grid-2-cols, .grid-3-2 {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* ── SIDE TEXT PANELS ───────────────────────────── */
-        .side-text {
-            padding: 6px 0 0;
-        }
-        .side-text h3 {
-            font-size: 0.84rem;
-            font-weight: 700;
-            color: var(--c-primary);
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-        .side-text ul {
+        /* ── STYLED LIST (DECISION BULLETS) ────────────── */
+        .styled-list {
             list-style: none;
             margin: 0;
             padding: 0;
         }
-        .side-text ul li {
+        .styled-list li {
             font-size: 0.79rem;
             color: var(--c-text-mid);
             line-height: 1.55;
@@ -275,34 +367,87 @@
             margin-bottom: 4px;
         }
 
-        /* ── DECISION LIST ──────────────────────────────── */
-        .decision-list { list-style: none; }
-        .decision-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid var(--c-border);
-            font-size: 0.79rem;
-            line-height: 1.6;
+        /* ── 4. STYLES EXCLUSIFS SECTION 4 : DECISIONS SUPPORT SUMMARY ──── */
+        .summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .decision-list li:last-child { border-bottom: none; }
-        .decision-list li strong {
-            display: block;
-            font-size: 0.72rem;
+        .dss-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            background-color: #F7FAFC;
+            border-radius: 8px;
+            border: 1px solid var(--c-border);
+            position: relative;
+        }
+        .dss-item.gray-bg {
+            background-color: #EDF2F7;
+            border-color: #CBD5E1;
+        }
+        .dss-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 600px) { .dss-grid-2 { grid-template-columns: 1fr; } }
+
+        .badge-new {
+            background-color: #0D9488;
+            color: #FFFFFF;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.58rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.4px;
-            color: var(--c-primary);
-            margin-bottom: 2px;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+            margin-top: 2px;
         }
 
-        /* ── FOOTER ─────────────────────────────────────── */
-        .footer {
-            text-align: center;
-            font-size: 0.64rem;
-            color: var(--c-text-light);
-            padding: 18px 0;
-            border-top: 1px solid var(--c-border);
-            margin-top: 16px;
-            line-height: 1.6;
+        .dss-icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            margin-top: 1px;
         }
+        .dss-icon-box svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .dss-text-body {
+            font-size: 0.78rem;
+            color: #334155;
+            line-height: 1.45;
+            flex-grow: 1;
+        }
+        .dss-text-body strong {
+            color: #0F172A;
+            font-weight: 700;
+        }
+
+        /* ── FOOTER BAR (THEME OLIVE) ──────────────────── */
+        .oss-footer-bar {
+            background: var(--c-primary);
+            color: #DAD7CD;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 32px;
+            font-size: 0.72rem;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+        }
+        .ticker-text { white-space: nowrap; }
+        .footer-copy { opacity: 0.85; }
 
         /* ── BILINGUAL TOGGLE ───────────────────────────── */
         span.lang-en { display: inline; }
@@ -315,175 +460,190 @@
         body.fr div.lang-fr { display: block; }
     </style>
 </head>
-<body>
+<body class="oss-theme">
 
 <!-- ================================================================ -->
-<!-- SECTION 1 — HEADER                                               -->
+<!-- 1. HEADER INSTITUTIONNEL SOMBRE (THEME OLIVE)                    -->
 <!-- ================================================================ -->
-<div class="header">
-    <div class="header-left">
-        <div class="program">
-            <span class="lang-en">{{ strings_en.header_programme }}</span>
-            <span class="lang-fr">{{ strings_fr.header_programme }}</span>
-        </div>
-        <h1>
-            <span class="lang-en">{{ strings_en.dashboard_title }}</span>
-            <span class="lang-fr">{{ strings_fr.dashboard_title }}</span>
-        </h1>
-        <div class="subtitle">
-            <span class="lang-en">{{ strings_en.dashboard_subtitle }}</span>
-            <span class="lang-fr">{{ strings_fr.dashboard_subtitle }}</span>
-        </div>
-        <div class="description">
-            <span class="lang-en">{{ strings_en.header_description }}</span>
-            <span class="lang-fr">{{ strings_fr.header_description }}</span>
+<header class="oss-navbar">
+    <div class="nav-brand">
+        <img src="logo.png" alt="OSS Logo" class="oss-logo-transparent" onerror="this.style.display='none'">
+        <div class="brand-titles">
+            <span class="org-subtitle">
+                <span class="lang-en">SAHARA AND SAHEL OBSERVATORY</span>
+                <span class="lang-fr">OBSERVATOIRE DU SAHARA ET DU SAHEL</span>
+            </span>
+            <h1 class="main-title">
+                <span class="lang-en">NORTH-WESTERN SAHARA AQUIFER SYSTEM : SASS</span>
+                <span class="lang-fr">SYSTÈME AQUIFÈRE DU SAHARA SEPTENTRIONAL : SASS</span>
+            </h1>
+            <span class="app-tag">
+                <span class="lang-en">DECISION-SUPPORT TOOL</span>
+                <span class="lang-fr">OUTIL D'AIDE À LA DÉCISION</span>
+            </span>
         </div>
     </div>
-    <div class="header-right">
-        <button class="lang-btn" onclick="toggleLang()">
-            <span class="lang-en">{{ strings_en.lang_toggle }}</span>
-            <span class="lang-fr">{{ strings_fr.lang_toggle }}</span>
+
+    <div class="nav-status-group">
+        <div class="status-item">
+            <span class="status-label">
+                <span class="lang-en">LAST UPDATE:</span>
+                <span class="lang-fr">DERNIÈRE MAJ :</span>
+            </span>
+            <span class="status-val">{{ last_update_date }}</span>
+            <span class="badge-sync">SYNC: OK &#10003;</span>
+        </div>
+        <button id="lang-toggle" class="btn-lang-dark" onclick="toggleLang()">
+            <span class="lang-en">FR</span>
+            <span class="lang-fr">EN</span>
         </button>
-        <div class="freshness">
-            <span class="lang-en">
-                {{ strings_en.freshness_grace }}: {{ freshness.last_grace_month }}<br>
-                {{ strings_en.freshness_gldas }}: {{ freshness.last_gldas_month }}<br>
-                {{ strings_en.freshness_proxy }}: {{ freshness.last_common_month }}
-            </span>
-            <span class="lang-fr">
-                {{ strings_fr.freshness_grace }} : {{ freshness.last_grace_month }}<br>
-                {{ strings_fr.freshness_gldas }} : {{ freshness.last_gldas_month }}<br>
-                {{ strings_fr.freshness_proxy }} : {{ freshness.last_common_month }}
-            </span>
+    </div>
+</header>
+
+<!-- ================================================================ -->
+<!-- BANNIÈRE AVERTISSEMENT                                            -->
+<!-- ================================================================ -->
+<div class="disclaimer-banner">
+    <div class="disclaimer-icon">&#9888;</div>
+    <div class="disclaimer-content">
+        <p>
+            <span class="lang-en"><strong>{{ strings_en.proxy_warning_title }}</strong> — {{ strings_en.proxy_warning_text }}</span>
+            <span class="lang-fr"><strong>{{ strings_fr.proxy_warning_title }}</strong> — {{ strings_fr.proxy_warning_text }}</span>
+        </p>
+        <p class="disclaimer-meta">
+            <span class="lang-en"><strong>Area:</strong> {{ strings_en.metadata_text }}</span>
+            <span class="lang-fr"><strong>Zone :</strong> {{ strings_fr.metadata_text }}</span>
+        </p>
+    </div>
+    <div class="disclaimer-dates">
+        <div>
+            <span class="lang-en">GRACE data through:</span>
+            <span class="lang-fr">Données GRACE :</span>
+            {{ freshness.last_grace_month }}
+        </div>
+        <div>
+            <span class="lang-en">GWSA proxy through:</span>
+            <span class="lang-fr">Proxy GWSA :</span>
+            {{ freshness.last_common_month }}
         </div>
     </div>
 </div>
 
-<!-- ================================================================ -->
-<!-- SECTION 2 — METADATA + WARNING                                   -->
-<!-- ================================================================ -->
-<div class="metadata-bar">
-    <span class="lang-en">{{ strings_en.metadata_text }}</span>
-    <span class="lang-fr">{{ strings_fr.metadata_text }}</span>
-</div>
+<main class="dashboard-container">
 
-<div class="container">
+    <!-- ============================================================ -->
+    <!-- 2. KPI GRID HARMONISÉE                                        -->
+    <!-- ============================================================ -->
+    <section class="kpi-grid">
 
-    <div class="warning-banner">
-        <span class="lang-en"><strong>{{ strings_en.proxy_warning_title }}.</strong> {{ strings_en.proxy_warning_text }}</span>
-        <span class="lang-fr"><strong>{{ strings_fr.proxy_warning_title }}.</strong> {{ strings_fr.proxy_warning_text }}</span>
-    </div>
-
-    <!-- ================================================================ -->
-    <!-- SECTION 3 — KPI CARDS                                            -->
-    <!-- ================================================================ -->
-    <div class="kpi-row">
-        <!-- KPI 1 : Derniere anomalie -->
+        <!-- KPI 1 : Long-term trend -->
         <div class="kpi-card">
-            <div class="kpi-label">
-                <span class="lang-en">{{ strings_en.kpi_anomaly_label }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_anomaly_label }}</span>
-            </div>
-            <div class="kpi-value">{{ kpi_anomaly }}</div>
-            <div class="kpi-unit">
-                <span class="lang-en">{{ strings_en.kpi_anomaly_unit }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_anomaly_unit }}</span>
-            </div>
-            <div class="kpi-context">
-                <span class="lang-en">{{ strings_en.kpi_anomaly_context }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_anomaly_context }}</span>
-            </div>
-            <div class="kpi-sparkline">
-                <svg viewBox="0 0 58 24" preserveAspectRatio="none">
-                    <polyline fill="none" stroke="var(--c-alert)" stroke-width="1.5" stroke-linecap="round"
-                        points="{% for v in sparklines.gwsa_sparkline %}{{ (loop.index0 / (sparklines.gwsa_sparkline|length - 1)) * 58 }},{{ 24 - ((v - sparklines.gwsa_sparkline|min) / ((sparklines.gwsa_sparkline|max - sparklines.gwsa_sparkline|min) or 1)) * 20 - 2 }} {% endfor %}"/>
-                </svg>
-            </div>
-        </div>
-
-        <!-- KPI 2 : Tendance + volume -->
-        <div class="kpi-card">
-            <div class="kpi-label">
+            <span class="kpi-title">
                 <span class="lang-en">{{ strings_en.kpi_trend_rate_label }}</span>
                 <span class="lang-fr">{{ strings_fr.kpi_trend_rate_label }}</span>
+            </span>
+            <div class="kpi-body">
+                <span class="kpi-value text-red">{{ kpi_trend_rate }}</span>
+                <svg class="kpi-sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
+                    <polyline fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round"
+                        points="{% for v in sparklines.gwsa_sparkline %}{{ (loop.index0 / (sparklines.gwsa_sparkline|length - 1)) * 80 }},{{ 28 - ((v - sparklines.gwsa_sparkline|min) / ((sparklines.gwsa_sparkline|max - sparklines.gwsa_sparkline|min) or 1)) * 24 - 2 }} {% endfor %}"/>
+                </svg>
             </div>
-            <div class="kpi-value">{{ kpi_trend_rate }}</div>
-            <div class="kpi-unit">
-                <span class="lang-en">{{ strings_en.kpi_trend_rate_unit }} &middot; {{ kpi_trend_vol }} {{ strings_en.kpi_trend_vol_unit }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_unit }} &middot; {{ kpi_trend_vol }} {{ strings_fr.kpi_trend_vol_unit }}</span>
-            </div>
-            <div class="kpi-context">
-                <span class="lang-en">{{ strings_en.kpi_trend_rate_context }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_context }}</span>
-            </div>
+            <span class="kpi-subtext">
+                <span class="lang-en">{{ strings_en.kpi_trend_rate_unit }} — {{ strings_en.kpi_trend_rate_context }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_unit }} — {{ strings_fr.kpi_trend_rate_context }}</span>
+            </span>
         </div>
 
-        <!-- KPI 3 : Prevision 24 mois -->
+        <!-- KPI 2 : Volume equivalent -->
         <div class="kpi-card">
-            <div class="kpi-label">
-                <span class="lang-en">{{ strings_en.kpi_forecast_label }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_forecast_label }}</span>
+            <div class="kpi-header-flex">
+                <span class="kpi-title">
+                    <span class="lang-en">{{ strings_en.kpi_trend_vol_label }}</span>
+                    <span class="lang-fr">{{ strings_fr.kpi_trend_vol_label }}</span>
+                </span>
+                <span class="kpi-icon">&#9728;</span>
             </div>
-            <div class="kpi-value neutral">{{ kpi_forecast_24 }}</div>
-            <div class="kpi-unit">
-                <span class="lang-en">{{ strings_en.kpi_forecast_unit }} &middot; {{ kpi_forecast_24_delta }} mm vs. last month</span>
-                <span class="lang-fr">{{ strings_fr.kpi_forecast_unit }} &middot; {{ kpi_forecast_24_delta }} mm vs. dernier mois</span>
+            <div class="kpi-body">
+                <span class="kpi-value text-purple">{{ kpi_trend_vol }}</span>
             </div>
-            <div class="kpi-context">
-                <span class="lang-en">{{ strings_en.kpi_forecast_context }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_forecast_context }}</span>
-            </div>
+            <span class="kpi-subtext">
+                <span class="lang-en">{{ strings_en.kpi_trend_vol_unit }} — over ~{{ area_km2 }} km²</span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_vol_unit }} — sur ~{{ area_km2 }} km²</span>
+            </span>
         </div>
 
-        <!-- KPI 4 : Signal de vigilance -->
+        <!-- KPI 3 : Latest estimated anomaly -->
         <div class="kpi-card">
-            <div class="kpi-label">
+            <span class="kpi-title">
+                <span class="lang-en">{{ strings_en.kpi_anomaly_label }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_anomaly_label }}</span>
+            </span>
+            <div class="kpi-body">
+                <span class="kpi-value text-blue">{{ kpi_anomaly }} mm</span>
+                <svg class="kpi-gauge" viewBox="0 0 36 18">
+                    <path d="M 3 18 A 15 15 0 0 1 33 18" fill="none" stroke="#CBD5E0" stroke-width="4"/>
+                    <path d="M 3 18 A 15 15 0 0 1 18 3" fill="none" stroke="#2563EB" stroke-width="4"/>
+                </svg>
+            </div>
+            <span class="kpi-subtext">
+                <span class="lang-en">{{ strings_en.kpi_anomaly_unit }} · z-score {{ kpi_zscore }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_anomaly_unit }} · z-score {{ kpi_zscore }}</span>
+            </span>
+        </div>
+
+        <!-- KPI 4 : Vigilance signal -->
+        <div class="kpi-card">
+            <span class="kpi-title">
                 <span class="lang-en">{{ strings_en.kpi_vigilance_label }}</span>
                 <span class="lang-fr">{{ strings_fr.kpi_vigilance_label }}</span>
+            </span>
+            <div class="kpi-body">
+                {% if kpi_vigilance == 'high' %}
+                <span class="tag-high">
+                    <span class="lang-en">{{ strings_en.kpi_vigilance_high }}</span>
+                    <span class="lang-fr">{{ strings_fr.kpi_vigilance_high }}</span>
+                </span>
+                {% elif kpi_vigilance == 'moderate' %}
+                <span class="tag-moderate">
+                    <span class="lang-en">{{ strings_en.kpi_vigilance_moderate }}</span>
+                    <span class="lang-fr">{{ strings_fr.kpi_vigilance_moderate }}</span>
+                </span>
+                {% else %}
+                <span class="tag-low">
+                    <span class="lang-en">{{ strings_en.kpi_vigilance_low }}</span>
+                    <span class="lang-fr">{{ strings_fr.kpi_vigilance_low }}</span>
+                </span>
+                {% endif %}
             </div>
-            <div class="kpi-value vigilance-{{ kpi_vigilance }}" style="font-size: 1.4rem;">
-                <span class="lang-en">{{ strings_en["kpi_vigilance_" + kpi_vigilance] }}</span>
-                <span class="lang-fr">{{ strings_fr["kpi_vigilance_" + kpi_vigilance] }}</span>
-            </div>
-            <div class="kpi-unit">z-score : {{ kpi_zscore }}</div>
-            <div class="kpi-context">
-                <span class="lang-en">{{ strings_en.kpi_vigilance_context }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_vigilance_context }}</span>
-            </div>
+            <span class="kpi-subtext">p {{ kpi_mk_pvalue }}</span>
         </div>
-    </div>
 
-    <!-- ================================================================ -->
-    <!-- SECTION 4 — 1. VEILLE : SERIE TEMPORELLE + TEXTE DECIDEUR        -->
-    <!-- ================================================================ -->
-    <div class="section-divider">
-        <span class="lang-en">{{ strings_en.section_monitoring }}</span>
-        <span class="lang-fr">{{ strings_fr.section_monitoring }}</span>
-    </div>
+    </section>
 
-    <div class="grid-3-2">
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
+    <!-- ============================================================ -->
+    <!-- SECTION 1 : MONITORING                                        -->
+    <!-- ============================================================ -->
+    <section class="dashboard-section">
+        <h2 class="section-title">
+            <span class="lang-en">{{ strings_en.section_monitoring }}</span>
+            <span class="lang-fr">{{ strings_fr.section_monitoring }}</span>
+        </h2>
+        <div class="grid-3-2">
+            <div class="ui-card">
+                <h3>
                     <span class="lang-en">{{ strings_en.ts_title }}</span>
                     <span class="lang-fr">{{ strings_fr.ts_title }}</span>
-                </div>
-                <div class="panel-context">
-                    <span class="lang-en">{{ strings_en.ts_context }}</span>
-                    <span class="lang-fr">{{ strings_fr.ts_context }}</span>
-                </div>
+                </h3>
+                <div class="chart-box">{{ fig_timeseries | safe }}</div>
             </div>
-            {{ fig_timeseries | safe }}
-        </div>
-
-        <div class="panel">
-            <div class="side-text">
+            <div class="ui-card flex-col">
                 <h3>
                     <span class="lang-en">{{ strings_en.ts_decision_title }}</span>
                     <span class="lang-fr">{{ strings_fr.ts_decision_title }}</span>
                 </h3>
                 <div class="lang-en">
-                    <ul>
+                    <ul class="styled-list">
                         <li>{{ strings_en.ts_decision_bullet_1 }}</li>
                         <li>{{ strings_en.ts_decision_bullet_2 }}</li>
                         <li>{{ strings_en.ts_decision_bullet_3 }}</li>
@@ -491,174 +651,240 @@
                     </ul>
                 </div>
                 <div class="lang-fr">
-                    <ul>
+                    <ul class="styled-list">
                         <li>{{ strings_fr.ts_decision_bullet_1 }}</li>
                         <li>{{ strings_fr.ts_decision_bullet_2 }}</li>
                         <li>{{ strings_fr.ts_decision_bullet_3 }}</li>
                         <li>{{ strings_fr.ts_decision_bullet_4 }}</li>
                     </ul>
                 </div>
+                <div class="mini-bar-title">
+                    <span class="lang-en">{{ strings_en.decision_mini_bar_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.decision_mini_bar_title }}</span>
+                </div>
+                <div class="chart-box">{{ fig_decision_bar | safe }}</div>
             </div>
-
-            <div class="mini-bar-title">
-                <span class="lang-en">{{ strings_en.decision_mini_bar_title }}</span>
-                <span class="lang-fr">{{ strings_fr.decision_mini_bar_title }}</span>
-            </div>
-            {{ fig_decision_bar | safe }}
         </div>
-    </div>
+    </section>
 
-    <!-- ================================================================ -->
-    <!-- SECTION 5 — SCENARIOS + SIGNATURE SAISONNIERE                    -->
-    <!-- ================================================================ -->
-    <div class="grid-2">
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
+    <!-- ============================================================ -->
+    <!-- SECTION 2 : OUTLOOK — SCENARIOS + SEASONAL                    -->
+    <!-- ============================================================ -->
+    <section class="dashboard-section">
+        <h2 class="section-title">
+            <span class="lang-en">{{ strings_en.section_outlook }}</span>
+            <span class="lang-fr">{{ strings_fr.section_outlook }}</span>
+        </h2>
+        <div class="grid-2-cols">
+            <div class="ui-card">
+                <h3>
                     <span class="lang-en">{{ strings_en.scenario_multi_title }}</span>
                     <span class="lang-fr">{{ strings_fr.scenario_multi_title }}</span>
-                </div>
-                <div class="panel-context">
+                </h3>
+                <p class="panel-context">
                     <span class="lang-en">{{ strings_en.scenario_multi_context }}</span>
                     <span class="lang-fr">{{ strings_fr.scenario_multi_context }}</span>
-                </div>
+                </p>
+                <div class="chart-box">{{ fig_multi_scenario | safe }}</div>
             </div>
-            {{ fig_multi_scenario | safe }}
-        </div>
-
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
+            <div class="ui-card">
+                <h3>
                     <span class="lang-en">{{ strings_en.seasonal_bar_title }}</span>
                     <span class="lang-fr">{{ strings_fr.seasonal_bar_title }}</span>
-                </div>
-                <div class="panel-context">
+                </h3>
+                <p class="panel-context">
                     <span class="lang-en">{{ strings_en.stl_amplitude }}: {{ seasonal_amplitude_mm }} mm. {{ strings_en.seasonal_bar_context }}</span>
                     <span class="lang-fr">{{ strings_fr.stl_amplitude }} : {{ seasonal_amplitude_mm }} mm. {{ strings_fr.seasonal_bar_context }}</span>
+                </p>
+                <div class="chart-box">{{ fig_seasonal_bar | safe }}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3 : ANALYSIS — STL DECOMPOSITION                      -->
+    <!-- ============================================================ -->
+    <section class="dashboard-section">
+        <h2 class="section-title">
+            <span class="lang-en">{{ strings_en.section_analysis }}</span>
+            <span class="lang-fr">{{ strings_fr.section_analysis }}</span>
+        </h2>
+        <div class="ui-card">
+            <h3>
+                <span class="lang-en">{{ strings_en.stl_title }}</span>
+                <span class="lang-fr">{{ strings_fr.stl_title }}</span>
+            </h3>
+            <p class="panel-context">
+                <span class="lang-en">{{ strings_en.stl_explanation }}</span>
+                <span class="lang-fr">{{ strings_fr.stl_explanation }}</span>
+            </p>
+            <div class="chart-box">{{ fig_stl | safe }}</div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 4 : OUTLOOK & CONTEXT — CARTE + DÉCISIONS             -->
+    <!-- (MODIFIÉE POUR CORRESPONDRE EXACTEMENT À L'IMAGE DE RÉFÉRENCE) -->
+    <!-- ============================================================ -->
+    <section class="dashboard-section">
+        <h2 class="section-title">
+            <span class="lang-en">{{ strings_en.section_context }}</span>
+            <span class="lang-fr">{{ strings_fr.section_context }}</span>
+        </h2>
+        <div class="grid-2-cols">
+
+            <!-- 1. CARTE INTERACTIVE (GAUCHE) -->
+            <div class="ui-card">
+                <h3 class="card-title-bold">
+                    <span class="lang-en">{{ strings_en.map_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.map_title }}</span>
+                </h3>
+                <div class="map-wrapper">{{ fig_map | safe }}</div>
+            </div>
+
+            <!-- 2. DECISIONS SUPPORT SUMMARY (DROITE) -->
+            <div class="ui-card">
+                <h3 class="card-title-bold">
+                    <span class="lang-en">{{ strings_en.decision_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.decision_title }}</span>
+                </h3>
+
+                <div class="summary-list">
+
+                    <!-- ITEM 1 : Depletion -->
+                    <div class="dss-item">
+                        <span class="badge-new">NEW</span>
+                        <div class="dss-icon-box">
+                            <!-- SVG Triangle Alerte Rouge -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="dss-text-body">
+                            <div class="lang-en">
+                                <strong>{{ strings_en.decision_monitoring }}:</strong> {{ strings_en.decision_monitoring_text }}
+                            </div>
+                            <div class="lang-fr">
+                                <strong>{{ strings_fr.decision_monitoring }} :</strong> {{ strings_fr.decision_monitoring_text }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ITEM 2 : Forecast -->
+                    <div class="dss-item">
+                        <span class="badge-new">NEW</span>
+                        <div class="dss-icon-box">
+                            <!-- SVG Tendance Montante Bleue -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                                <polyline points="16 7 22 7 22 13"/>
+                            </svg>
+                        </div>
+                        <div class="dss-text-body">
+                            <div class="lang-en">
+                                <strong>{{ strings_en.decision_anticipation }}:</strong> {{ strings_en.decision_anticipation_text }}
+                            </div>
+                            <div class="lang-fr">
+                                <strong>{{ strings_fr.decision_anticipation }} :</strong> {{ strings_fr.decision_anticipation_text }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ITEM 3 : Fossil System -->
+                    <div class="dss-item">
+                        <span class="badge-new">NEW</span>
+                        <div class="dss-icon-box">
+                            <!-- SVG Feuille / Plante Verte -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.12 2 9a7 7 0 0 1-7 7Zm0 0v-6"/>
+                            </svg>
+                        </div>
+                        <div class="dss-text-body">
+                            <div class="lang-en">
+                                <strong>{{ strings_en.decision_dialogue }}:</strong> {{ strings_en.decision_dialogue_text }}
+                            </div>
+                            <div class="lang-fr">
+                                <strong>{{ strings_fr.decision_dialogue }} :</strong> {{ strings_fr.decision_dialogue_text }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRILLE 2 COLONNES (Resolution Caveat + Limitations) -->
+                    <div class="dss-grid-2">
+
+                        <!-- ITEM 4 : Resolution Caveat -->
+                        <div class="dss-item">
+                            <span class="badge-new">NEW</span>
+                            <div class="dss-icon-box">
+                                <!-- SVG Quadrillage / Grille Violette -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <path d="M3 9h18"/>
+                                    <path d="M3 15h18"/>
+                                    <path d="M9 3v18"/>
+                                    <path d="M15 3v18"/>
+                                </svg>
+                            </div>
+                            <div class="dss-text-body">
+                                <div class="lang-en">
+                                    <strong>{{ strings_en.decision_capitalisation }}:</strong> {{ strings_en.decision_capitalisation_text }}
+                                </div>
+                                <div class="lang-fr">
+                                    <strong>{{ strings_fr.decision_capitalisation }} :</strong> {{ strings_fr.decision_capitalisation_text }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ITEM 5 : Limitations (Gris clair distinct, Sans Badge NEW) -->
+                        <div class="dss-item gray-bg">
+                            <div class="dss-text-body">
+                                <div class="lang-en">
+                                    <strong>Limitations:</strong> {{ strings_en.decision_limits_inline }}
+                                </div>
+                                <div class="lang-fr">
+                                    <strong>Limites :</strong> {{ strings_fr.decision_limits_inline }}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
-            {{ fig_seasonal_bar | safe }}
+
         </div>
-    </div>
+    </section>
 
-    <!-- ================================================================ -->
-    <!-- SECTION 6 — DECOMPOSITION STL + MESSAGES D'AIDE A LA DECISION    -->
-    <!-- ================================================================ -->
-    <div class="section-divider">
-        <span class="lang-en">{{ strings_en.section_analysis }}</span>
-        <span class="lang-fr">{{ strings_fr.section_analysis }}</span>
-    </div>
+</main>
 
-    <div class="grid-55-45">
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <span class="lang-en">{{ strings_en.stl_title }}</span>
-                    <span class="lang-fr">{{ strings_fr.stl_title }}</span>
-                </div>
-                <div class="panel-context">
-                    <span class="lang-en">{{ strings_en.stl_explanation }}</span>
-                    <span class="lang-fr">{{ strings_fr.stl_explanation }}</span>
-                </div>
-            </div>
-            {{ fig_stl | safe }}
-        </div>
-
-        <div class="panel">
-            <div class="panel-title" style="margin-bottom: 10px;">
-                <span class="lang-en">{{ strings_en.decision_title }}</span>
-                <span class="lang-fr">{{ strings_fr.decision_title }}</span>
-            </div>
-
-            <div class="lang-en">
-                <ul class="decision-list">
-                    <li>
-                        <strong>{{ strings_en.decision_monitoring }}</strong>
-                        {{ strings_en.decision_monitoring_text }}
-                    </li>
-                    <li>
-                        <strong>{{ strings_en.decision_anticipation }}</strong>
-                        {{ strings_en.decision_anticipation_text }}
-                    </li>
-                    <li>
-                        <strong>{{ strings_en.decision_dialogue }}</strong>
-                        {{ strings_en.decision_dialogue_text }}
-                    </li>
-                    <li>
-                        <strong>{{ strings_en.decision_capitalisation }}</strong>
-                        {{ strings_en.decision_capitalisation_text }}
-                    </li>
-                </ul>
-                <p style="font-size: 0.73rem; color: var(--c-text-light); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--c-border); line-height: 1.55;">
-                    {{ strings_en.decision_limits_inline }}
-                </p>
-                <p style="font-size: 0.73rem; color: var(--c-text-mid); margin-top: 8px; line-height: 1.55;">
-                    <strong>{{ strings_en.decision_utility_title }}.</strong> {{ strings_en.decision_utility_text }}
-                </p>
-            </div>
-
-            <div class="lang-fr">
-                <ul class="decision-list">
-                    <li>
-                        <strong>{{ strings_fr.decision_monitoring }}</strong>
-                        {{ strings_fr.decision_monitoring_text }}
-                    </li>
-                    <li>
-                        <strong>{{ strings_fr.decision_anticipation }}</strong>
-                        {{ strings_fr.decision_anticipation_text }}
-                    </li>
-                    <li>
-                        <strong>{{ strings_fr.decision_dialogue }}</strong>
-                        {{ strings_fr.decision_dialogue_text }}
-                    </li>
-                    <li>
-                        <strong>{{ strings_fr.decision_capitalisation }}</strong>
-                        {{ strings_fr.decision_capitalisation_text }}
-                    </li>
-                </ul>
-                <p style="font-size: 0.73rem; color: var(--c-text-light); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--c-border); line-height: 1.55;">
-                    {{ strings_fr.decision_limits_inline }}
-                </p>
-                <p style="font-size: 0.73rem; color: var(--c-text-mid); margin-top: 8px; line-height: 1.55;">
-                    <strong>{{ strings_fr.decision_utility_title }}.</strong> {{ strings_fr.decision_utility_text }}
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================================================================ -->
-    <!-- SECTION 7 — CONTEXTE : CARTE SASS                                -->
-    <!-- ================================================================ -->
-    <div class="section-divider">
-        <span class="lang-en">{{ strings_en.section_context }}</span>
-        <span class="lang-fr">{{ strings_fr.section_context }}</span>
-    </div>
-
-    <div class="panel">
-        <div class="panel-title" style="margin-bottom: 10px;">
-            <span class="lang-en">{{ strings_en.map_title }}</span>
-            <span class="lang-fr">{{ strings_fr.map_title }}</span>
-        </div>
-        {{ fig_map | safe }}
-    </div>
-
-    <!-- ================================================================ -->
-    <!-- FOOTER                                                           -->
-    <!-- ================================================================ -->
-    <div class="footer">
+<!-- ================================================================ -->
+<!-- FOOTER BOTTOM BANNER (THEME OLIVE)                               -->
+<!-- ================================================================ -->
+<footer class="oss-footer-bar">
+    <div class="ticker-text">
+        &#128196;
         <span class="lang-en">{{ strings_en.footer_credits }}</span>
         <span class="lang-fr">{{ strings_fr.footer_credits }}</span>
-        <br>
+    </div>
+    <div class="footer-copy">
         <span class="lang-en">{{ strings_en.footer_version }}</span>
         <span class="lang-fr">{{ strings_fr.footer_version }}</span>
     </div>
-
-</div>
+</footer>
 
 <script>
 function toggleLang() {
     document.body.classList.toggle('fr');
+    window.dispatchEvent(new Event('resize'));
 }
+
+window.addEventListener('load', function() {
+    document.querySelectorAll('.js-plotly-plot').forEach(function(plot) {
+        Plotly.Plots.resize(plot);
+    });
+});
 </script>
 </body>
 </html>

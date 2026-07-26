@@ -8,7 +8,12 @@
       "Bash(python3:*)",
       "Bash(/c/Users/user/AppData/Local/Programs/Python/Python312/python << 'EOF'\nimport pandas as pd\nimport os\nos.chdir\\(\"/c/Users/user/Desktop/grace-sass\"\\)\n\ntry:\n    df = pd.read_parquet\\(\"data/sass_series.parquet\"\\)\n    print\\(\"Columns in sass_series.parquet:\"\\)\n    print\\(df.columns.tolist\\(\\)\\)\n    print\\(\"\\\\nData types:\"\\)\n    print\\(df.dtypes\\)\n    print\\(\"\\\\nShape:\", df.shape\\)\n    print\\(\"\\\\nFirst few rows:\"\\)\n    print\\(df.head\\(10\\)\\)\n    print\\(\"\\\\nDate range:\"\\)\n    for col in df.columns:\n        if 'date' in col.lower\\(\\) or 'time' in col.lower\\(\\):\n            print\\(f\"  {col}: {df[col].min\\(\\)} to {df[col].max\\(\\)}\"\\)\nexcept Exception as e:\n    print\\(f\"Error: {e}\"\\)\n    import traceback\n    traceback.print_exc\\(\\)\nEOF)",
       "Bash(python:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(find /c/Users/user/Desktop/grace-sass -type f -name *.nc)",
+      "Bash(ncdump -h data/raw/mascon_cri.nc)",
+      "Bash(/c/Users/user/Desktop/grace-sass/README_MASCON_HEATMAP.txt:*)",
+      "Bash(/c/Users/user/Desktop/grace-sass/DELIVERABLES.txt:*)"
     ]
   }
 }

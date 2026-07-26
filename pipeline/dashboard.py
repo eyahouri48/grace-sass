@@ -11,9 +11,13 @@ import json
 
 import numpy as np
 import pandas as pd
+import xarray as xr
 import geopandas as gpd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from scipy.ndimage import zoom as scipy_zoom
+from rasterio.features import rasterize
+from rasterio.transform import from_bounds
 
 from pipeline import config
 from pipeline.trend import mann_kendall_sen, ols_trend_hac, compute_aoi_area_m2, mm_to_km3
@@ -398,53 +402,149 @@ def make_gldas_contribution_figure(df: pd.DataFrame, strings: dict) -> go.Figure
 
 
 def make_aoi_map(strings: dict) -> go.Figure:
-    """Carte de contexte : contour SASS + grille mascon 3°."""
+    """Carte contour lissée : anomalie GWSA spatiale (dernier mois) sur le SASS."""
     fig = go.Figure()
 
     aoi = gpd.read_file(config.AOI_GEOJSON)
-    coords = list(aoi.geometry.iloc[0].exterior.coords)
-    lons_aoi = [c[0] for c in coords]
-    lats_aoi = [c[1] for c in coords]
+    poly = aoi.geometry.iloc[0]
 
-    fig.add_trace(go.Scattergeo(
-        lon=lons_aoi, lat=lats_aoi,
-        mode="lines",
-        line=dict(width=2.5, color=config.COLORS["primary"]),
-        fill="toself", fillcolor=config.COLORS["primary_bg"],
-        name="SASS / NWSAS", hoverinfo="name",
-    ))
+    nc_path = config.MASCON_NC_PATH
+    if nc_path.exists():
+        ds = xr.open_dataset(nc_path)
+        ds = ds.assign_coords(lon=(((ds.lon + 180) % 360) - 180)).sortby("lon")
 
-    lat_min, lat_max = config.BBOX_LAT
-    lon_min, lon_max = config.BBOX_LON
+        lwe = ds["lwe_thickness"].sel(
+            lat=slice(config.BBOX_LAT_MIN, config.BBOX_LAT_MAX),
+            lon=slice(config.BBOX_LON_MIN, config.BBOX_LON_MAX),
+        )
+        lwe = lwe.rio.write_crs("EPSG:4326")
+        lwe_clipped = lwe.rio.clip(aoi.geometry, aoi.crs, all_touched=True, drop=False)
 
-    for lat_line in np.arange(lat_min, lat_max + 1, 3):
-        fig.add_trace(go.Scattergeo(
-            lon=[lon_min, lon_max], lat=[lat_line, lat_line],
-            mode="lines",
-            line=dict(width=0.5, color=config.COLORS["text_light"], dash="dot"),
-            showlegend=False, hoverinfo="skip",
+        last_field = lwe_clipped.isel(time=-1)
+        last_date = pd.Timestamp(last_field.time.values).strftime("%Y-%m")
+        vals_mm = last_field.values * 10.0  # cm → mm
+
+        lons = last_field.lon.values
+        lats = last_field.lat.values
+
+        # ── Interpolation cubique 0.5° → 0.05° ──
+        fill_val = np.nanmean(vals_mm)
+        vals_filled = np.where(np.isnan(vals_mm), fill_val, vals_mm)
+        zoom_factor = 10
+        vals_fine = scipy_zoom(vals_filled, zoom_factor, order=3)
+        lons_fine = np.linspace(lons[0], lons[-1], vals_fine.shape[1])
+        lats_fine = np.linspace(lats[0], lats[-1], vals_fine.shape[0])
+
+        # ── Masque AOI rapide (rasterio) ──
+        transform = from_bounds(
+            lons_fine[0], lats_fine[0], lons_fine[-1], lats_fine[-1],
+            vals_fine.shape[1], vals_fine.shape[0],
+        )
+        mask_arr = rasterize(
+            [(poly, 1)], out_shape=vals_fine.shape,
+            transform=transform, fill=0, dtype=np.uint8,
+        )[::-1]  # flip: rasterize top-down, our array bottom-up
+        vals_fine[mask_arr == 0] = np.nan
+
+        valid = vals_fine[~np.isnan(vals_fine)]
+        v_abs = max(abs(valid.min()), abs(valid.max()))
+
+        # ── Contour lissé ──
+        fig.add_trace(go.Contour(
+            z=vals_fine, x=lons_fine, y=lats_fine,
+            colorscale="RdBu", reversescale=True,
+            zmin=-v_abs, zmax=v_abs,
+            contours=dict(
+                start=-v_abs, end=v_abs,
+                size=v_abs * 2 / 20,
+                showlines=True, showlabels=False,
+            ),
+            line=dict(width=0.3, color="rgba(0,0,0,0.15)"),
+            colorbar=dict(
+                title=dict(text="GWSA (mm)", font=dict(size=11)),
+                thickness=14, len=0.85,
+                tickfont=dict(size=10), tickformat=".0f",
+            ),
+            hovertemplate="lon: %{x:.2f}°  lat: %{y:.2f}°<br>GWSA: %{z:.1f} mm<extra></extra>",
         ))
-    for lon_line in np.arange(lon_min, lon_max + 1, 3):
-        fig.add_trace(go.Scattergeo(
-            lon=[lon_line, lon_line], lat=[lat_min, lat_max],
-            mode="lines",
-            line=dict(width=0.5, color=config.COLORS["text_light"], dash="dot"),
-            showlegend=False, hoverinfo="skip",
+
+        # ── Contour SASS ──
+        coords = list(poly.exterior.coords)
+        fig.add_trace(go.Scatter(
+            x=[c[0] for c in coords], y=[c[1] for c in coords],
+            mode="lines", line=dict(width=2.5, color="#1B3A4B"),
+            name="SASS boundary", hoverinfo="skip",
         ))
 
-    fig.update_geos(
-        fitbounds="locations",
-        showland=True, landcolor="#F5F5F0",
-        showocean=True, oceancolor="#E8F4FD",
-        showlakes=False,
-        showcountries=True, countrycolor="#CCCCCC",
-        showcoastlines=True, coastlinecolor="#AAAAAA",
-        projection_type="natural earth",
-    )
-    fig.update_layout(
-        margin=dict(l=0, r=0, t=10, b=0),
-        height=350, showlegend=False,
-    )
+        # ── Villes repères ──
+        cities = [
+            {"name": "Ouargla", "lon": 5.33, "lat": 31.95},
+            {"name": "Ghardaïa", "lon": 3.67, "lat": 32.49},
+            {"name": "Tozeur", "lon": 8.13, "lat": 33.92},
+            {"name": "Ghadames", "lon": 9.50, "lat": 30.13},
+            {"name": "In Salah", "lon": 2.47, "lat": 27.19},
+        ]
+        fig.add_trace(go.Scatter(
+            x=[c["lon"] for c in cities],
+            y=[c["lat"] for c in cities],
+            mode="markers+text",
+            marker=dict(size=7, color="#0F172A", symbol="circle",
+                        line=dict(width=1.5, color="white")),
+            text=[c["name"] for c in cities],
+            textposition="top center",
+            textfont=dict(size=9, color="#0F172A", family="Inter, sans-serif"),
+            name="Cities",
+            hovertemplate="%{text}<extra></extra>",
+        ))
+
+        fig.update_layout(
+            xaxis=dict(
+                title="Longitude (°)",
+                range=[config.BBOX_LON_MIN - 0.5, config.BBOX_LON_MAX + 0.5],
+                scaleanchor="y", scaleratio=1, showgrid=False,
+            ),
+            yaxis=dict(
+                title="Latitude (°)",
+                range=[config.BBOX_LAT_MIN - 0.5, config.BBOX_LAT_MAX + 0.5],
+                showgrid=False,
+            ),
+            template="plotly_white",
+            font=dict(family="Inter, system-ui, sans-serif", size=12,
+                      color=config.COLORS["text"]),
+            margin=dict(l=50, r=20, t=35, b=40),
+            height=420, showlegend=False,
+            title=dict(
+                text=f"GWSA Spatial Anomaly — {last_date}",
+                font=dict(size=12, color=config.COLORS["text_mid"]),
+                x=0.01,
+            ),
+            plot_bgcolor="rgba(0,0,0,0)",
+        )
+        ds.close()
+    else:
+        # Fallback : simple contour AOI
+        coords = list(poly.exterior.coords)
+        fig.add_trace(go.Scattergeo(
+            lon=[c[0] for c in coords], lat=[c[1] for c in coords],
+            mode="lines",
+            line=dict(width=2.5, color=config.COLORS["primary"]),
+            fill="toself", fillcolor=config.COLORS["primary_bg"],
+            name="SASS / NWSAS", hoverinfo="name",
+        ))
+        fig.update_geos(
+            fitbounds="locations",
+            showland=True, landcolor="#F5F5F0",
+            showocean=True, oceancolor="#E8F4FD",
+            showlakes=False,
+            showcountries=True, countrycolor="#CCCCCC",
+            showcoastlines=True, coastlinecolor="#AAAAAA",
+            projection_type="natural earth",
+        )
+        fig.update_layout(
+            margin=dict(l=0, r=0, t=10, b=0),
+            height=350, showlegend=False,
+        )
+
     return fig
 
 
