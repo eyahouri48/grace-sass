@@ -33,8 +33,6 @@ jobs:
         run: |
           git config user.name  "grace-bot"
           git config user.email "bot@users.noreply.github.com"
-          # last_refresh.json change à chaque run → commit "heartbeat" contre
-          # l'auto-désactivation des workflows après 60 jours d'inactivité
-          git add data/sass_series.parquet data/last_refresh.json docs/
+          git add -A data/ docs/
           git diff --staged --quiet || git commit -m "chore: refresh $(date +%F)"
           git push

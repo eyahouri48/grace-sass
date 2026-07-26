@@ -23,11 +23,17 @@ logger = logging.getLogger(__name__)
 
 # ── Téléchargement ──────────────────────────────────────────────
 
-def download_grace_mascon(dest: Path | None = None) -> Path:
-    """Télécharge le fichier mascon CRI global (~50 Mo) via HTTPS.
+def download_grace_mascon(dest_dir: Path | None = None) -> Path:
+    """Télécharge le dernier mascon CRI via recherche CMR (earthaccess).
 
-    Utilise earthaccess pour l'authentification Earthdata Login.
-    Si le fichier existe déjà localement, on ne re-télécharge pas.
+    Résout dynamiquement le fichier le plus récent au lieu d'une URL
+    fixe — le nom du fichier change à chaque publication mensuelle JPL
+    (il contient la date de fin, ex: ...202605... → ...202606...).
+
+    Parameters
+    ----------
+    dest_dir : Path | None
+        Dossier de destination (défaut : RAW_DIR).
 
     Returns
     -------
@@ -36,27 +42,40 @@ def download_grace_mascon(dest: Path | None = None) -> Path:
     """
     import earthaccess
 
-    if dest is None:
-        dest = RAW_DIR / "mascon_cri.nc"
+    if dest_dir is None:
+        dest_dir = RAW_DIR
 
-    if dest.exists():
-        logger.info("Mascon CRI déjà en cache : %s", dest)
-        return dest
+    dest_dir.mkdir(parents=True, exist_ok=True)
 
-    dest.parent.mkdir(parents=True, exist_ok=True)
-
-    # earthaccess gère l'auth via EARTHDATA_USERNAME/PASSWORD en env
+    # Authentification Earthdata (EARTHDATA_USERNAME/PASSWORD en env)
     earthaccess.login(strategy="environment")
 
-    logger.info("Téléchargement du mascon CRI depuis PO.DAAC...")
+    # Recherche CMR — le mascon CRI est un fichier unique global,
+    # mis à jour mensuellement. count=1 retourne le dernier.
+    logger.info("Recherche CMR du dernier mascon CRI...")
+    results = earthaccess.search_data(
+        short_name="TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4",
+        count=1,
+    )
+    if not results:
+        raise RuntimeError(
+            "Aucun fichier mascon CRI trouvé via CMR. "
+            "Vérifier la collection ou l'authentification Earthdata."
+        )
 
-    session = earthaccess.get_requests_https_session()
-    resp = session.get(GRACE_URL, timeout=300)
-    resp.raise_for_status()
+    # Télécharger dans dest_dir (le nom du fichier est celui de JPL)
+    logger.info("Téléchargement du mascon CRI...")
+    downloaded = earthaccess.download(results, str(dest_dir))
 
-    dest.write_bytes(resp.content)
-    logger.info("Mascon CRI sauvegardé : %s (%.1f Mo)", dest, dest.stat().st_size / 1e6)
-    return dest
+    if not downloaded:
+        raise RuntimeError("Échec du téléchargement mascon CRI via earthaccess.")
+
+    nc_path = Path(downloaded[0])
+    logger.info(
+        "Mascon CRI sauvegardé : %s (%.1f Mo)",
+        nc_path.name, nc_path.stat().st_size / 1e6,
+    )
+    return nc_path
 
 
 # ── Découpe AOI + moyenne de bassin ─────────────────────────────
@@ -127,7 +146,7 @@ def save_twsa_parquet(twsa_cm: pd.Series, dest: Path | None = None) -> Path:
 
 def run():
     """Pipeline complet : télécharger → découper → moyenner → cacher."""
-    nc_path = download_grace_mascon()
+    nc_path = download_grace_mascon()       # retourne le chemin dynamique
     twsa_cm = extract_twsa_basin_mean(nc_path)
     save_twsa_parquet(twsa_cm)
     return twsa_cm
