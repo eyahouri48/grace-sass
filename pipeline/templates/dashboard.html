@@ -8,7 +8,6 @@
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <style>
         :root {
-            /* Palette globale thème Olive */
             --c-primary: #3D4F2F;
             --c-primary-light: #556B2F;
             --c-primary-bg: #F4F6F0;
@@ -38,432 +37,177 @@
             line-height: 1.6;
         }
 
-        /* ── 1. HEADER INSTITUTIONNEL SOMBRE (THEME OLIVE) ───────────── */
+        /* ── HEADER ───────────────────────────────────── */
         .oss-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-light) 100%);
-            color: #fff;
-            padding: 14px 28px;
-            flex-wrap: wrap;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff; padding: 14px 28px; flex-wrap: wrap; gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-        .oss-logo-transparent {
-            height: 56px;
-            width: auto;
-        }
+        .nav-brand { display: flex; align-items: center; gap: 18px; }
+        .oss-logo-transparent { height: 56px; width: auto; }
         .brand-titles { display: flex; flex-direction: column; gap: 2px; }
-        .org-subtitle {
-            font-size: 0.62rem;
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            opacity: 0.85;
-            color: #DAD7CD;
-        }
-        .main-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            line-height: 1.3;
-            color: #FFFFFF;
-        }
-        .app-tag {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #E9EDC9;
-            font-weight: 600;
-        }
-        .nav-status-group {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.72rem;
-            color: #DAD7CD;
-        }
-        .status-label {
-            opacity: 0.85;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.6rem;
-        }
-        .status-val { font-weight: 600; color: #FFFFFF; }
-        .badge-sync {
-            background: #8A9A5B;
-            color: #FFFFFF;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 0.6rem;
-            font-weight: 600;
-        }
-        .btn-lang-dark {
-            background: rgba(255,255,255,0.12);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.25);
-            padding: 5px 14px;
-            border-radius: 3px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            cursor: pointer;
-            letter-spacing: 0.5px;
-            transition: background 0.2s;
-        }
+        .org-subtitle { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 2.5px; opacity: 0.85; color: #DAD7CD; }
+        .main-title { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.3px; line-height: 1.3; color: #fff; }
+        .app-tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: #E9EDC9; font-weight: 600; }
+        .nav-status-group { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+        .status-item { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #DAD7CD; }
+        .status-label { opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.6rem; }
+        .status-val { font-weight: 600; color: #fff; }
+        .badge-sync { background: #8A9A5B; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 0.6rem; font-weight: 600; }
+        .btn-lang-dark { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25); padding: 5px 14px; border-radius: 3px; font-size: 0.78rem; font-weight: 600; cursor: pointer; letter-spacing: 0.5px; transition: background 0.2s; }
         .btn-lang-dark:hover { background: rgba(255,255,255,0.22); }
-        @media (max-width: 640px) {
-            .oss-navbar { padding: 10px 16px; }
-            .main-title { font-size: 0.95rem; }
-            .oss-logo-transparent { height: 42px; }
-        }
+        @media (max-width: 640px) { .oss-navbar { padding: 10px 16px; } .main-title { font-size: 0.95rem; } .oss-logo-transparent { height: 42px; } }
 
-        /* ── DISCLAIMER BANNER ─────────────────────────── */
+        /* ── FRESHNESS BAR ─────────────────────────────── */
+        .freshness-bar {
+            display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+            background: var(--c-primary-bg); border-bottom: 1px solid var(--c-border);
+            padding: 8px 28px; font-size: 0.72rem; color: var(--c-text-mid);
+        }
+        .freshness-bar .fresh-title { font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 0.62rem; color: var(--c-primary); }
+        .freshness-bar .fresh-item { display: flex; gap: 4px; }
+        .freshness-bar .fresh-label { opacity: 0.7; }
+        .freshness-bar .fresh-val { font-weight: 600; color: var(--c-text); }
+
+        /* ── DISCLAIMER ────────────────────────────────── */
         .disclaimer-banner {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            background: var(--c-warn-light);
-            border-bottom: 2px solid var(--c-warn);
-            padding: 10px 28px;
-            font-size: 0.75rem;
-            color: var(--c-text-mid);
-            line-height: 1.55;
-            flex-wrap: wrap;
+            display: flex; align-items: flex-start; gap: 14px;
+            background: var(--c-warn-light); border-bottom: 2px solid var(--c-warn);
+            padding: 8px 28px; font-size: 0.72rem; color: var(--c-text-mid); line-height: 1.5; flex-wrap: wrap;
         }
-        .disclaimer-icon {
-            font-size: 1.3rem;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .disclaimer-content { flex: 1; min-width: 300px; }
+        .disclaimer-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+        .disclaimer-content { flex: 1; min-width: 280px; }
         .disclaimer-content strong { color: var(--c-text); }
-        .disclaimer-meta {
-            font-size: 0.68rem;
-            color: var(--c-text-light);
-            margin-top: 4px;
-        }
-        .disclaimer-dates {
-            font-size: 0.68rem;
-            color: var(--c-text-light);
-            text-align: right;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
 
         /* ── DASHBOARD CONTAINER ───────────────────────── */
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 22px 24px;
-        }
+        .dashboard-container { max-width: 1280px; margin: 0 auto; padding: 0 22px 24px; }
 
-        /* ── 2. KPI GRID ───────────────────────────────── */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            padding: 22px 28px 0;
-            margin-bottom: 8px;
+        /* ── VIEW TABS ─────────────────────────────────── */
+        .view-tabs {
+            display: flex; gap: 0; margin: 20px 0 16px; border-bottom: 2px solid var(--c-border);
         }
+        .view-tab {
+            padding: 10px 24px; font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.8px; border: none; background: none; color: var(--c-text-light);
+            cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s;
+        }
+        .view-tab:hover { color: var(--c-text-mid); }
+        .view-tab.active { color: var(--c-primary); border-bottom-color: var(--c-primary); }
+
+        .view-panel { display: none; }
+        .view-panel.active { display: block; }
+
+        /* ── KPI GRID ──────────────────────────────────── */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
         @media (max-width: 900px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 520px) { .kpi-grid { grid-template-columns: 1fr; } }
         .kpi-card {
-            background: var(--c-card);
-            border: 1px solid var(--c-border);
-            border-radius: 6px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-            padding: 16px 18px 14px;
+            background: var(--c-card); border: 1px solid var(--c-border); border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 16px 18px 14px;
         }
-        .kpi-header-flex, .kpi-card > .kpi-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .kpi-card > .kpi-title { display: block; }
-        .kpi-title {
-            font-size: 0.68rem;
-            color: var(--c-text-mid);
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .kpi-icon { font-size: 1.1rem; opacity: 0.6; }
-        .kpi-body {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 10px;
-        }
-        .kpi-value {
-            font-size: 2rem;
-            font-weight: 800;
-            line-height: 1.1;
-        }
-        .text-red { color: #EF4444; }
-        .text-purple { color: #805AD5; }
-        .text-blue { color: #2563EB; }
-        .kpi-sparkline {
-            flex-shrink: 0;
-            width: 80px;
-            height: 30px;
-        }
-        .kpi-gauge {
-            flex-shrink: 0;
-            width: 36px;
-            height: 18px;
-        }
-        .kpi-subtext {
-            font-size: 0.68rem;
-            color: var(--c-text-light);
-            margin-top: 8px;
-            padding-top: 7px;
-            border-top: 1px solid var(--c-border);
-            line-height: 1.4;
-        }
-        .tag-high {
-            display: inline-block;
-            background: #FED7D7;
-            color: #C53030;
-            padding: 5px 14px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .tag-moderate {
-            display: inline-block;
-            background: #FEFCBF;
-            color: #B7791F;
-            padding: 5px 14px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .tag-low {
-            display: inline-block;
-            background: #C6F6D5;
-            color: #276749;
-            padding: 5px 14px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+        .kpi-title { font-size: 0.66rem; color: var(--c-text-mid); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 600; margin-bottom: 6px; }
+        .kpi-body { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+        .kpi-value { font-size: 1.9rem; font-weight: 800; line-height: 1.1; }
+        .text-red { color: #EF4444; } .text-purple { color: #805AD5; } .text-blue { color: #2563EB; }
+        .kpi-sparkline { flex-shrink: 0; width: 80px; height: 30px; }
+        .kpi-gauge { flex-shrink: 0; width: 36px; height: 18px; }
+        .kpi-subtext { font-size: 0.66rem; color: var(--c-text-light); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--c-border); line-height: 1.35; }
+        .kpi-interp { font-size: 0.66rem; font-weight: 600; margin-top: 4px; }
+        .kpi-interp.critical { color: #DC2626; } .kpi-interp.below { color: #D97706; } .kpi-interp.near { color: #059669; } .kpi-interp.above { color: #2563EB; }
+        .kpi-delta { font-size: 0.64rem; color: var(--c-text-light); margin-top: 2px; }
+        .tag-high { display: inline-block; background: #FED7D7; color: #C53030; padding: 5px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tag-moderate { display: inline-block; background: #FEFCBF; color: #B7791F; padding: 5px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .tag-low { display: inline-block; background: #C6F6D5; color: #276749; padding: 5px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .vigilance-explain { font-size: 0.64rem; color: var(--c-text-light); margin-top: 6px; line-height: 1.4; padding-top: 6px; border-top: 1px solid var(--c-border); }
 
-        /* ── SECTION TITLES & DIVIDERS ─────────────────── */
-        .section-title {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            color: var(--c-primary);
-            font-weight: 700;
-            margin: 28px 0 14px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid var(--c-border);
-        }
+        /* ── SECTION TITLES ────────────────────────────── */
+        .section-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 2.5px; color: var(--c-primary); font-weight: 700; margin: 24px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--c-border); }
         .dashboard-section { margin-bottom: 16px; }
 
-        /* ── UI-CARD / PANELS ──────────────────────────── */
-        .ui-card {
-            background: var(--c-card);
-            border: 1px solid var(--c-border);
-            border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-            padding: 22px 24px;
-            min-width: 0;
-            overflow: hidden;
-        }
-        .ui-card.flex-col {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-        .ui-card h3 {
-            font-size: 0.92rem;
-            font-weight: 700;
-            color: var(--c-text);
-            line-height: 1.4;
-            margin-bottom: 12px;
-        }
-        .card-title-bold {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #0F172A;
-            margin-bottom: 16px;
-        }
-        .chart-box, .plotly-container, .map-wrapper {
-            min-width: 0;
-            overflow: hidden;
-            border-radius: 6px;
-        }
-        .ui-card .js-plotly-plot, .ui-card .plotly {
-            width: 100% !important;
-        }
-        .panel-context {
-            font-size: 0.77rem;
-            color: var(--c-text-mid);
-            line-height: 1.55;
-            max-width: 720px;
-            margin-bottom: 10px;
-        }
+        /* ── UI-CARD ───────────────────────────────────── */
+        .ui-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 22px 24px; min-width: 0; overflow: hidden; }
+        .ui-card h3 { font-size: 0.92rem; font-weight: 700; color: var(--c-text); line-height: 1.4; margin-bottom: 12px; }
+        .card-title-bold { font-size: 1.05rem; font-weight: 700; color: #0F172A; margin-bottom: 16px; }
+        .chart-box, .plotly-container, .map-wrapper { min-width: 0; overflow: hidden; border-radius: 6px; }
+        .ui-card .js-plotly-plot, .ui-card .plotly { width: 100% !important; }
+        .panel-context { font-size: 0.75rem; color: var(--c-text-mid); line-height: 1.5; max-width: 720px; margin-bottom: 10px; }
 
-        /* ── GRID LAYOUTS ───────────────────────────────── */
-        .grid-2-cols {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        .grid-3-2 {
-            display: grid;
-            grid-template-columns: 3fr 2fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        @media (max-width: 768px) {
-            .grid-2-cols, .grid-3-2 {
-                grid-template-columns: 1fr;
-            }
-        }
+        /* ── INSIGHT STRIP (replaces decision bullets) ── */
+        .insight-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+        @media (max-width: 768px) { .insight-strip { grid-template-columns: 1fr 1fr; } }
+        .insight-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--c-primary-bg); border-radius: 6px; border: 1px solid var(--c-border); }
+        .insight-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .insight-label { font-size: 0.7rem; font-weight: 600; color: var(--c-text-mid); line-height: 1.3; }
 
-        /* ── STYLED LIST (DECISION BULLETS) ────────────── */
-        .styled-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        .styled-list li {
-            font-size: 0.79rem;
-            color: var(--c-text-mid);
-            line-height: 1.55;
-            padding: 6px 0 6px 14px;
-            border-left: 2px solid var(--c-primary);
-            margin-bottom: 6px;
-        }
+        /* ── GRID LAYOUTS ──────────────────────────────── */
+        .grid-2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .grid-3-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin-bottom: 16px; }
+        @media (max-width: 768px) { .grid-2-cols, .grid-3-2 { grid-template-columns: 1fr; } }
 
-        /* ── MINI BAR SECTION ───────────────────────────── */
-        .mini-bar-title {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--c-text-mid);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 20px;
-            margin-bottom: 4px;
-        }
+        /* ── MINI BAR ──────────────────────────────────── */
+        .mini-bar-title { font-size: 0.72rem; font-weight: 700; color: var(--c-text-mid); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 20px; margin-bottom: 4px; }
 
-        /* ── 4. STYLES EXCLUSIFS SECTION 4 : DECISIONS SUPPORT SUMMARY ──── */
-        .summary-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .dss-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px 14px;
-            background-color: #F7FAFC;
-            border-radius: 8px;
-            border: 1px solid var(--c-border);
-            position: relative;
-        }
-        .dss-item.gray-bg {
-            background-color: #EDF2F7;
-            border-color: #CBD5E1;
-        }
-        .dss-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        /* ── FORECAST QUALITY BADGE ─────────────────────── */
+        .forecast-quality { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #EBF5FF; border: 1px solid #BFDBFE; border-radius: 4px; font-size: 0.66rem; font-weight: 600; color: #1E40AF; margin-top: 8px; }
+
+        /* ── DSS ITEMS ─────────────────────────────────── */
+        .summary-list { display: flex; flex-direction: column; gap: 10px; }
+        .dss-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; background-color: #F7FAFC; border-radius: 8px; border: 1px solid var(--c-border); position: relative; }
+        .dss-item.gray-bg { background-color: #EDF2F7; border-color: #CBD5E1; }
+        .dss-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         @media (max-width: 600px) { .dss-grid-2 { grid-template-columns: 1fr; } }
+        .badge-new { background-color: #0D9488; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; margin-top: 2px; }
+        .dss-icon-box { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px; }
+        .dss-icon-box svg { width: 20px; height: 20px; }
+        .dss-text-body { font-size: 0.76rem; color: #334155; line-height: 1.4; flex-grow: 1; }
+        .dss-text-body strong { color: #0F172A; font-weight: 700; }
 
-        .badge-new {
-            background-color: #0D9488;
-            color: #FFFFFF;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.58rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            flex-shrink: 0;
-            margin-top: 2px;
+        /* ── ACCORDION ─────────────────────────────────── */
+        .accordion-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; background: var(--c-primary-bg); border: 1px solid var(--c-border);
+            border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600;
+            color: var(--c-primary); margin-bottom: 4px; transition: background 0.2s;
         }
+        .accordion-header:hover { background: #E8EDDF; }
+        .accordion-chevron { transition: transform 0.2s; font-size: 0.8rem; }
+        .accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+        .accordion-body { display: none; padding: 16px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 0 0 6px 6px; margin-top: -5px; margin-bottom: 12px; }
+        .accordion-body.open { display: block; }
+        .accordion-body p, .accordion-body li { font-size: 0.75rem; color: var(--c-text-mid); line-height: 1.55; }
+        .accordion-body ul { padding-left: 18px; margin-top: 8px; }
+        .accordion-body li { margin-bottom: 4px; }
 
-        .dss-icon-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            margin-top: 1px;
+        /* ── TOOLTIP ───────────────────────────────────── */
+        .tt { position: relative; cursor: help; border-bottom: 1px dotted var(--c-text-light); }
+        .tt .tt-text {
+            visibility: hidden; opacity: 0; position: absolute; z-index: 100;
+            bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+            background: #1A2526; color: #fff; padding: 8px 12px; border-radius: 6px;
+            font-size: 0.68rem; line-height: 1.45; width: 260px; text-align: left;
+            font-weight: 400; letter-spacing: 0; text-transform: none;
+            pointer-events: none; transition: opacity 0.15s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        .dss-icon-box svg {
-            width: 20px;
-            height: 20px;
-        }
+        .tt:hover .tt-text { visibility: visible; opacity: 1; }
 
-        .dss-text-body {
-            font-size: 0.78rem;
-            color: #334155;
-            line-height: 1.45;
-            flex-grow: 1;
-        }
-        .dss-text-body strong {
-            color: #0F172A;
-            font-weight: 700;
-        }
-
-        /* ── FOOTER BAR (THEME OLIVE) ──────────────────── */
-        .oss-footer-bar {
-            background: var(--c-primary);
-            color: #DAD7CD;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 32px;
-            font-size: 0.72rem;
-            flex-wrap: wrap;
-            gap: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 30px;
-        }
+        /* ── FOOTER ────────────────────────────────────── */
+        .oss-footer-bar { background: var(--c-primary); color: #DAD7CD; display: flex; justify-content: space-between; align-items: center; padding: 12px 32px; font-size: 0.72rem; flex-wrap: wrap; gap: 16px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 30px; }
         .ticker-text { white-space: nowrap; }
         .footer-copy { opacity: 0.85; }
 
-        /* ── BILINGUAL TOGGLE ───────────────────────────── */
-        span.lang-en { display: inline; }
-        span.lang-fr { display: none; }
-        body.fr span.lang-en { display: none; }
-        body.fr span.lang-fr { display: inline; }
-        div.lang-en { display: block; }
-        div.lang-fr { display: none; }
-        body.fr div.lang-en { display: none; }
-        body.fr div.lang-fr { display: block; }
+        /* ── BILINGUAL TOGGLE ──────────────────────────── */
+        span.lang-en { display: inline; } span.lang-fr { display: none; }
+        body.fr span.lang-en { display: none; } body.fr span.lang-fr { display: inline; }
+        div.lang-en { display: block; } div.lang-fr { display: none; }
+        body.fr div.lang-en { display: none; } body.fr div.lang-fr { display: block; }
     </style>
 </head>
 <body class="oss-theme">
 
 <!-- ================================================================ -->
-<!-- 1. HEADER INSTITUTIONNEL SOMBRE (THEME OLIVE)                    -->
+<!-- HEADER                                                            -->
 <!-- ================================================================ -->
 <header class="oss-navbar">
     <div class="nav-brand">
@@ -483,7 +227,6 @@
             </span>
         </div>
     </div>
-
     <div class="nav-status-group">
         <div class="status-item">
             <span class="status-label">
@@ -501,40 +244,47 @@
 </header>
 
 <!-- ================================================================ -->
-<!-- BANNIÈRE AVERTISSEMENT                                            -->
+<!-- DATA FRESHNESS BAR                                                -->
+<!-- ================================================================ -->
+<div class="freshness-bar">
+    <span class="fresh-title">
+        <span class="lang-en">{{ strings_en.freshness_title }}</span>
+        <span class="lang-fr">{{ strings_fr.freshness_title }}</span>
+    </span>
+    <span class="fresh-item">
+        <span class="fresh-label">GRACE:</span>
+        <span class="fresh-val">{{ freshness.last_grace_month }}</span>
+    </span>
+    <span class="fresh-item">
+        <span class="fresh-label">GLDAS:</span>
+        <span class="fresh-val">{{ freshness.last_gldas_month }}</span>
+    </span>
+    <span class="fresh-item">
+        <span class="fresh-label">
+            <span class="lang-en">GWSA proxy:</span>
+            <span class="lang-fr">Proxy GWSA :</span>
+        </span>
+        <span class="fresh-val">{{ freshness.last_common_month }}</span>
+    </span>
+</div>
+
+<!-- ================================================================ -->
+<!-- DISCLAIMER                                                        -->
 <!-- ================================================================ -->
 <div class="disclaimer-banner">
     <div class="disclaimer-icon">&#9888;</div>
     <div class="disclaimer-content">
-        <p>
-            <span class="lang-en"><strong>{{ strings_en.proxy_warning_title }}</strong> — {{ strings_en.proxy_warning_text }}</span>
-            <span class="lang-fr"><strong>{{ strings_fr.proxy_warning_title }}</strong> — {{ strings_fr.proxy_warning_text }}</span>
-        </p>
-        <p class="disclaimer-meta">
-            <span class="lang-en"><strong>Area:</strong> {{ strings_en.metadata_text }}</span>
-            <span class="lang-fr"><strong>Zone :</strong> {{ strings_fr.metadata_text }}</span>
-        </p>
-    </div>
-    <div class="disclaimer-dates">
-        <div>
-            <span class="lang-en">GRACE data through:</span>
-            <span class="lang-fr">Données GRACE :</span>
-            {{ freshness.last_grace_month }}
-        </div>
-        <div>
-            <span class="lang-en">GWSA proxy through:</span>
-            <span class="lang-fr">Proxy GWSA :</span>
-            {{ freshness.last_common_month }}
-        </div>
+        <span class="lang-en"><strong>{{ strings_en.proxy_warning_title }}</strong> — {{ strings_en.proxy_warning_text }}</span>
+        <span class="lang-fr"><strong>{{ strings_fr.proxy_warning_title }}</strong> — {{ strings_fr.proxy_warning_text }}</span>
     </div>
 </div>
 
 <main class="dashboard-container">
 
     <!-- ============================================================ -->
-    <!-- 2. KPI GRID HARMONISÉE                                        -->
+    <!-- KPI GRID                                                      -->
     <!-- ============================================================ -->
-    <section class="kpi-grid">
+    <section class="kpi-grid" style="margin-top: 20px;">
 
         <!-- KPI 1 : Long-term trend -->
         <div class="kpi-card">
@@ -550,20 +300,21 @@
                 </svg>
             </div>
             <span class="kpi-subtext">
-                <span class="lang-en">{{ strings_en.kpi_trend_rate_unit }} — {{ strings_en.kpi_trend_rate_context }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_unit }} — {{ strings_fr.kpi_trend_rate_context }}</span>
+                <span class="lang-en">{{ strings_en.kpi_trend_rate_unit }} — <span class="tt">Sen's slope<span class="tt-text">{{ strings_en.tooltip_mk }}</span></span></span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_unit }} — <span class="tt">Pente de Sen<span class="tt-text">{{ strings_fr.tooltip_mk }}</span></span></span>
             </span>
+            <div class="kpi-interp {{ kpi_interp_key }}">
+                <span class="lang-en">{{ strings_en["kpi_interpretation_" + kpi_interp_key] }}</span>
+                <span class="lang-fr">{{ strings_fr["kpi_interpretation_" + kpi_interp_key] }}</span>
+            </div>
         </div>
 
         <!-- KPI 2 : Volume equivalent -->
         <div class="kpi-card">
-            <div class="kpi-header-flex">
-                <span class="kpi-title">
-                    <span class="lang-en">{{ strings_en.kpi_trend_vol_label }}</span>
-                    <span class="lang-fr">{{ strings_fr.kpi_trend_vol_label }}</span>
-                </span>
-                <span class="kpi-icon">&#9728;</span>
-            </div>
+            <span class="kpi-title">
+                <span class="lang-en">{{ strings_en.kpi_trend_vol_label }}</span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_vol_label }}</span>
+            </span>
             <div class="kpi-body">
                 <span class="kpi-value text-purple">{{ kpi_trend_vol }}</span>
             </div>
@@ -571,9 +322,13 @@
                 <span class="lang-en">{{ strings_en.kpi_trend_vol_unit }} — over ~{{ area_km2 }} km²</span>
                 <span class="lang-fr">{{ strings_fr.kpi_trend_vol_unit }} — sur ~{{ area_km2 }} km²</span>
             </span>
+            <div class="kpi-delta">
+                <span class="lang-en">{{ kpi_delta_month }} mm {{ strings_en.kpi_vs_prev_month }}</span>
+                <span class="lang-fr">{{ kpi_delta_month }} mm {{ strings_fr.kpi_vs_prev_month }}</span>
+            </div>
         </div>
 
-        <!-- KPI 3 : Latest estimated anomaly -->
+        <!-- KPI 3 : Latest anomaly -->
         <div class="kpi-card">
             <span class="kpi-title">
                 <span class="lang-en">{{ strings_en.kpi_anomaly_label }}</span>
@@ -587,12 +342,16 @@
                 </svg>
             </div>
             <span class="kpi-subtext">
-                <span class="lang-en">{{ strings_en.kpi_anomaly_unit }} · z-score {{ kpi_zscore }}</span>
-                <span class="lang-fr">{{ strings_fr.kpi_anomaly_unit }} · z-score {{ kpi_zscore }}</span>
+                <span class="tt"><span class="lang-en">z-score</span><span class="lang-fr">z-score</span><span class="tt-text"><span class="lang-en">{{ strings_en.tooltip_zscore }}</span><span class="lang-fr">{{ strings_fr.tooltip_zscore }}</span></span></span> {{ kpi_zscore }}
+                · {{ kpi_rank }}<span class="lang-en">{{ strings_en.kpi_rank_suffix }}</span><span class="lang-fr">{{ strings_fr.kpi_rank_suffix }}</span>
             </span>
+            <div class="kpi-delta">
+                <span class="lang-en">{{ kpi_delta_year }} mm {{ strings_en.kpi_vs_prev_year }}</span>
+                <span class="lang-fr">{{ kpi_delta_year }} mm {{ strings_fr.kpi_vs_prev_year }}</span>
+            </div>
         </div>
 
-        <!-- KPI 4 : Vigilance signal -->
+        <!-- KPI 4 : Vigilance -->
         <div class="kpi-card">
             <span class="kpi-title">
                 <span class="lang-en">{{ strings_en.kpi_vigilance_label }}</span>
@@ -616,251 +375,275 @@
                 </span>
                 {% endif %}
             </div>
-            <span class="kpi-subtext">p {{ kpi_mk_pvalue }}</span>
+            <div class="vigilance-explain">
+                <span class="lang-en">{{ strings_en["vigilance_explain_" + kpi_vigilance] }}</span>
+                <span class="lang-fr">{{ strings_fr["vigilance_explain_" + kpi_vigilance] }}</span>
+            </div>
         </div>
 
     </section>
 
     <!-- ============================================================ -->
-    <!-- SECTION 1 : MONITORING                                        -->
+    <!-- VIEW TABS: DECISION / EXPERT                                  -->
     <!-- ============================================================ -->
-    <section class="dashboard-section">
-        <h2 class="section-title">
-            <span class="lang-en">{{ strings_en.section_monitoring }}</span>
-            <span class="lang-fr">{{ strings_fr.section_monitoring }}</span>
-        </h2>
-        <div class="grid-3-2">
+    <div class="view-tabs">
+        <button class="view-tab active" data-view="decision" onclick="switchView('decision')">
+            <span class="lang-en">{{ strings_en.tab_decision }}</span>
+            <span class="lang-fr">{{ strings_fr.tab_decision }}</span>
+        </button>
+        <button class="view-tab" data-view="expert" onclick="switchView('expert')">
+            <span class="lang-en">{{ strings_en.tab_expert }}</span>
+            <span class="lang-fr">{{ strings_fr.tab_expert }}</span>
+        </button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DECISION VIEW                                                 -->
+    <!-- ============================================================ -->
+    <div id="view-decision" class="view-panel active">
+
+        <!-- SECTION 1 : MAIN TIME SERIES (FULL WIDTH, DOMINANT) -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                <span class="lang-en">{{ strings_en.section_monitoring }}</span>
+                <span class="lang-fr">{{ strings_fr.section_monitoring }}</span>
+            </h2>
             <div class="ui-card">
                 <h3>
                     <span class="lang-en">{{ strings_en.ts_title }}</span>
                     <span class="lang-fr">{{ strings_fr.ts_title }}</span>
                 </h3>
                 <div class="chart-box">{{ fig_timeseries | safe }}</div>
+                <!-- Insight strip: 4 compact visual items -->
+                <div class="insight-strip">
+                    <div class="insight-item">
+                        <span class="insight-icon">&#128202;</span>
+                        <span class="insight-label">
+                            <span class="lang-en">{{ strings_en.insight_strip_trend }}</span>
+                            <span class="lang-fr">{{ strings_fr.insight_strip_trend }}</span>
+                        </span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">&#127760;</span>
+                        <span class="insight-label">
+                            <span class="lang-en">{{ strings_en.insight_strip_governance }}</span>
+                            <span class="lang-fr">{{ strings_fr.insight_strip_governance }}</span>
+                        </span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">&#128200;</span>
+                        <span class="insight-label">
+                            <span class="lang-en">{{ strings_en.insight_strip_forecast }}</span>
+                            <span class="lang-fr">{{ strings_fr.insight_strip_forecast }}</span>
+                        </span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">&#128269;</span>
+                        <span class="insight-label">
+                            <span class="lang-en">{{ strings_en.insight_strip_transparency }}</span>
+                            <span class="lang-fr">{{ strings_fr.insight_strip_transparency }}</span>
+                        </span>
+                    </div>
+                </div>
             </div>
-            <div class="ui-card flex-col">
-                <h3>
-                    <span class="lang-en">{{ strings_en.ts_decision_title }}</span>
-                    <span class="lang-fr">{{ strings_fr.ts_decision_title }}</span>
-                </h3>
-                <div class="lang-en">
-                    <ul class="styled-list">
-                        <li>{{ strings_en.ts_decision_bullet_1 }}</li>
-                        <li>{{ strings_en.ts_decision_bullet_2 }}</li>
-                        <li>{{ strings_en.ts_decision_bullet_3 }}</li>
-                        <li>{{ strings_en.ts_decision_bullet_4 }}</li>
-                    </ul>
+        </section>
+
+        <!-- SECTION 2 : OUTLOOK — SCENARIOS + MINI BAR -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                <span class="lang-en">{{ strings_en.section_outlook }}</span>
+                <span class="lang-fr">{{ strings_fr.section_outlook }}</span>
+            </h2>
+            <div class="grid-2-cols">
+                <div class="ui-card">
+                    <h3>
+                        <span class="lang-en">{{ strings_en.scenario_multi_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.scenario_multi_title }}</span>
+                    </h3>
+                    <p class="panel-context">
+                        <span class="lang-en">{{ strings_en.scenario_multi_context }}</span>
+                        <span class="lang-fr">{{ strings_fr.scenario_multi_context }}</span>
+                    </p>
+                    <div class="chart-box">{{ fig_multi_scenario | safe }}</div>
+                    <div class="forecast-quality">
+                        &#9989;
+                        <span class="lang-en">{{ strings_en.forecast_mae_text }} · CI avg. ± {{ kpi_forecast_ci_avg }} mm</span>
+                        <span class="lang-fr">{{ strings_fr.forecast_mae_text }} · IC moy. ± {{ kpi_forecast_ci_avg }} mm</span>
+                    </div>
                 </div>
-                <div class="lang-fr">
-                    <ul class="styled-list">
-                        <li>{{ strings_fr.ts_decision_bullet_1 }}</li>
-                        <li>{{ strings_fr.ts_decision_bullet_2 }}</li>
-                        <li>{{ strings_fr.ts_decision_bullet_3 }}</li>
-                        <li>{{ strings_fr.ts_decision_bullet_4 }}</li>
-                    </ul>
+                <div class="ui-card">
+                    <div class="mini-bar-title">
+                        <span class="lang-en">{{ strings_en.decision_mini_bar_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.decision_mini_bar_title }}</span>
+                    </div>
+                    <div class="chart-box">{{ fig_decision_bar | safe }}</div>
                 </div>
-                <div class="mini-bar-title">
-                    <span class="lang-en">{{ strings_en.decision_mini_bar_title }}</span>
-                    <span class="lang-fr">{{ strings_fr.decision_mini_bar_title }}</span>
-                </div>
-                <div class="chart-box">{{ fig_decision_bar | safe }}</div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- SECTION 3 : CONTEXT — MAP + DECISION SUMMARY -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                <span class="lang-en">{{ strings_en.section_context }}</span>
+                <span class="lang-fr">{{ strings_fr.section_context }}</span>
+            </h2>
+            <div class="grid-2-cols">
+                <div class="ui-card">
+                    <h3 class="card-title-bold">
+                        <span class="lang-en">{{ strings_en.map_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.map_title }}</span>
+                    </h3>
+                    <div class="map-wrapper">{{ fig_map | safe }}</div>
+                </div>
+                <div class="ui-card">
+                    <h3 class="card-title-bold">
+                        <span class="lang-en">{{ strings_en.decision_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.decision_title }}</span>
+                    </h3>
+                    <div class="summary-list">
+                        <!-- Item 1 : Monitoring -->
+                        <div class="dss-item">
+                            <div class="dss-icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                            </div>
+                            <div class="dss-text-body">
+                                <div class="lang-en"><strong>{{ strings_en.decision_monitoring }}:</strong> {{ strings_en.decision_monitoring_text }}</div>
+                                <div class="lang-fr"><strong>{{ strings_fr.decision_monitoring }} :</strong> {{ strings_fr.decision_monitoring_text }}</div>
+                            </div>
+                        </div>
+                        <!-- Item 2 : Anticipation -->
+                        <div class="dss-item">
+                            <div class="dss-icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+                                </svg>
+                            </div>
+                            <div class="dss-text-body">
+                                <div class="lang-en"><strong>{{ strings_en.decision_anticipation }}:</strong> {{ strings_en.decision_anticipation_text }}</div>
+                                <div class="lang-fr"><strong>{{ strings_fr.decision_anticipation }} :</strong> {{ strings_fr.decision_anticipation_text }}</div>
+                            </div>
+                        </div>
+                        <!-- Item 3 : Dialogue -->
+                        <div class="dss-item">
+                            <div class="dss-icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.12 2 9a7 7 0 0 1-7 7Zm0 0v-6"/>
+                                </svg>
+                            </div>
+                            <div class="dss-text-body">
+                                <div class="lang-en"><strong>{{ strings_en.decision_dialogue }}:</strong> {{ strings_en.decision_dialogue_text }}</div>
+                                <div class="lang-fr"><strong>{{ strings_fr.decision_dialogue }} :</strong> {{ strings_fr.decision_dialogue_text }}</div>
+                            </div>
+                        </div>
+                        <!-- Grid 2-col: Capitalisation + Limitations -->
+                        <div class="dss-grid-2">
+                            <div class="dss-item">
+                                <div class="dss-icon-box">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>
+                                    </svg>
+                                </div>
+                                <div class="dss-text-body">
+                                    <div class="lang-en"><strong>{{ strings_en.decision_capitalisation }}:</strong> {{ strings_en.decision_capitalisation_text }}</div>
+                                    <div class="lang-fr"><strong>{{ strings_fr.decision_capitalisation }} :</strong> {{ strings_fr.decision_capitalisation_text }}</div>
+                                </div>
+                            </div>
+                            <div class="dss-item gray-bg">
+                                <div class="dss-text-body">
+                                    <div class="lang-en"><strong>Limitations:</strong> {{ strings_en.decision_limits_inline }}</div>
+                                    <div class="lang-fr"><strong>Limites :</strong> {{ strings_fr.decision_limits_inline }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
 
     <!-- ============================================================ -->
-    <!-- SECTION 2 : OUTLOOK — SCENARIOS + SEASONAL                    -->
+    <!-- EXPERT VIEW                                                   -->
     <!-- ============================================================ -->
-    <section class="dashboard-section">
-        <h2 class="section-title">
-            <span class="lang-en">{{ strings_en.section_outlook }}</span>
-            <span class="lang-fr">{{ strings_fr.section_outlook }}</span>
-        </h2>
-        <div class="grid-2-cols">
+    <div id="view-expert" class="view-panel">
+
+        <!-- STL DECOMPOSITION -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                <span class="lang-en">{{ strings_en.section_expert }}</span>
+                <span class="lang-fr">{{ strings_fr.section_expert }}</span>
+            </h2>
             <div class="ui-card">
                 <h3>
-                    <span class="lang-en">{{ strings_en.scenario_multi_title }}</span>
-                    <span class="lang-fr">{{ strings_fr.scenario_multi_title }}</span>
+                    <span class="lang-en">{{ strings_en.stl_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.stl_title }}</span>
                 </h3>
                 <p class="panel-context">
-                    <span class="lang-en">{{ strings_en.scenario_multi_context }}</span>
-                    <span class="lang-fr">{{ strings_fr.scenario_multi_context }}</span>
+                    <span class="lang-en">{{ strings_en.stl_explanation }}</span>
+                    <span class="lang-fr">{{ strings_fr.stl_explanation }}</span>
                 </p>
-                <div class="chart-box">{{ fig_multi_scenario | safe }}</div>
+                <div class="chart-box">{{ fig_stl | safe }}</div>
             </div>
+        </section>
+
+        <!-- SEASONAL BAR -->
+        <section class="dashboard-section">
             <div class="ui-card">
                 <h3>
                     <span class="lang-en">{{ strings_en.seasonal_bar_title }}</span>
                     <span class="lang-fr">{{ strings_fr.seasonal_bar_title }}</span>
                 </h3>
                 <p class="panel-context">
-                    <span class="lang-en">{{ strings_en.stl_amplitude }}: {{ seasonal_amplitude_mm }} mm. {{ strings_en.seasonal_bar_context }}</span>
-                    <span class="lang-fr">{{ strings_fr.stl_amplitude }} : {{ seasonal_amplitude_mm }} mm. {{ strings_fr.seasonal_bar_context }}</span>
+                    <span class="lang-en"><span class="tt">STL<span class="tt-text">{{ strings_en.tooltip_stl }}</span></span> {{ strings_en.stl_amplitude }}: {{ seasonal_amplitude_mm }} mm. {{ strings_en.seasonal_bar_context }}</span>
+                    <span class="lang-fr"><span class="tt">STL<span class="tt-text">{{ strings_fr.tooltip_stl }}</span></span> {{ strings_fr.stl_amplitude }} : {{ seasonal_amplitude_mm }} mm. {{ strings_fr.seasonal_bar_context }}</span>
                 </p>
                 <div class="chart-box">{{ fig_seasonal_bar | safe }}</div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ============================================================ -->
-    <!-- SECTION 3 : ANALYSIS — STL DECOMPOSITION                      -->
-    <!-- ============================================================ -->
-    <section class="dashboard-section">
-        <h2 class="section-title">
-            <span class="lang-en">{{ strings_en.section_analysis }}</span>
-            <span class="lang-fr">{{ strings_fr.section_analysis }}</span>
-        </h2>
-        <div class="ui-card">
-            <h3>
-                <span class="lang-en">{{ strings_en.stl_title }}</span>
-                <span class="lang-fr">{{ strings_fr.stl_title }}</span>
-            </h3>
-            <p class="panel-context">
-                <span class="lang-en">{{ strings_en.stl_explanation }}</span>
-                <span class="lang-fr">{{ strings_fr.stl_explanation }}</span>
-            </p>
-            <div class="chart-box">{{ fig_stl | safe }}</div>
-        </div>
-    </section>
-
-    <!-- ============================================================ -->
-    <!-- SECTION 4 : OUTLOOK & CONTEXT — CARTE + DÉCISIONS             -->
-    <!-- (MODIFIÉE POUR CORRESPONDRE EXACTEMENT À L'IMAGE DE RÉFÉRENCE) -->
-    <!-- ============================================================ -->
-    <section class="dashboard-section">
-        <h2 class="section-title">
-            <span class="lang-en">{{ strings_en.section_context }}</span>
-            <span class="lang-fr">{{ strings_fr.section_context }}</span>
-        </h2>
-        <div class="grid-2-cols">
-
-            <!-- 1. CARTE INTERACTIVE (GAUCHE) -->
-            <div class="ui-card">
-                <h3 class="card-title-bold">
-                    <span class="lang-en">{{ strings_en.map_title }}</span>
-                    <span class="lang-fr">{{ strings_fr.map_title }}</span>
-                </h3>
-                <div class="map-wrapper">{{ fig_map | safe }}</div>
+        <!-- METHODOLOGY ACCORDION -->
+        <section class="dashboard-section">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <span>
+                    <span class="lang-en">{{ strings_en.accordion_methodology }}</span>
+                    <span class="lang-fr">{{ strings_fr.accordion_methodology }}</span>
+                </span>
+                <span class="accordion-chevron">&#9660;</span>
+            </div>
+            <div class="accordion-body">
+                <p>
+                    <span class="lang-en">{{ strings_en.method_pipeline_text }}</span>
+                    <span class="lang-fr">{{ strings_fr.method_pipeline_text }}</span>
+                </p>
             </div>
 
-            <!-- 2. DECISIONS SUPPORT SUMMARY (DROITE) -->
-            <div class="ui-card">
-                <h3 class="card-title-bold">
-                    <span class="lang-en">{{ strings_en.decision_title }}</span>
-                    <span class="lang-fr">{{ strings_fr.decision_title }}</span>
-                </h3>
-
-                <div class="summary-list">
-
-                    <!-- ITEM 1 : Depletion -->
-                    <div class="dss-item">
-                        <span class="badge-new">NEW</span>
-                        <div class="dss-icon-box">
-                            <!-- SVG Triangle Alerte Rouge -->
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-                                <line x1="12" y1="9" x2="12" y2="13"/>
-                                <line x1="12" y1="17" x2="12.01" y2="17"/>
-                            </svg>
-                        </div>
-                        <div class="dss-text-body">
-                            <div class="lang-en">
-                                <strong>{{ strings_en.decision_monitoring }}:</strong> {{ strings_en.decision_monitoring_text }}
-                            </div>
-                            <div class="lang-fr">
-                                <strong>{{ strings_fr.decision_monitoring }} :</strong> {{ strings_fr.decision_monitoring_text }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ITEM 2 : Forecast -->
-                    <div class="dss-item">
-                        <span class="badge-new">NEW</span>
-                        <div class="dss-icon-box">
-                            <!-- SVG Tendance Montante Bleue -->
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
-                                <polyline points="16 7 22 7 22 13"/>
-                            </svg>
-                        </div>
-                        <div class="dss-text-body">
-                            <div class="lang-en">
-                                <strong>{{ strings_en.decision_anticipation }}:</strong> {{ strings_en.decision_anticipation_text }}
-                            </div>
-                            <div class="lang-fr">
-                                <strong>{{ strings_fr.decision_anticipation }} :</strong> {{ strings_fr.decision_anticipation_text }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ITEM 3 : Fossil System -->
-                    <div class="dss-item">
-                        <span class="badge-new">NEW</span>
-                        <div class="dss-icon-box">
-                            <!-- SVG Feuille / Plante Verte -->
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.12 2 9a7 7 0 0 1-7 7Zm0 0v-6"/>
-                            </svg>
-                        </div>
-                        <div class="dss-text-body">
-                            <div class="lang-en">
-                                <strong>{{ strings_en.decision_dialogue }}:</strong> {{ strings_en.decision_dialogue_text }}
-                            </div>
-                            <div class="lang-fr">
-                                <strong>{{ strings_fr.decision_dialogue }} :</strong> {{ strings_fr.decision_dialogue_text }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- GRILLE 2 COLONNES (Resolution Caveat + Limitations) -->
-                    <div class="dss-grid-2">
-
-                        <!-- ITEM 4 : Resolution Caveat -->
-                        <div class="dss-item">
-                            <span class="badge-new">NEW</span>
-                            <div class="dss-icon-box">
-                                <!-- SVG Quadrillage / Grille Violette -->
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                    <path d="M3 9h18"/>
-                                    <path d="M3 15h18"/>
-                                    <path d="M9 3v18"/>
-                                    <path d="M15 3v18"/>
-                                </svg>
-                            </div>
-                            <div class="dss-text-body">
-                                <div class="lang-en">
-                                    <strong>{{ strings_en.decision_capitalisation }}:</strong> {{ strings_en.decision_capitalisation_text }}
-                                </div>
-                                <div class="lang-fr">
-                                    <strong>{{ strings_fr.decision_capitalisation }} :</strong> {{ strings_fr.decision_capitalisation_text }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ITEM 5 : Limitations (Gris clair distinct, Sans Badge NEW) -->
-                        <div class="dss-item gray-bg">
-                            <div class="dss-text-body">
-                                <div class="lang-en">
-                                    <strong>Limitations:</strong> {{ strings_en.decision_limits_inline }}
-                                </div>
-                                <div class="lang-fr">
-                                    <strong>Limites :</strong> {{ strings_fr.decision_limits_inline }}
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <span>
+                    <span class="lang-en">{{ strings_en.accordion_limitations }}</span>
+                    <span class="lang-fr">{{ strings_fr.accordion_limitations }}</span>
+                </span>
+                <span class="accordion-chevron">&#9660;</span>
             </div>
+            <div class="accordion-body">
+                <ul>
+                    <li><span class="lang-en">{{ strings_en.method_limit_1 }}</span><span class="lang-fr">{{ strings_fr.method_limit_1 }}</span></li>
+                    <li><span class="lang-en">{{ strings_en.method_limit_2 }}</span><span class="lang-fr">{{ strings_fr.method_limit_2 }}</span></li>
+                    <li><span class="lang-en">{{ strings_en.method_limit_3 }}</span><span class="lang-fr">{{ strings_fr.method_limit_3 }}</span></li>
+                    <li><span class="lang-en">{{ strings_en.method_limit_4 }}</span><span class="lang-fr">{{ strings_fr.method_limit_4 }}</span></li>
+                    <li><span class="lang-en">{{ strings_en.method_limit_5 }}</span><span class="lang-fr">{{ strings_fr.method_limit_5 }}</span></li>
+                    <li><span class="lang-en">{{ strings_en.method_limit_6 }}</span><span class="lang-fr">{{ strings_fr.method_limit_6 }}</span></li>
+                </ul>
+            </div>
+        </section>
 
-        </div>
-    </section>
+    </div>
 
 </main>
 
 <!-- ================================================================ -->
-<!-- FOOTER BOTTOM BANNER (THEME OLIVE)                               -->
+<!-- FOOTER                                                            -->
 <!-- ================================================================ -->
 <footer class="oss-footer-bar">
     <div class="ticker-text">
@@ -878,6 +661,25 @@
 function toggleLang() {
     document.body.classList.toggle('fr');
     window.dispatchEvent(new Event('resize'));
+}
+
+function switchView(view) {
+    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-view="' + view + '"]').classList.add('active');
+    document.getElementById('view-' + view).classList.add('active');
+    // Resize all Plotly charts in the newly visible panel
+    setTimeout(function() {
+        document.querySelectorAll('.view-panel.active .js-plotly-plot').forEach(function(plot) {
+            Plotly.Plots.resize(plot);
+        });
+    }, 50);
+}
+
+function toggleAccordion(header) {
+    header.classList.toggle('open');
+    var body = header.nextElementSibling;
+    body.classList.toggle('open');
 }
 
 window.addEventListener('load', function() {

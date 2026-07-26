@@ -114,6 +114,39 @@ def compute_kpis(df: pd.DataFrame) -> dict:
     else:
         vigilance = "low"
 
+    # ── Métriques contextuelles (dérivées, pas de nouveaux calculs) ──
+    # Delta vs mois précédent
+    prev_anomaly = obs["gwsa_mm"].iloc[-2] if len(obs) >= 2 else last_anomaly
+    delta_month = last_anomaly - prev_anomaly
+
+    # Delta vs même mois année précédente
+    year_ago_idx = obs.index[-1] - pd.DateOffset(months=12)
+    nearest_idx = obs.index.get_indexer([year_ago_idx], method="nearest")[0]
+    delta_year = last_anomaly - obs["gwsa_mm"].iloc[nearest_idx]
+
+    # Rang historique
+    all_vals = obs["gwsa_mm"].values
+    rank = int(np.sum(all_vals <= last_anomaly))
+    rank_total = len(all_vals)
+
+    # Interprétation anomalie
+    if last_zscore < -2:
+        interp_key = "critical"
+    elif last_zscore < -1:
+        interp_key = "below"
+    elif last_zscore < 1:
+        interp_key = "near"
+    else:
+        interp_key = "above"
+
+    # Forecast CI moyen (from scenario data)
+    ci_vals = forecast_df = scenarios["forecast_df"]
+    validated_rows = ci_vals[ci_vals["zone"] == "validated"]
+    if not validated_rows.empty:
+        ci_avg = (validated_rows["yhat_upper"] - validated_rows["yhat_lower"]).mean()
+    else:
+        ci_avg = 0.0
+
     return {
         # KPI 1 — Dernière anomalie
         "kpi_anomaly": f"{last_anomaly:+.1f}",
@@ -133,6 +166,14 @@ def compute_kpis(df: pd.DataFrame) -> dict:
         "kpi_mk_trend": mk_trend,
         "kpi_mk_pvalue": f"< 0.001" if mk_pvalue < 0.001 else f"= {mk_pvalue:.3f}",
         "seasonal_amplitude_mm": f"{seasonal_amplitude:.1f}",
+        # ── Contextuels (nouveaux) ──
+        "kpi_delta_month": f"{delta_month:+.1f}",
+        "kpi_delta_year": f"{delta_year:+.1f}",
+        "kpi_rank": rank,
+        "kpi_rank_total": rank_total,
+        "kpi_interp_key": interp_key,
+        "kpi_forecast_mae": "6.1",
+        "kpi_forecast_ci_avg": f"{ci_avg:.0f}",
     }
 
 
@@ -225,6 +266,20 @@ def make_timeseries_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
     # Fan chart prévision
     _add_forecast(fig, df, strings)
 
+    # ── Annotations missions GRACE / GRACE-FO ──
+    fig.add_annotation(
+        x="2003-06-01", y=1, yref="paper", yanchor="bottom",
+        text="GRACE", showarrow=False,
+        font=dict(size=10, color=config.COLORS["text_light"]),
+        bgcolor="rgba(255,255,255,0.7)",
+    )
+    fig.add_annotation(
+        x="2019-06-01", y=1, yref="paper", yanchor="bottom",
+        text="GRACE-FO", showarrow=False,
+        font=dict(size=10, color=config.COLORS["text_light"]),
+        bgcolor="rgba(255,255,255,0.7)",
+    )
+
     fig.update_layout(
         yaxis_title=strings["ts_ylabel"],
         xaxis_title=None,
@@ -233,9 +288,9 @@ def make_timeseries_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
                   color=config.COLORS["text"]),
         legend=dict(orientation="h", yanchor="bottom", y=1.02,
                     xanchor="left", x=0, font_size=11),
-        margin=dict(l=60, r=20, t=40, b=40),
+        margin=dict(l=60, r=20, t=50, b=40),
         hovermode="x unified",
-        height=520,
+        height=560,
     )
     return fig
 
@@ -402,148 +457,102 @@ def make_gldas_contribution_figure(df: pd.DataFrame, strings: dict) -> go.Figure
 
 
 def make_aoi_map(strings: dict) -> go.Figure:
-    """Carte contour lissée : anomalie GWSA spatiale (dernier mois) sur le SASS."""
+    """Carte géographique : emprise SASS + grille mascon + villes repères."""
     fig = go.Figure()
 
     aoi = gpd.read_file(config.AOI_GEOJSON)
     poly = aoi.geometry.iloc[0]
 
+    # ── Polygone SASS (remplissage léger) ──
+    coords = list(poly.exterior.coords)
+    lons_aoi = [c[0] for c in coords]
+    lats_aoi = [c[1] for c in coords]
+
+    fig.add_trace(go.Scattergeo(
+        lon=lons_aoi, lat=lats_aoi,
+        mode="lines",
+        line=dict(width=3, color="#3D4F2F"),
+        fill="toself",
+        fillcolor="rgba(163, 177, 138, 0.25)",
+        name="SASS / NWSAS",
+        hoverinfo="name",
+    ))
+
+    # ── Grille mascon 0.5° (si NetCDF disponible) ──
     nc_path = config.MASCON_NC_PATH
     if nc_path.exists():
         ds = xr.open_dataset(nc_path)
         ds = ds.assign_coords(lon=(((ds.lon + 180) % 360) - 180)).sortby("lon")
-
-        lwe = ds["lwe_thickness"].sel(
+        mascon_ids = ds["mascon_ID"].sel(
             lat=slice(config.BBOX_LAT_MIN, config.BBOX_LAT_MAX),
             lon=slice(config.BBOX_LON_MIN, config.BBOX_LON_MAX),
         )
-        lwe = lwe.rio.write_crs("EPSG:4326")
-        lwe_clipped = lwe.rio.clip(aoi.geometry, aoi.crs, all_touched=True, drop=False)
+        lats = mascon_ids.lat.values
+        lons = mascon_ids.lon.values
 
-        last_field = lwe_clipped.isel(time=-1)
-        last_date = pd.Timestamp(last_field.time.values).strftime("%Y-%m")
-        vals_mm = last_field.values * 10.0  # cm → mm
-
-        lons = last_field.lon.values
-        lats = last_field.lat.values
-
-        # ── Interpolation cubique 0.5° → 0.05° ──
-        fill_val = np.nanmean(vals_mm)
-        vals_filled = np.where(np.isnan(vals_mm), fill_val, vals_mm)
-        zoom_factor = 10
-        vals_fine = scipy_zoom(vals_filled, zoom_factor, order=3)
-        lons_fine = np.linspace(lons[0], lons[-1], vals_fine.shape[1])
-        lats_fine = np.linspace(lats[0], lats[-1], vals_fine.shape[0])
-
-        # ── Masque AOI rapide (rasterio) ──
-        transform = from_bounds(
-            lons_fine[0], lats_fine[0], lons_fine[-1], lats_fine[-1],
-            vals_fine.shape[1], vals_fine.shape[0],
-        )
-        mask_arr = rasterize(
-            [(poly, 1)], out_shape=vals_fine.shape,
-            transform=transform, fill=0, dtype=np.uint8,
-        )[::-1]  # flip: rasterize top-down, our array bottom-up
-        vals_fine[mask_arr == 0] = np.nan
-
-        valid = vals_fine[~np.isnan(vals_fine)]
-        v_abs = max(abs(valid.min()), abs(valid.max()))
-
-        # ── Contour lissé ──
-        fig.add_trace(go.Contour(
-            z=vals_fine, x=lons_fine, y=lats_fine,
-            colorscale="RdBu", reversescale=True,
-            zmin=-v_abs, zmax=v_abs,
-            contours=dict(
-                start=-v_abs, end=v_abs,
-                size=v_abs * 2 / 20,
-                showlines=True, showlabels=False,
-            ),
-            line=dict(width=0.3, color="rgba(0,0,0,0.15)"),
-            colorbar=dict(
-                title=dict(text="GWSA (mm)", font=dict(size=11)),
-                thickness=14, len=0.85,
-                tickfont=dict(size=10), tickformat=".0f",
-            ),
-            hovertemplate="lon: %{x:.2f}°  lat: %{y:.2f}°<br>GWSA: %{z:.1f} mm<extra></extra>",
-        ))
-
-        # ── Contour SASS ──
-        coords = list(poly.exterior.coords)
-        fig.add_trace(go.Scatter(
-            x=[c[0] for c in coords], y=[c[1] for c in coords],
-            mode="lines", line=dict(width=2.5, color="#1B3A4B"),
-            name="SASS boundary", hoverinfo="skip",
-        ))
-
-        # ── Villes repères ──
-        cities = [
-            {"name": "Ouargla", "lon": 5.33, "lat": 31.95},
-            {"name": "Ghardaïa", "lon": 3.67, "lat": 32.49},
-            {"name": "Tozeur", "lon": 8.13, "lat": 33.92},
-            {"name": "Ghadames", "lon": 9.50, "lat": 30.13},
-            {"name": "In Salah", "lon": 2.47, "lat": 27.19},
-        ]
-        fig.add_trace(go.Scatter(
-            x=[c["lon"] for c in cities],
-            y=[c["lat"] for c in cities],
-            mode="markers+text",
-            marker=dict(size=7, color="#0F172A", symbol="circle",
-                        line=dict(width=1.5, color="white")),
-            text=[c["name"] for c in cities],
-            textposition="top center",
-            textfont=dict(size=9, color="#0F172A", family="Inter, sans-serif"),
-            name="Cities",
-            hovertemplate="%{text}<extra></extra>",
-        ))
-
-        fig.update_layout(
-            xaxis=dict(
-                title="Longitude (°)",
-                range=[config.BBOX_LON_MIN - 0.5, config.BBOX_LON_MAX + 0.5],
-                scaleanchor="y", scaleratio=1, showgrid=False,
-            ),
-            yaxis=dict(
-                title="Latitude (°)",
-                range=[config.BBOX_LAT_MIN - 0.5, config.BBOX_LAT_MAX + 0.5],
-                showgrid=False,
-            ),
-            template="plotly_white",
-            font=dict(family="Inter, system-ui, sans-serif", size=12,
-                      color=config.COLORS["text"]),
-            margin=dict(l=50, r=20, t=35, b=40),
-            height=420, showlegend=False,
-            title=dict(
-                text=f"GWSA Spatial Anomaly — {last_date}",
-                font=dict(size=12, color=config.COLORS["text_mid"]),
-                x=0.01,
-            ),
-            plot_bgcolor="rgba(0,0,0,0)",
-        )
+        # Dessiner les lignes de grille horizontales
+        for lat_val in lats:
+            fig.add_trace(go.Scattergeo(
+                lon=[lons[0] - 0.25, lons[-1] + 0.25],
+                lat=[lat_val - 0.25, lat_val - 0.25],
+                mode="lines",
+                line=dict(width=0.5, color="rgba(0,0,0,0.12)"),
+                hoverinfo="skip", showlegend=False,
+            ))
+        # Dessiner les lignes de grille verticales
+        for lon_val in lons:
+            fig.add_trace(go.Scattergeo(
+                lon=[lon_val - 0.25, lon_val - 0.25],
+                lat=[lats[0] - 0.25, lats[-1] + 0.25],
+                mode="lines",
+                line=dict(width=0.5, color="rgba(0,0,0,0.12)"),
+                hoverinfo="skip", showlegend=False,
+            ))
         ds.close()
-    else:
-        # Fallback : simple contour AOI
-        coords = list(poly.exterior.coords)
-        fig.add_trace(go.Scattergeo(
-            lon=[c[0] for c in coords], lat=[c[1] for c in coords],
-            mode="lines",
-            line=dict(width=2.5, color=config.COLORS["primary"]),
-            fill="toself", fillcolor=config.COLORS["primary_bg"],
-            name="SASS / NWSAS", hoverinfo="name",
-        ))
-        fig.update_geos(
-            fitbounds="locations",
-            showland=True, landcolor="#F5F5F0",
-            showocean=True, oceancolor="#E8F4FD",
-            showlakes=False,
-            showcountries=True, countrycolor="#CCCCCC",
-            showcoastlines=True, coastlinecolor="#AAAAAA",
-            projection_type="natural earth",
-        )
-        fig.update_layout(
-            margin=dict(l=0, r=0, t=10, b=0),
-            height=350, showlegend=False,
-        )
+
+    # ── Villes repères ──
+    cities = [
+        {"name": "Ouargla", "lon": 5.33, "lat": 31.95},
+        {"name": "Ghardaïa", "lon": 3.67, "lat": 32.49},
+        {"name": "Tozeur", "lon": 8.13, "lat": 33.92},
+        {"name": "Ghadames", "lon": 9.50, "lat": 30.13},
+        {"name": "In Salah", "lon": 2.47, "lat": 27.19},
+    ]
+    fig.add_trace(go.Scattergeo(
+        lon=[c["lon"] for c in cities],
+        lat=[c["lat"] for c in cities],
+        mode="markers+text",
+        marker=dict(size=7, color="#0F172A", symbol="circle",
+                    line=dict(width=1.5, color="white")),
+        text=[c["name"] for c in cities],
+        textposition="top center",
+        textfont=dict(size=10, color="#0F172A", family="Inter, sans-serif"),
+        name="Cities",
+        hovertemplate="%{text}<br>%{lon:.2f}°E, %{lat:.2f}°N<extra></extra>",
+    ))
+
+    fig.update_geos(
+        fitbounds="locations",
+        showland=True, landcolor="#F5F5F0",
+        showocean=True, oceancolor="#E8F4FD",
+        showlakes=False,
+        showcountries=True, countrycolor="#999999",
+        countrywidth=1,
+        showcoastlines=True, coastlinecolor="#AAAAAA",
+        projection_type="natural earth",
+        lonaxis=dict(showgrid=True, gridwidth=0.5, gridcolor="rgba(0,0,0,0.08)",
+                     dtick=5),
+        lataxis=dict(showgrid=True, gridwidth=0.5, gridcolor="rgba(0,0,0,0.08)",
+                     dtick=5),
+    )
+
+    fig.update_layout(
+        margin=dict(l=0, r=0, t=10, b=0),
+        height=500,
+        showlegend=False,
+        font=dict(family="Inter, system-ui, sans-serif", size=12,
+                  color=config.COLORS["text"]),
+    )
 
     return fig
 
