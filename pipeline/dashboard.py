@@ -401,69 +401,194 @@ def make_stl_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
 
 
 def make_gldas_contribution_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
-    """Bar chart horizontal : contribution relative TWSA, GLDAS, GWSA."""
+    """Signal decomposition: TWSA = GWSA (proxy) + GLDAS surface stores.
+
+    Two panels:
+      Top — time series overlay of TWSA, GLDAS, GWSA to show relative magnitudes
+      Bottom — horizontal bar with variability (σ) and % contribution
+    """
     obs = df[~df["is_imputed"]].copy()
 
-    # Écart-type de chaque composante (variabilité = "poids" du signal)
-    twsa_std = (obs["twsa_cm"] * 10).std()   # cm → mm
-    gldas_std = obs["gldas_anom_mm"].std()
-    gwsa_std = obs["gwsa_mm"].std()
+    twsa_mm = obs["twsa_cm"] * 10  # cm → mm
+    gldas_mm = obs["gldas_anom_mm"]
+    gwsa_mm = obs["gwsa_mm"]
 
-    labels = [
-        strings.get("gldas_bar_twsa", "TWSA (GRACE)"),
-        strings.get("gldas_bar_gldas", "Surface (GLDAS)"),
-        strings.get("gldas_bar_gwsa", "GWSA (proxy)"),
-    ]
-    values = [twsa_std, gldas_std, gwsa_std]
-    colors = [
-        config.COLORS["primary_light"],
-        config.COLORS["seasonal"],
-        config.COLORS["primary"],
-    ]
-
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        y=labels,
-        x=values,
-        orientation="h",
-        marker_color=colors,
-        text=[f"{v:.1f} mm" for v in values],
-        textposition="outside",
-        hovertemplate="%{y} : %{x:.1f} mm (σ)<extra></extra>",
-    ))
-
-    # Pourcentage GLDAS / TWSA
+    twsa_std = twsa_mm.std()
+    gldas_std = gldas_mm.std()
+    gwsa_std = gwsa_mm.std()
     pct_gldas = (gldas_std / twsa_std * 100) if twsa_std > 0 else 0
-    fig.add_annotation(
-        x=max(values) * 0.95,
-        y=1,
-        text=f"{pct_gldas:.0f}% of TWSA",
-        showarrow=False,
-        font=dict(size=11, color=config.COLORS["text_mid"]),
-        xanchor="right",
+    pct_gwsa = (gwsa_std / twsa_std * 100) if twsa_std > 0 else 0
+
+    fig = make_subplots(
+        rows=2, cols=1,
+        row_heights=[0.65, 0.35],
+        vertical_spacing=0.15,
+        subplot_titles=(
+            "TWSA vs GWSA vs GLDAS (mm)",
+            f"Variability σ (mm) — GLDAS = {pct_gldas:.0f}% of TWSA",
+        ),
     )
+
+    # ── Top panel: time series overlay ──
+    fig.add_trace(go.Scatter(
+        x=obs.index, y=twsa_mm,
+        mode="lines", name=strings.get("gldas_bar_twsa", "TWSA (GRACE)"),
+        line=dict(color=config.COLORS["primary_light"], width=1.8),
+        hovertemplate="%{x|%b %Y}: %{y:.1f} mm<extra>TWSA</extra>",
+    ), row=1, col=1)
+
+    fig.add_trace(go.Scatter(
+        x=obs.index, y=gwsa_mm,
+        mode="lines", name=strings.get("gldas_bar_gwsa", "GWSA (proxy)"),
+        line=dict(color=config.COLORS["primary"], width=2),
+        hovertemplate="%{x|%b %Y}: %{y:.1f} mm<extra>GWSA</extra>",
+    ), row=1, col=1)
+
+    fig.add_trace(go.Scatter(
+        x=obs.index, y=gldas_mm,
+        mode="lines", name=strings.get("gldas_bar_gldas", "Surface (GLDAS)"),
+        line=dict(color=config.COLORS["seasonal"], width=1.5, dash="dot"),
+        hovertemplate="%{x|%b %Y}: %{y:.1f} mm<extra>GLDAS</extra>",
+    ), row=1, col=1)
+
+    fig.add_hline(y=0, line_dash="dot", line_color=config.COLORS["text_light"],
+                  line_width=0.6, row=1, col=1)
+
+    # ── Bottom panel: horizontal bars with σ ──
+    bar_labels = [
+        strings.get("gldas_bar_twsa", "TWSA (GRACE)"),
+        strings.get("gldas_bar_gwsa", "GWSA (proxy)"),
+        strings.get("gldas_bar_gldas", "Surface (GLDAS)"),
+    ]
+    bar_values = [twsa_std, gwsa_std, gldas_std]
+    bar_colors = [
+        config.COLORS["primary_light"],
+        config.COLORS["primary"],
+        config.COLORS["seasonal"],
+    ]
+    bar_pcts = [100.0, pct_gwsa, pct_gldas]
+
+    fig.add_trace(go.Bar(
+        y=bar_labels, x=bar_values,
+        orientation="h", marker_color=bar_colors,
+        text=[f"σ = {v:.1f} mm ({p:.0f}%)" for v, p in zip(bar_values, bar_pcts)],
+        textposition="outside",
+        hovertemplate="%{y}: σ = %{x:.1f} mm<extra></extra>",
+        showlegend=False,
+    ), row=2, col=1)
 
     fig.update_layout(
         template="plotly_white",
-        font=dict(family="Inter, system-ui, sans-serif", size=13,
+        font=dict(family="Inter, system-ui, sans-serif", size=12,
                   color=config.COLORS["text"]),
-        margin=dict(l=120, r=60, t=20, b=30),
-        height=220,
-        xaxis_title=strings.get("gldas_bar_xaxis", "Variability σ (mm)"),
-        showlegend=False,
-        hovermode="y unified",
+        margin=dict(l=60, r=80, t=30, b=20),
+        height=380,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02,
+                    xanchor="left", x=0, font_size=10),
+        hovermode="x unified",
     )
+    # Style subplot titles
+    for ann in fig.layout.annotations:
+        ann.font = dict(size=10, color=config.COLORS["text_mid"])
+
+    fig.update_yaxes(title_text="mm", row=1, col=1, title_font_size=10)
+    fig.update_xaxes(row=2, col=1, range=[0, twsa_std * 1.4])
+
     return fig
 
 
+def _get_mascon_cells(poly) -> list[dict]:
+    """Identify real ~3° mascon cells that intersect the SASS polygon.
+
+    JPL mascons are ~3 arc-degree equal-area cells.  The NetCDF stores
+    data on a 0.5° grid, but adjacent 0.5° pixels sharing the same
+    mascon_ID belong to the same physical mascon.  This function groups
+    them and returns bounding boxes of each real mascon cell.
+    """
+    from shapely.geometry import box as shapely_box
+
+    nc_path = config.MASCON_NC_PATH
+    if not nc_path.exists():
+        return []
+
+    ds = xr.open_dataset(nc_path)
+    ds = ds.assign_coords(lon=(((ds.lon + 180) % 360) - 180)).sortby("lon")
+    mascon_ids = ds["mascon_ID"].sel(
+        lat=slice(config.BBOX_LAT_MIN, config.BBOX_LAT_MAX),
+        lon=slice(config.BBOX_LON_MIN, config.BBOX_LON_MAX),
+    )
+    lats = mascon_ids.lat.values
+    lons = mascon_ids.lon.values
+    ids = mascon_ids.values
+    ds.close()
+
+    unique_ids = np.unique(ids[~np.isnan(ids)])
+    cells = []
+    for mid in unique_ids:
+        mask = ids == mid
+        lat_idx, lon_idx = np.where(mask)
+        lat_min = lats[lat_idx].min() - 0.25
+        lat_max = lats[lat_idx].max() + 0.25
+        lon_min = lons[lon_idx].min() - 0.25
+        lon_max = lons[lon_idx].max() + 0.25
+
+        mascon_box = shapely_box(lon_min, lat_min, lon_max, lat_max)
+        if mascon_box.intersects(poly):
+            overlap = mascon_box.intersection(poly).area / mascon_box.area
+            if overlap > 0.05:  # skip barely touching cells
+                cells.append({
+                    "id": int(mid),
+                    "lon_min": lon_min, "lon_max": lon_max,
+                    "lat_min": lat_min, "lat_max": lat_max,
+                    "overlap": overlap,
+                })
+    return cells
+
+
 def make_aoi_map(strings: dict) -> go.Figure:
-    """Carte géographique : emprise SASS + grille mascon + villes repères."""
+    """Carte cartographique professionnelle : SASS + mascons réels (~3°).
+
+    Affiche les véritables cellules mascon JPL (~3 arc-degrés) qui
+    intersectent le polygone SASS, sur fond Natural Earth.
+    """
     fig = go.Figure()
 
     aoi = gpd.read_file(config.AOI_GEOJSON)
     poly = aoi.geometry.iloc[0]
 
-    # ── Polygone SASS (remplissage léger) ──
+    # ── 1. Real mascon cells (~3° each) ──
+    mascon_cells = _get_mascon_cells(poly)
+    for i, cell in enumerate(mascon_cells):
+        is_first = (i == 0)
+        # Rectangle outline for each mascon
+        rect_lons = [cell["lon_min"], cell["lon_max"], cell["lon_max"],
+                     cell["lon_min"], cell["lon_min"]]
+        rect_lats = [cell["lat_min"], cell["lat_min"], cell["lat_max"],
+                     cell["lat_max"], cell["lat_min"]]
+
+        # Color intensity by overlap percentage
+        alpha = 0.06 + 0.14 * cell["overlap"]  # 6-20%
+        fill_c = f"rgba(74, 144, 164, {alpha:.2f})"
+
+        fig.add_trace(go.Scattergeo(
+            lon=rect_lons, lat=rect_lats,
+            mode="lines",
+            line=dict(width=0.8, color="rgba(0,0,0,0.20)"),
+            fill="toself",
+            fillcolor=fill_c,
+            name=f"Mascon ~3° ({len(mascon_cells)} cells)" if is_first else "",
+            legendgroup="mascon",
+            showlegend=is_first,
+            hovertemplate=(
+                f"Mascon #{cell['id']}<br>"
+                f"{cell['lon_min']:.1f}–{cell['lon_max']:.1f}°E, "
+                f"{cell['lat_min']:.1f}–{cell['lat_max']:.1f}°N<br>"
+                f"SASS overlap: {cell['overlap']*100:.0f}%"
+                "<extra></extra>"
+            ),
+        ))
+
+    # ── 2. SASS boundary polygon ──
     coords = list(poly.exterior.coords)
     lons_aoi = [c[0] for c in coords]
     lats_aoi = [c[1] for c in coords]
@@ -471,46 +596,14 @@ def make_aoi_map(strings: dict) -> go.Figure:
     fig.add_trace(go.Scattergeo(
         lon=lons_aoi, lat=lats_aoi,
         mode="lines",
-        line=dict(width=3, color="#3D4F2F"),
+        line=dict(width=2.8, color="#1B3A4B"),
         fill="toself",
-        fillcolor="rgba(163, 177, 138, 0.25)",
+        fillcolor="rgba(200, 210, 218, 0.25)",
         name="SASS / NWSAS",
-        hoverinfo="name",
+        hovertemplate="SASS<br>%{lon:.2f}°E, %{lat:.2f}°N<extra></extra>",
     ))
 
-    # ── Grille mascon 0.5° (si NetCDF disponible) ──
-    nc_path = config.MASCON_NC_PATH
-    if nc_path.exists():
-        ds = xr.open_dataset(nc_path)
-        ds = ds.assign_coords(lon=(((ds.lon + 180) % 360) - 180)).sortby("lon")
-        mascon_ids = ds["mascon_ID"].sel(
-            lat=slice(config.BBOX_LAT_MIN, config.BBOX_LAT_MAX),
-            lon=slice(config.BBOX_LON_MIN, config.BBOX_LON_MAX),
-        )
-        lats = mascon_ids.lat.values
-        lons = mascon_ids.lon.values
-
-        # Dessiner les lignes de grille horizontales
-        for lat_val in lats:
-            fig.add_trace(go.Scattergeo(
-                lon=[lons[0] - 0.25, lons[-1] + 0.25],
-                lat=[lat_val - 0.25, lat_val - 0.25],
-                mode="lines",
-                line=dict(width=0.5, color="rgba(0,0,0,0.12)"),
-                hoverinfo="skip", showlegend=False,
-            ))
-        # Dessiner les lignes de grille verticales
-        for lon_val in lons:
-            fig.add_trace(go.Scattergeo(
-                lon=[lon_val - 0.25, lon_val - 0.25],
-                lat=[lats[0] - 0.25, lats[-1] + 0.25],
-                mode="lines",
-                line=dict(width=0.5, color="rgba(0,0,0,0.12)"),
-                hoverinfo="skip", showlegend=False,
-            ))
-        ds.close()
-
-    # ── Villes repères ──
+    # ── 3. Cities ──
     cities = [
         {"name": "Ouargla", "lon": 5.33, "lat": 31.95},
         {"name": "Ghardaïa", "lon": 3.67, "lat": 32.49},
@@ -522,36 +615,58 @@ def make_aoi_map(strings: dict) -> go.Figure:
         lon=[c["lon"] for c in cities],
         lat=[c["lat"] for c in cities],
         mode="markers+text",
-        marker=dict(size=7, color="#0F172A", symbol="circle",
-                    line=dict(width=1.5, color="white")),
+        marker=dict(
+            size=6, color="#0F172A", symbol="circle",
+            line=dict(width=1.2, color="white"),
+        ),
         text=[c["name"] for c in cities],
         textposition="top center",
-        textfont=dict(size=10, color="#0F172A", family="Inter, sans-serif"),
-        name="Cities",
+        textfont=dict(size=9, color="#1A2526", family="Inter, sans-serif"),
+        name=strings.get("map_cities", "Cities"),
         hovertemplate="%{text}<br>%{lon:.2f}°E, %{lat:.2f}°N<extra></extra>",
     ))
 
+    # ── 4. Geographic base map (Natural Earth) ──
+    center_lon = (config.BBOX_LON_MIN + config.BBOX_LON_MAX) / 2
+    center_lat = (config.BBOX_LAT_MIN + config.BBOX_LAT_MAX) / 2
+
     fig.update_geos(
-        fitbounds="locations",
-        showland=True, landcolor="#F5F5F0",
-        showocean=True, oceancolor="#E8F4FD",
-        showlakes=False,
-        showcountries=True, countrycolor="#999999",
-        countrywidth=1,
-        showcoastlines=True, coastlinecolor="#AAAAAA",
-        projection_type="natural earth",
-        lonaxis=dict(showgrid=True, gridwidth=0.5, gridcolor="rgba(0,0,0,0.08)",
-                     dtick=5),
-        lataxis=dict(showgrid=True, gridwidth=0.5, gridcolor="rgba(0,0,0,0.08)",
-                     dtick=5),
+        projection_type="mercator",
+        center=dict(lon=center_lon, lat=center_lat),
+        lonaxis=dict(
+            range=[config.BBOX_LON_MIN - 2, config.BBOX_LON_MAX + 2],
+            showgrid=True, gridwidth=0.4,
+            gridcolor="rgba(0,0,0,0.08)", dtick=5,
+        ),
+        lataxis=dict(
+            range=[config.BBOX_LAT_MIN - 2, config.BBOX_LAT_MAX + 2],
+            showgrid=True, gridwidth=0.4,
+            gridcolor="rgba(0,0,0,0.08)", dtick=5,
+        ),
+        showland=True, landcolor="#F0F0EC",
+        showocean=True, oceancolor="#DCEAF7",
+        showlakes=True, lakecolor="#DCEAF7",
+        showcountries=True, countrycolor="#AAAAAA", countrywidth=0.8,
+        showcoastlines=True, coastlinecolor="#999999", coastlinewidth=0.8,
+        showsubunits=False,
+        showrivers=False,
+        bgcolor="rgba(0,0,0,0)",
     )
 
+    # ── 5. Layout ──
     fig.update_layout(
-        margin=dict(l=0, r=0, t=10, b=0),
-        height=500,
-        showlegend=False,
-        font=dict(family="Inter, system-ui, sans-serif", size=12,
+        margin=dict(l=0, r=0, t=0, b=0),
+        height=460,
+        font=dict(family="Inter, system-ui, sans-serif", size=11,
                   color=config.COLORS["text"]),
+        showlegend=True,
+        legend=dict(
+            orientation="h", yanchor="top", y=-0.02,
+            xanchor="center", x=0.5, font_size=9,
+            bgcolor="rgba(255,255,255,0.85)",
+            bordercolor="rgba(0,0,0,0.1)", borderwidth=1,
+        ),
+        paper_bgcolor="rgba(0,0,0,0)",
     )
 
     return fig
@@ -911,5 +1026,118 @@ def make_multi_scenario_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
         margin=dict(l=60, r=20, t=40, b=40),
         hovermode="x unified",
         height=380,
+    )
+    return fig
+
+
+# ── Données et figures supplémentaires ──────────────────────────
+
+def compute_scenario_comparison(df: pd.DataFrame) -> list[dict]:
+    """Comparaison annuelle des 3 scénarios sur 5 ans (pour le template)."""
+    multi = build_multi_scenarios(
+        gwsa_mm=df["gwsa_mm"],
+        is_imputed=df["is_imputed"],
+        validated_mae_mm=6.1,
+    )
+    area_m2 = compute_aoi_area_m2(config.AOI_GEOJSON)
+
+    rows = []
+    for label, sc_df in [
+        ("central", multi["central_df"]),
+        ("dry", multi["dry_df"]),
+        ("wet", multi["wet_df"]),
+    ]:
+        annual = sc_df.groupby(sc_df["ds"].dt.year)["yhat"].mean()
+        for year, val_mm in annual.items():
+            val_cm = val_mm / 10.0
+            val_km3 = val_mm * area_m2 / 1e12
+            rows.append({
+                "scenario": label,
+                "year": int(year),
+                "mm": f"{val_mm:.0f}",
+                "cm": f"{val_cm:.1f}",
+                "km3": f"{val_km3:.1f}",
+            })
+    return rows
+
+
+def make_expert_scenario_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
+    """Vue Expert : 3 scénarios détaillés avec bandes IC pour chaque scénario."""
+    multi = build_multi_scenarios(
+        gwsa_mm=df["gwsa_mm"],
+        is_imputed=df["is_imputed"],
+        validated_mae_mm=6.1,
+    )
+    central_df = multi["central_df"]
+    dry_df = multi["dry_df"]
+    wet_df = multi["wet_df"]
+    last_obs_date = multi["last_obs_date"]
+    cutoff_date = multi["cutoff_date"]
+
+    obs = df[~df["is_imputed"]].copy()
+    obs_start = last_obs_date - pd.DateOffset(years=8)
+    obs_recent = obs.loc[obs_start:]
+
+    fig = go.Figure()
+
+    # Full observation history
+    fig.add_trace(go.Scatter(
+        x=obs_recent.index, y=obs_recent["gwsa_mm"],
+        mode="lines",
+        name=strings.get("ts_observed", "Observed"),
+        line=dict(color=config.COLORS["primary"], width=2),
+        hovertemplate="%{x|%b %Y}: %{y:.1f} mm<extra></extra>",
+    ))
+
+    # CI bands + lines for each scenario
+    scenario_specs = [
+        (central_df, config.COLORS["primary_light"], "scenario_central", "Trend continuation"),
+        (dry_df, config.COLORS["scenario_dry"], "scenario_dry_label", "Dry years"),
+        (wet_df, config.COLORS["scenario_wet"], "scenario_wet_label", "Enhanced management"),
+    ]
+    for sc_df, color, name_key, default_name in scenario_specs:
+        # Convert hex color to rgba for fill
+        if color.startswith("#"):
+            r, g, b = int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16)
+            fill_color = f"rgba({r},{g},{b},0.08)"
+        else:
+            fill_color = config.COLORS["primary_bg"]
+
+        fig.add_trace(go.Scatter(
+            x=pd.concat([sc_df["ds"], sc_df["ds"][::-1]]),
+            y=pd.concat([sc_df["yhat_upper"], sc_df["yhat_lower"][::-1]]),
+            fill="toself", fillcolor=fill_color,
+            line=dict(width=0), showlegend=False, hoverinfo="skip",
+        ))
+        fig.add_trace(go.Scatter(
+            x=sc_df["ds"], y=sc_df["yhat"],
+            mode="lines",
+            name=strings.get(name_key, default_name),
+            line=dict(color=color,
+                      width=2.5 if "central" in name_key else 2,
+                      dash="solid" if "central" in name_key else "dash"),
+            hovertemplate="%{x|%b %Y}: %{y:.1f} mm<extra></extra>",
+        ))
+
+    fig.add_vline(
+        x=cutoff_date,
+        line=dict(color=config.COLORS["text_light"], width=1, dash="dashdot"),
+        annotation_text=strings.get("forecast_cutoff", "Validated limit"),
+        annotation_position="top right",
+        annotation_font_size=10,
+        annotation_font_color=config.COLORS["text_mid"],
+    )
+
+    fig.update_layout(
+        yaxis_title=strings.get("scenario_ylabel", "GWSA anomaly (mm)"),
+        xaxis_title=None,
+        template="plotly_white",
+        font=dict(family="Inter, system-ui, sans-serif", size=13,
+                  color=config.COLORS["text"]),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02,
+                    xanchor="left", x=0, font_size=11),
+        margin=dict(l=60, r=20, t=40, b=40),
+        hovermode="x unified",
+        height=420,
     )
     return fig

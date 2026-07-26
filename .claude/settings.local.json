@@ -13,7 +13,8 @@
       "Bash(find /c/Users/user/Desktop/grace-sass -type f -name *.nc)",
       "Bash(ncdump -h data/raw/mascon_cri.nc)",
       "Bash(/c/Users/user/Desktop/grace-sass/README_MASCON_HEATMAP.txt:*)",
-      "Bash(/c/Users/user/Desktop/grace-sass/DELIVERABLES.txt:*)"
+      "Bash(/c/Users/user/Desktop/grace-sass/DELIVERABLES.txt:*)",
+      "WebSearch"
     ]
   }
 }

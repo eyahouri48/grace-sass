@@ -189,5 +189,26 @@
   "insight_strip_trend": "Basin-scale indicator",
   "insight_strip_governance": "Governance-ready unit",
   "insight_strip_forecast": "Forecast with uncertainty",
-  "insight_strip_transparency": "Data gap transparency"
+  "insight_strip_transparency": "Data gap transparency",
+
+  "map_cities": "Reference cities",
+
+  "scenario_table_title": "5-year scenario comparison (LWE)",
+  "scenario_table_year": "Year",
+  "scenario_table_central": "Trend continuation",
+  "scenario_table_dry": "Dry years",
+  "scenario_table_wet": "Enhanced management",
+  "scenario_table_unit": "cm",
+
+  "expert_scenario_title": "Detailed scenario analysis with confidence intervals",
+  "expert_scenario_context": "Three scenarios projected over 60 months. Each scenario shows its own prediction interval. The dry-year scenario assumes 50% acceleration of the current decline; enhanced management assumes 50% reduction.",
+
+  "expert_gldas_title": "Signal decomposition: GRACE vs GLDAS contribution",
+  "expert_gldas_context": "GWSA is derived as TWSA (GRACE) minus GLDAS surface stores (soil moisture, SWE, canopy). On the SASS, the surface correction is small: GLDAS accounts for less than 15% of total signal variability, confirming that the GWSA proxy inherits most of its signal from GRACE total water storage. This is consistent with the fossil character of the aquifer — minimal surface water dynamics.",
+  "expert_annual_title": "Annual mean anomaly — observed months only",
+  "expert_trend_title": "Trend analysis: two methods converge",
+  "expert_forecast_title": "Forecast milestones",
+
+  "section_expert_scenarios": "Scenarios & Forecast",
+  "section_expert_decomposition": "Signal Decomposition"
 }

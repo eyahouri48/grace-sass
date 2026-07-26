@@ -133,11 +133,17 @@
         .ui-card .js-plotly-plot, .ui-card .plotly { width: 100% !important; }
         .panel-context { font-size: 0.75rem; color: var(--c-text-mid); line-height: 1.5; max-width: 720px; margin-bottom: 10px; }
 
-        /* ── INSIGHT STRIP (replaces decision bullets) ── */
+        /* ── INSIGHT STRIP (professional markers) ─────── */
         .insight-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
         @media (max-width: 768px) { .insight-strip { grid-template-columns: 1fr 1fr; } }
-        .insight-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--c-primary-bg); border-radius: 6px; border: 1px solid var(--c-border); }
-        .insight-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .insight-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--c-primary-bg); border-radius: 6px; border: 1px solid var(--c-border); }
+        .insight-marker {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        }
+        .insight-marker.m-trend { background: var(--c-primary); }
+        .insight-marker.m-governance { background: var(--c-positive); }
+        .insight-marker.m-forecast { background: var(--c-primary-accent); }
+        .insight-marker.m-transparency { background: var(--c-text-light); }
         .insight-label { font-size: 0.7rem; font-weight: 600; color: var(--c-text-mid); line-height: 1.3; }
 
         /* ── GRID LAYOUTS ──────────────────────────────── */
@@ -146,22 +152,43 @@
         @media (max-width: 768px) { .grid-2-cols, .grid-3-2 { grid-template-columns: 1fr; } }
 
         /* ── MINI BAR ──────────────────────────────────── */
-        .mini-bar-title { font-size: 0.72rem; font-weight: 700; color: var(--c-text-mid); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 20px; margin-bottom: 4px; }
+        .mini-bar-title { font-size: 0.72rem; font-weight: 700; color: var(--c-text-mid); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
 
         /* ── FORECAST QUALITY BADGE ─────────────────────── */
         .forecast-quality { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #EBF5FF; border: 1px solid #BFDBFE; border-radius: 4px; font-size: 0.66rem; font-weight: 600; color: #1E40AF; margin-top: 8px; }
 
-        /* ── DSS ITEMS ─────────────────────────────────── */
+        /* ── DSS ITEMS (professional markers) ──────────── */
         .summary-list { display: flex; flex-direction: column; gap: 10px; }
         .dss-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; background-color: #F7FAFC; border-radius: 8px; border: 1px solid var(--c-border); position: relative; }
         .dss-item.gray-bg { background-color: #EDF2F7; border-color: #CBD5E1; }
         .dss-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         @media (max-width: 600px) { .dss-grid-2 { grid-template-columns: 1fr; } }
-        .badge-new { background-color: #0D9488; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; margin-top: 2px; }
-        .dss-icon-box { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px; }
-        .dss-icon-box svg { width: 20px; height: 20px; }
+        .dss-marker {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
+            border: 2px solid;
+        }
+        .dss-marker.m-alert { background: var(--c-alert); border-color: var(--c-alert); }
+        .dss-marker.m-blue { background: #2563EB; border-color: #2563EB; }
+        .dss-marker.m-green { background: var(--c-positive); border-color: var(--c-positive); }
+        .dss-marker.m-purple { background: #7C3AED; border-color: #7C3AED; }
         .dss-text-body { font-size: 0.76rem; color: #334155; line-height: 1.4; flex-grow: 1; }
         .dss-text-body strong { color: #0F172A; font-weight: 700; }
+
+        /* ── SCENARIO COMPARISON TABLE ─────────────────── */
+        .scenario-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; margin-top: 8px; }
+        .scenario-table th { background: var(--c-primary-bg); color: var(--c-primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.62rem; padding: 6px 8px; text-align: center; border-bottom: 2px solid var(--c-border); }
+        .scenario-table td { padding: 5px 8px; text-align: center; border-bottom: 1px solid var(--c-border); font-variant-numeric: tabular-nums; }
+        .scenario-table .sc-central { color: var(--c-primary); font-weight: 600; }
+        .scenario-table .sc-dry { color: var(--c-alert); font-weight: 600; }
+        .scenario-table .sc-wet { color: var(--c-positive); font-weight: 600; }
+        .scenario-table .sc-label { text-align: left; font-weight: 600; font-size: 0.66rem; }
+
+        /* ── DATA TABLES (expert) ──────────────────────── */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+        .data-table th { background: var(--c-primary-bg); color: var(--c-primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.62rem; padding: 6px 10px; text-align: left; border-bottom: 2px solid var(--c-border); }
+        .data-table td { padding: 5px 10px; border-bottom: 1px solid var(--c-border); font-variant-numeric: tabular-nums; }
+        .data-table .zone-validated { color: var(--c-positive); font-weight: 600; }
+        .data-table .zone-extrapolation { color: var(--c-warn); font-weight: 600; }
 
         /* ── ACCORDION ─────────────────────────────────── */
         .accordion-header {
@@ -219,11 +246,11 @@
             </span>
             <h1 class="main-title">
                 <span class="lang-en">NORTH-WESTERN SAHARA AQUIFER SYSTEM : SASS</span>
-                <span class="lang-fr">SYSTÈME AQUIFÈRE DU SAHARA SEPTENTRIONAL : SASS</span>
+                <span class="lang-fr">SYST&Egrave;ME AQUIF&Egrave;RE DU SAHARA SEPTENTRIONAL : SASS</span>
             </h1>
             <span class="app-tag">
                 <span class="lang-en">DECISION-SUPPORT TOOL</span>
-                <span class="lang-fr">OUTIL D'AIDE À LA DÉCISION</span>
+                <span class="lang-fr">OUTIL D'AIDE &Agrave; LA D&Eacute;CISION</span>
             </span>
         </div>
     </div>
@@ -231,7 +258,7 @@
         <div class="status-item">
             <span class="status-label">
                 <span class="lang-en">LAST UPDATE:</span>
-                <span class="lang-fr">DERNIÈRE MAJ :</span>
+                <span class="lang-fr">DERNI&Egrave;RE MAJ :</span>
             </span>
             <span class="status-val">{{ last_update_date }}</span>
             <span class="badge-sync">SYNC: OK &#10003;</span>
@@ -274,8 +301,8 @@
 <div class="disclaimer-banner">
     <div class="disclaimer-icon">&#9888;</div>
     <div class="disclaimer-content">
-        <span class="lang-en"><strong>{{ strings_en.proxy_warning_title }}</strong> — {{ strings_en.proxy_warning_text }}</span>
-        <span class="lang-fr"><strong>{{ strings_fr.proxy_warning_title }}</strong> — {{ strings_fr.proxy_warning_text }}</span>
+        <span class="lang-en"><strong>{{ strings_en.proxy_warning_title }}</strong> &mdash; {{ strings_en.proxy_warning_text }}</span>
+        <span class="lang-fr"><strong>{{ strings_fr.proxy_warning_title }}</strong> &mdash; {{ strings_fr.proxy_warning_text }}</span>
     </div>
 </div>
 
@@ -300,8 +327,8 @@
                 </svg>
             </div>
             <span class="kpi-subtext">
-                <span class="lang-en">{{ strings_en.kpi_trend_rate_unit }} — <span class="tt">Sen's slope<span class="tt-text">{{ strings_en.tooltip_mk }}</span></span></span>
-                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_unit }} — <span class="tt">Pente de Sen<span class="tt-text">{{ strings_fr.tooltip_mk }}</span></span></span>
+                <span class="lang-en">{{ strings_en.kpi_trend_rate_unit }} &mdash; <span class="tt">Sen's slope<span class="tt-text">{{ strings_en.tooltip_mk }}</span></span></span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_rate_unit }} &mdash; <span class="tt">Pente de Sen<span class="tt-text">{{ strings_fr.tooltip_mk }}</span></span></span>
             </span>
             <div class="kpi-interp {{ kpi_interp_key }}">
                 <span class="lang-en">{{ strings_en["kpi_interpretation_" + kpi_interp_key] }}</span>
@@ -319,8 +346,8 @@
                 <span class="kpi-value text-purple">{{ kpi_trend_vol }}</span>
             </div>
             <span class="kpi-subtext">
-                <span class="lang-en">{{ strings_en.kpi_trend_vol_unit }} — over ~{{ area_km2 }} km²</span>
-                <span class="lang-fr">{{ strings_fr.kpi_trend_vol_unit }} — sur ~{{ area_km2 }} km²</span>
+                <span class="lang-en">{{ strings_en.kpi_trend_vol_unit }} &mdash; over ~{{ area_km2 }} km&sup2;</span>
+                <span class="lang-fr">{{ strings_fr.kpi_trend_vol_unit }} &mdash; sur ~{{ area_km2 }} km&sup2;</span>
             </span>
             <div class="kpi-delta">
                 <span class="lang-en">{{ kpi_delta_month }} mm {{ strings_en.kpi_vs_prev_month }}</span>
@@ -343,7 +370,7 @@
             </div>
             <span class="kpi-subtext">
                 <span class="tt"><span class="lang-en">z-score</span><span class="lang-fr">z-score</span><span class="tt-text"><span class="lang-en">{{ strings_en.tooltip_zscore }}</span><span class="lang-fr">{{ strings_fr.tooltip_zscore }}</span></span></span> {{ kpi_zscore }}
-                · {{ kpi_rank }}<span class="lang-en">{{ strings_en.kpi_rank_suffix }}</span><span class="lang-fr">{{ strings_fr.kpi_rank_suffix }}</span>
+                &middot; {{ kpi_rank }}<span class="lang-en">{{ strings_en.kpi_rank_suffix }}</span><span class="lang-fr">{{ strings_fr.kpi_rank_suffix }}</span>
             </span>
             <div class="kpi-delta">
                 <span class="lang-en">{{ kpi_delta_year }} mm {{ strings_en.kpi_vs_prev_year }}</span>
@@ -414,31 +441,31 @@
                     <span class="lang-fr">{{ strings_fr.ts_title }}</span>
                 </h3>
                 <div class="chart-box">{{ fig_timeseries | safe }}</div>
-                <!-- Insight strip: 4 compact visual items -->
+                <!-- Insight strip: 4 compact items with colored dots -->
                 <div class="insight-strip">
                     <div class="insight-item">
-                        <span class="insight-icon">&#128202;</span>
+                        <span class="insight-marker m-trend"></span>
                         <span class="insight-label">
                             <span class="lang-en">{{ strings_en.insight_strip_trend }}</span>
                             <span class="lang-fr">{{ strings_fr.insight_strip_trend }}</span>
                         </span>
                     </div>
                     <div class="insight-item">
-                        <span class="insight-icon">&#127760;</span>
+                        <span class="insight-marker m-governance"></span>
                         <span class="insight-label">
                             <span class="lang-en">{{ strings_en.insight_strip_governance }}</span>
                             <span class="lang-fr">{{ strings_fr.insight_strip_governance }}</span>
                         </span>
                     </div>
                     <div class="insight-item">
-                        <span class="insight-icon">&#128200;</span>
+                        <span class="insight-marker m-forecast"></span>
                         <span class="insight-label">
                             <span class="lang-en">{{ strings_en.insight_strip_forecast }}</span>
                             <span class="lang-fr">{{ strings_fr.insight_strip_forecast }}</span>
                         </span>
                     </div>
                     <div class="insight-item">
-                        <span class="insight-icon">&#128269;</span>
+                        <span class="insight-marker m-transparency"></span>
                         <span class="insight-label">
                             <span class="lang-en">{{ strings_en.insight_strip_transparency }}</span>
                             <span class="lang-fr">{{ strings_fr.insight_strip_transparency }}</span>
@@ -448,7 +475,7 @@
             </div>
         </section>
 
-        <!-- SECTION 2 : OUTLOOK — SCENARIOS + MINI BAR -->
+        <!-- SECTION 2 : OUTLOOK — SCENARIOS + COMPARISON TABLE + MINI BAR -->
         <section class="dashboard-section">
             <h2 class="section-title">
                 <span class="lang-en">{{ strings_en.section_outlook }}</span>
@@ -466,13 +493,63 @@
                     </p>
                     <div class="chart-box">{{ fig_multi_scenario | safe }}</div>
                     <div class="forecast-quality">
-                        &#9989;
-                        <span class="lang-en">{{ strings_en.forecast_mae_text }} · CI avg. ± {{ kpi_forecast_ci_avg }} mm</span>
-                        <span class="lang-fr">{{ strings_fr.forecast_mae_text }} · IC moy. ± {{ kpi_forecast_ci_avg }} mm</span>
+                        &#10003;
+                        <span class="lang-en">{{ strings_en.forecast_mae_text }} &middot; CI avg. &plusmn; {{ kpi_forecast_ci_avg }} mm</span>
+                        <span class="lang-fr">{{ strings_fr.forecast_mae_text }} &middot; IC moy. &plusmn; {{ kpi_forecast_ci_avg }} mm</span>
                     </div>
                 </div>
                 <div class="ui-card">
-                    <div class="mini-bar-title">
+                    <!-- Scenario comparison table (fills empty space above mini bar) -->
+                    <h3>
+                        <span class="lang-en">{{ strings_en.scenario_table_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.scenario_table_title }}</span>
+                    </h3>
+                    <table class="scenario-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.scenario_table_year }}</span>
+                                    <span class="lang-fr">{{ strings_fr.scenario_table_year }}</span>
+                                </th>
+                                <th class="sc-central">
+                                    <span class="lang-en">{{ strings_en.scenario_table_central }}</span>
+                                    <span class="lang-fr">{{ strings_fr.scenario_table_central }}</span>
+                                </th>
+                                <th class="sc-dry">
+                                    <span class="lang-en">{{ strings_en.scenario_table_dry }}</span>
+                                    <span class="lang-fr">{{ strings_fr.scenario_table_dry }}</span>
+                                </th>
+                                <th class="sc-wet">
+                                    <span class="lang-en">{{ strings_en.scenario_table_wet }}</span>
+                                    <span class="lang-fr">{{ strings_fr.scenario_table_wet }}</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set years_seen = [] %}
+                            {% for row in scenario_comparison %}
+                                {% if row.scenario == 'central' and row.year not in years_seen %}
+                                    {% set _ = years_seen.append(row.year) %}
+                                    <tr>
+                                        <td><strong>{{ row.year }}</strong></td>
+                                        <td class="sc-central">{{ row.cm }} cm</td>
+                                        {% for r2 in scenario_comparison %}
+                                            {% if r2.scenario == 'dry' and r2.year == row.year %}
+                                                <td class="sc-dry">{{ r2.cm }} cm</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% for r3 in scenario_comparison %}
+                                            {% if r3.scenario == 'wet' and r3.year == row.year %}
+                                                <td class="sc-wet">{{ r3.cm }} cm</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <!-- Mini bar chart -->
+                    <div class="mini-bar-title" style="margin-top: 18px;">
                         <span class="lang-en">{{ strings_en.decision_mini_bar_title }}</span>
                         <span class="lang-fr">{{ strings_fr.decision_mini_bar_title }}</span>
                     </div>
@@ -503,11 +580,7 @@
                     <div class="summary-list">
                         <!-- Item 1 : Monitoring -->
                         <div class="dss-item">
-                            <div class="dss-icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                                </svg>
-                            </div>
+                            <span class="dss-marker m-alert"></span>
                             <div class="dss-text-body">
                                 <div class="lang-en"><strong>{{ strings_en.decision_monitoring }}:</strong> {{ strings_en.decision_monitoring_text }}</div>
                                 <div class="lang-fr"><strong>{{ strings_fr.decision_monitoring }} :</strong> {{ strings_fr.decision_monitoring_text }}</div>
@@ -515,11 +588,7 @@
                         </div>
                         <!-- Item 2 : Anticipation -->
                         <div class="dss-item">
-                            <div class="dss-icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
-                                </svg>
-                            </div>
+                            <span class="dss-marker m-blue"></span>
                             <div class="dss-text-body">
                                 <div class="lang-en"><strong>{{ strings_en.decision_anticipation }}:</strong> {{ strings_en.decision_anticipation_text }}</div>
                                 <div class="lang-fr"><strong>{{ strings_fr.decision_anticipation }} :</strong> {{ strings_fr.decision_anticipation_text }}</div>
@@ -527,11 +596,7 @@
                         </div>
                         <!-- Item 3 : Dialogue -->
                         <div class="dss-item">
-                            <div class="dss-icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.12 2 9a7 7 0 0 1-7 7Zm0 0v-6"/>
-                                </svg>
-                            </div>
+                            <span class="dss-marker m-green"></span>
                             <div class="dss-text-body">
                                 <div class="lang-en"><strong>{{ strings_en.decision_dialogue }}:</strong> {{ strings_en.decision_dialogue_text }}</div>
                                 <div class="lang-fr"><strong>{{ strings_fr.decision_dialogue }} :</strong> {{ strings_fr.decision_dialogue_text }}</div>
@@ -540,11 +605,7 @@
                         <!-- Grid 2-col: Capitalisation + Limitations -->
                         <div class="dss-grid-2">
                             <div class="dss-item">
-                                <div class="dss-icon-box">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>
-                                    </svg>
-                                </div>
+                                <span class="dss-marker m-purple"></span>
                                 <div class="dss-text-body">
                                     <div class="lang-en"><strong>{{ strings_en.decision_capitalisation }}:</strong> {{ strings_en.decision_capitalisation_text }}</div>
                                     <div class="lang-fr"><strong>{{ strings_fr.decision_capitalisation }} :</strong> {{ strings_fr.decision_capitalisation_text }}</div>
@@ -569,12 +630,131 @@
     <!-- ============================================================ -->
     <div id="view-expert" class="view-panel">
 
-        <!-- STL DECOMPOSITION -->
+        <!-- EXPERT: DETAILED SCENARIOS -->
         <section class="dashboard-section">
             <h2 class="section-title">
-                <span class="lang-en">{{ strings_en.section_expert }}</span>
-                <span class="lang-fr">{{ strings_fr.section_expert }}</span>
+                <span class="lang-en">{{ strings_en.section_expert_scenarios }}</span>
+                <span class="lang-fr">{{ strings_fr.section_expert_scenarios }}</span>
             </h2>
+            <div class="ui-card">
+                <h3>
+                    <span class="lang-en">{{ strings_en.expert_scenario_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.expert_scenario_title }}</span>
+                </h3>
+                <p class="panel-context">
+                    <span class="lang-en">{{ strings_en.expert_scenario_context }}</span>
+                    <span class="lang-fr">{{ strings_fr.expert_scenario_context }}</span>
+                </p>
+                <div class="chart-box">{{ fig_expert_scenario | safe }}</div>
+            </div>
+
+            <!-- Trend table + Forecast milestones side by side -->
+            <div class="grid-2-cols" style="margin-top: 16px;">
+                <div class="ui-card">
+                    <h3>
+                        <span class="lang-en">{{ strings_en.expert_trend_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.expert_trend_title }}</span>
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.trend_table_method }}</span>
+                                    <span class="lang-fr">{{ strings_fr.trend_table_method }}</span>
+                                </th>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.trend_table_slope }}</span>
+                                    <span class="lang-fr">{{ strings_fr.trend_table_slope }}</span>
+                                </th>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.trend_table_ci }}</span>
+                                    <span class="lang-fr">{{ strings_fr.trend_table_ci }}</span>
+                                </th>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.trend_table_pvalue }}</span>
+                                    <span class="lang-fr">{{ strings_fr.trend_table_pvalue }}</span>
+                                </th>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.trend_table_slope_km3 }}</span>
+                                    <span class="lang-fr">{{ strings_fr.trend_table_slope_km3 }}</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong><span class="tt">OLS + HAC<span class="tt-text"><span class="lang-en">{{ strings_en.tooltip_hac }}</span><span class="lang-fr">{{ strings_fr.tooltip_hac }}</span></span></span></strong></td>
+                                <td>{{ trend_table.ols_slope_mm }}</td>
+                                <td>{{ trend_table.ols_ci }}</td>
+                                <td>{{ trend_table.ols_pvalue }}</td>
+                                <td>{{ trend_table.ols_slope_km3 }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong><span class="tt">Sen's slope<span class="tt-text"><span class="lang-en">{{ strings_en.tooltip_mk }}</span><span class="lang-fr">{{ strings_fr.tooltip_mk }}</span></span></span></strong></td>
+                                <td>{{ trend_table.sen_slope_mm }}</td>
+                                <td>{{ trend_table.sen_ci }}</td>
+                                <td>{{ trend_table.sen_pvalue }}</td>
+                                <td>{{ trend_table.sen_slope_km3 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="ui-card">
+                    <h3>
+                        <span class="lang-en">{{ strings_en.expert_forecast_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.expert_forecast_title }}</span>
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.forecast_table_horizon }}</span>
+                                    <span class="lang-fr">{{ strings_fr.forecast_table_horizon }}</span>
+                                </th>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.forecast_table_date }}</span>
+                                    <span class="lang-fr">{{ strings_fr.forecast_table_date }}</span>
+                                </th>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.forecast_table_yhat }}</span>
+                                    <span class="lang-fr">{{ strings_fr.forecast_table_yhat }}</span>
+                                </th>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.forecast_table_ci }}</span>
+                                    <span class="lang-fr">{{ strings_fr.forecast_table_ci }}</span>
+                                </th>
+                                <th>
+                                    <span class="lang-en">{{ strings_en.forecast_table_zone }}</span>
+                                    <span class="lang-fr">{{ strings_fr.forecast_table_zone }}</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in forecast_milestones %}
+                            <tr>
+                                <td><strong>{{ m.horizon }} mo.</strong></td>
+                                <td>{{ m.date }}</td>
+                                <td>{{ m.yhat }}</td>
+                                <td>{{ m.ci }}</td>
+                                <td class="{{ 'zone-validated' if m.zone == 'validated' else 'zone-extrapolation' }}">
+                                    <span class="lang-en">{{ strings_en["forecast_zone_" + m.zone] }}</span>
+                                    <span class="lang-fr">{{ strings_fr["forecast_zone_" + m.zone] }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXPERT: SIGNAL DECOMPOSITION -->
+        <section class="dashboard-section">
+            <h2 class="section-title">
+                <span class="lang-en">{{ strings_en.section_expert_decomposition }}</span>
+                <span class="lang-fr">{{ strings_fr.section_expert_decomposition }}</span>
+            </h2>
+
+            <!-- STL DECOMPOSITION -->
             <div class="ui-card">
                 <h3>
                     <span class="lang-en">{{ strings_en.stl_title }}</span>
@@ -586,20 +766,44 @@
                 </p>
                 <div class="chart-box">{{ fig_stl | safe }}</div>
             </div>
-        </section>
 
-        <!-- SEASONAL BAR -->
-        <section class="dashboard-section">
-            <div class="ui-card">
+            <!-- SEASONAL BAR + GLDAS CONTRIBUTION side by side -->
+            <div class="grid-2-cols" style="margin-top: 16px;">
+                <div class="ui-card">
+                    <h3>
+                        <span class="lang-en">{{ strings_en.seasonal_bar_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.seasonal_bar_title }}</span>
+                    </h3>
+                    <p class="panel-context">
+                        <span class="lang-en"><span class="tt">STL<span class="tt-text">{{ strings_en.tooltip_stl }}</span></span> {{ strings_en.stl_amplitude }}: {{ seasonal_amplitude_mm }} mm. {{ strings_en.seasonal_bar_context }}</span>
+                        <span class="lang-fr"><span class="tt">STL<span class="tt-text">{{ strings_fr.tooltip_stl }}</span></span> {{ strings_fr.stl_amplitude }} : {{ seasonal_amplitude_mm }} mm. {{ strings_fr.seasonal_bar_context }}</span>
+                    </p>
+                    <div class="chart-box">{{ fig_seasonal_bar | safe }}</div>
+                </div>
+                <div class="ui-card">
+                    <h3>
+                        <span class="lang-en">{{ strings_en.expert_gldas_title }}</span>
+                        <span class="lang-fr">{{ strings_fr.expert_gldas_title }}</span>
+                    </h3>
+                    <p class="panel-context">
+                        <span class="lang-en">{{ strings_en.expert_gldas_context }}</span>
+                        <span class="lang-fr">{{ strings_fr.expert_gldas_context }}</span>
+                    </p>
+                    <div class="chart-box">{{ fig_gldas | safe }}</div>
+                </div>
+            </div>
+
+            <!-- ANNUAL BAR -->
+            <div class="ui-card" style="margin-top: 16px;">
                 <h3>
-                    <span class="lang-en">{{ strings_en.seasonal_bar_title }}</span>
-                    <span class="lang-fr">{{ strings_fr.seasonal_bar_title }}</span>
+                    <span class="lang-en">{{ strings_en.expert_annual_title }}</span>
+                    <span class="lang-fr">{{ strings_fr.expert_annual_title }}</span>
                 </h3>
                 <p class="panel-context">
-                    <span class="lang-en"><span class="tt">STL<span class="tt-text">{{ strings_en.tooltip_stl }}</span></span> {{ strings_en.stl_amplitude }}: {{ seasonal_amplitude_mm }} mm. {{ strings_en.seasonal_bar_context }}</span>
-                    <span class="lang-fr"><span class="tt">STL<span class="tt-text">{{ strings_fr.tooltip_stl }}</span></span> {{ strings_fr.stl_amplitude }} : {{ seasonal_amplitude_mm }} mm. {{ strings_fr.seasonal_bar_context }}</span>
+                    <span class="lang-en">{{ strings_en.annual_bar_context }}</span>
+                    <span class="lang-fr">{{ strings_fr.annual_bar_context }}</span>
                 </p>
-                <div class="chart-box">{{ fig_seasonal_bar | safe }}</div>
+                <div class="chart-box">{{ fig_annual_bar | safe }}</div>
             </div>
         </section>
 
@@ -647,7 +851,6 @@
 <!-- ================================================================ -->
 <footer class="oss-footer-bar">
     <div class="ticker-text">
-        &#128196;
         <span class="lang-en">{{ strings_en.footer_credits }}</span>
         <span class="lang-fr">{{ strings_fr.footer_credits }}</span>
     </div>
@@ -668,7 +871,6 @@ function switchView(view) {
     document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
     document.querySelector('[data-view="' + view + '"]').classList.add('active');
     document.getElementById('view-' + view).classList.add('active');
-    // Resize all Plotly charts in the newly visible panel
     setTimeout(function() {
         document.querySelectorAll('.view-panel.active .js-plotly-plot').forEach(function(plot) {
             Plotly.Plots.resize(plot);

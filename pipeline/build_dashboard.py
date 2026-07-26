@@ -15,10 +15,14 @@ from pipeline import config
 from pipeline.dashboard import (
     load_data, load_strings, load_freshness,
     compute_kpis, make_sparkline_data,
+    compute_trend_table, compute_forecast_milestones,
+    compute_scenario_comparison,
     make_timeseries_figure, make_stl_figure,
-    make_seasonal_bar_figure,
+    make_seasonal_bar_figure, make_annual_bar_figure,
+    make_gldas_contribution_figure,
     make_aoi_map,
     make_multi_scenario_figure, make_decision_mini_bar,
+    make_expert_scenario_figure,
 )
 
 
@@ -32,15 +36,21 @@ def build():
     print("[2/5] Calcul des KPI et analyses...")
     kpis = compute_kpis(df)
     sparklines = make_sparkline_data(df)
+    trend_table = compute_trend_table(df)
+    forecast_milestones = compute_forecast_milestones(df)
+    scenario_comparison = compute_scenario_comparison(df)
 
     print("[3/5] Création des figures...")
     figs = {
         "fig_timeseries": make_timeseries_figure(df, strings_en),
         "fig_stl": make_stl_figure(df, strings_en),
         "fig_seasonal_bar": make_seasonal_bar_figure(df, strings_en),
+        "fig_annual_bar": make_annual_bar_figure(df, strings_en),
+        "fig_gldas": make_gldas_contribution_figure(df, strings_en),
         "fig_map": make_aoi_map(strings_en),
         "fig_multi_scenario": make_multi_scenario_figure(df, strings_en),
         "fig_decision_bar": make_decision_mini_bar(df, strings_en),
+        "fig_expert_scenario": make_expert_scenario_figure(df, strings_en),
     }
 
     # Responsive config for all Plotly charts
@@ -59,6 +69,9 @@ def build():
         freshness=freshness, sparklines=sparklines,
         last_update_date=last_update_date,
         colors=config.COLORS,
+        trend_table=trend_table,
+        forecast_milestones=forecast_milestones,
+        scenario_comparison=scenario_comparison,
         **divs, **kpis,
     )
 

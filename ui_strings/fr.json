@@ -189,5 +189,26 @@
   "insight_strip_trend": "Indicateur \u00e0 l'\u00e9chelle du bassin",
   "insight_strip_governance": "Unit\u00e9 pour la gouvernance",
   "insight_strip_forecast": "Pr\u00e9vision avec incertitude",
-  "insight_strip_transparency": "Transparence sur les lacunes"
+  "insight_strip_transparency": "Transparence sur les lacunes",
+
+  "map_cities": "Villes rep\u00e8res",
+
+  "scenario_table_title": "Comparaison des sc\u00e9narios sur 5 ans (LWE)",
+  "scenario_table_year": "Ann\u00e9e",
+  "scenario_table_central": "Poursuite de tendance",
+  "scenario_table_dry": "Ann\u00e9e s\u00e8che",
+  "scenario_table_wet": "Gestion renforc\u00e9e",
+  "scenario_table_unit": "cm",
+
+  "expert_scenario_title": "Analyse d\u00e9taill\u00e9e des sc\u00e9narios avec intervalles de confiance",
+  "expert_scenario_context": "Trois sc\u00e9narios projet\u00e9s sur 60 mois. Chaque sc\u00e9nario affiche son propre intervalle de pr\u00e9diction. Le sc\u00e9nario s\u00e9cheresse suppose une acc\u00e9l\u00e9ration de 50% du d\u00e9clin actuel ; la gestion renforc\u00e9e suppose une r\u00e9duction de 50%.",
+
+  "expert_gldas_title": "D\u00e9composition du signal : contribution GRACE vs GLDAS",
+  "expert_gldas_context": "Le GWSA est d\u00e9riv\u00e9 comme TWSA (GRACE) moins les stocks de surface GLDAS (humidit\u00e9 du sol, SWE, canop\u00e9e). Sur le SASS, la correction de surface est faible : GLDAS repr\u00e9sente moins de 15% de la variabilit\u00e9 totale du signal, confirmant que le proxy GWSA h\u00e9rite l'essentiel de son signal du stockage total GRACE. Ceci est coh\u00e9rent avec le caract\u00e8re fossile de l'aquif\u00e8re \u2014 dynamique de surface minimale.",
+  "expert_annual_title": "Anomalie annuelle moyenne \u2014 mois observ\u00e9s uniquement",
+  "expert_trend_title": "Analyse de tendance : deux m\u00e9thodes convergent",
+  "expert_forecast_title": "Jalons de pr\u00e9vision",
+
+  "section_expert_scenarios": "Sc\u00e9narios & Pr\u00e9vision",
+  "section_expert_decomposition": "D\u00e9composition du signal"
 }
