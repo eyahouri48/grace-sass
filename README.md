@@ -6,7 +6,7 @@ et la prévision (« perspectives ») du stockage des eaux souterraines du
 mascons GRACE/GRACE-FO (JPL RL06.3 V04, filtrés CRI) et d'un proxy
 résiduel GLDAS-2.1 Noah.
 
-Projet [OSS](https://www.oss-online.org/) — programme « Veille et Perspectives ».
+Projet [OSS](https://www.oss-online.org/) : programme « Veille et Perspectives ».
 
 > ⚠️ **Estimation prototype** : `gwsa_mm ≈ TWSA − anomalie GLDAS` est une
 > séparation de premier ordre, non validée par la piézométrie in situ.
