@@ -8,10 +8,10 @@
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <style>
         :root {
-            --c-primary: #3D4F2F;
-            --c-primary-light: #556B2F;
-            --c-primary-bg: #F4F6F0;
-            --c-primary-accent: #A3B18A;
+            --c-primary: {{ colors.header }};
+            --c-primary-light: {{ colors.header_light }};
+            --c-primary-bg: {{ colors.header_bg }};
+            --c-primary-accent: {{ colors.header_accent }};
             --c-alert: {{ colors.alert }};
             --c-alert-light: {{ colors.alert_light }};
             --c-warn: {{ colors.warn }};
@@ -23,7 +23,7 @@
             --c-text: {{ colors.text }};
             --c-text-mid: {{ colors.text_mid }};
             --c-text-light: {{ colors.text_light }};
-            --c-bg: #F5F6F8;
+            --c-bg: {{ colors.bg_page }};
             --c-card: {{ colors.bg_card }};
             --c-border: {{ colors.border }};
         }
@@ -173,6 +173,14 @@
         .dss-marker.m-purple { background: #7C3AED; border-color: #7C3AED; }
         .dss-text-body { font-size: 0.76rem; color: #334155; line-height: 1.4; flex-grow: 1; }
         .dss-text-body strong { color: #0F172A; font-weight: 700; }
+        .dss-paragraphs { display: flex; flex-direction: column; gap: 0; }
+        .dss-paragraph { font-size: 0.76rem; color: #334155; line-height: 1.5; margin-bottom: 16px; }
+        .dss-paragraph:last-child { margin-bottom: 0; }
+        .dss-paragraph strong { color: #0F172A; font-weight: 600; }
+        .limits-paragraphs { display: flex; flex-direction: column; gap: 0; }
+        .limit-paragraph { font-size: 0.75rem; color: var(--c-text-mid); line-height: 1.55; margin-bottom: 16px; }
+        .limit-paragraph:last-child { margin-bottom: 0; }
+        .limit-paragraph strong { color: var(--c-text); font-weight: 600; }
 
         /* ── SCENARIO COMPARISON TABLE ─────────────────── */
         .scenario-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; margin-top: 8px; }
@@ -261,7 +269,10 @@
                 <span class="lang-fr">DERNI&Egrave;RE MAJ :</span>
             </span>
             <span class="status-val">{{ last_update_date }}</span>
-            <span class="badge-sync">SYNC: OK &#10003;</span>
+            <span class="badge-sync">
+                <span class="lang-en">SYNC: OK &#10003;</span>
+                <span class="lang-fr">SYNC : OK &#10003;</span>
+            </span>
         </div>
         <button id="lang-toggle" class="btn-lang-dark" onclick="toggleLang()">
             <span class="lang-en">FR</span>
@@ -577,31 +588,23 @@
                         <span class="lang-en">{{ strings_en.decision_title }}</span>
                         <span class="lang-fr">{{ strings_fr.decision_title }}</span>
                     </h3>
-                    <div class="summary-list">
-                        <div class="dss-item">
-                            <div class="dss-text-body">
-                                <div class="lang-en"><strong>{{ strings_en.decision_depletion_dss }}</strong> — {{ strings_en.decision_depletion_dss_text }}</div>
-                                <div class="lang-fr"><strong>{{ strings_fr.decision_depletion_dss }}</strong> — {{ strings_fr.decision_depletion_dss_text }}</div>
-                            </div>
-                        </div>
-                        <div class="dss-item">
-                            <div class="dss-text-body">
-                                <div class="lang-en"><strong>{{ strings_en.decision_forecast_dss }}</strong> — {{ strings_en.decision_forecast_dss_text }}</div>
-                                <div class="lang-fr"><strong>{{ strings_fr.decision_forecast_dss }}</strong> — {{ strings_fr.decision_forecast_dss_text }}</div>
-                            </div>
-                        </div>
-                        <div class="dss-item">
-                            <div class="dss-text-body">
-                                <div class="lang-en"><strong>{{ strings_en.decision_fossil_dss }}</strong> — {{ strings_en.decision_fossil_dss_text }}</div>
-                                <div class="lang-fr"><strong>{{ strings_fr.decision_fossil_dss }}</strong> — {{ strings_fr.decision_fossil_dss_text }}</div>
-                            </div>
-                        </div>
-                        <div class="dss-item">
-                            <div class="dss-text-body">
-                                <div class="lang-en"><strong>{{ strings_en.decision_resolution_dss }}</strong> — {{ strings_en.decision_resolution_dss_text }}</div>
-                                <div class="lang-fr"><strong>{{ strings_fr.decision_resolution_dss }}</strong> — {{ strings_fr.decision_resolution_dss_text }}</div>
-                            </div>
-                        </div>
+                    <div class="dss-paragraphs">
+                        <p class="dss-paragraph">
+                            <span class="lang-en"><strong>{{ strings_en.decision_depletion_dss }}.</strong> {{ strings_en.decision_depletion_dss_text }}</span>
+                            <span class="lang-fr"><strong>{{ strings_fr.decision_depletion_dss }}.</strong> {{ strings_fr.decision_depletion_dss_text }}</span>
+                        </p>
+                        <p class="dss-paragraph">
+                            <span class="lang-en"><strong>{{ strings_en.decision_forecast_dss }}.</strong> {{ strings_en.decision_forecast_dss_text }}</span>
+                            <span class="lang-fr"><strong>{{ strings_fr.decision_forecast_dss }}.</strong> {{ strings_fr.decision_forecast_dss_text }}</span>
+                        </p>
+                        <p class="dss-paragraph">
+                            <span class="lang-en"><strong>{{ strings_en.decision_fossil_dss }}.</strong> {{ strings_en.decision_fossil_dss_text }}</span>
+                            <span class="lang-fr"><strong>{{ strings_fr.decision_fossil_dss }}.</strong> {{ strings_fr.decision_fossil_dss_text }}</span>
+                        </p>
+                        <p class="dss-paragraph">
+                            <span class="lang-en"><strong>{{ strings_en.decision_resolution_dss }}.</strong> {{ strings_en.decision_resolution_dss_text }}</span>
+                            <span class="lang-fr"><strong>{{ strings_fr.decision_resolution_dss }}.</strong> {{ strings_fr.decision_resolution_dss_text }}</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -629,22 +632,35 @@
                 </div>
             </div>
             <div class="ui-card" style="margin-top: 12px;">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>
-                        <span class="lang-en">{{ strings_en.accordion_limitations }}</span>
-                        <span class="lang-fr">{{ strings_fr.accordion_limitations }}</span>
-                    </span>
-                    <span class="accordion-chevron">&#9660;</span>
-                </div>
-                <div class="accordion-body">
-                    <ul class="limits-list">
-                        <li><span class="lang-en">{{ strings_en.method_limit_1 }}</span><span class="lang-fr">{{ strings_fr.method_limit_1 }}</span></li>
-                        <li><span class="lang-en">{{ strings_en.method_limit_2 }}</span><span class="lang-fr">{{ strings_fr.method_limit_2 }}</span></li>
-                        <li><span class="lang-en">{{ strings_en.method_limit_3 }}</span><span class="lang-fr">{{ strings_fr.method_limit_3 }}</span></li>
-                        <li><span class="lang-en">{{ strings_en.method_limit_4 }}</span><span class="lang-fr">{{ strings_fr.method_limit_4 }}</span></li>
-                        <li><span class="lang-en">{{ strings_en.method_limit_5 }}</span><span class="lang-fr">{{ strings_fr.method_limit_5 }}</span></li>
-                        <li><span class="lang-en">{{ strings_en.method_limit_6 }}</span><span class="lang-fr">{{ strings_fr.method_limit_6 }}</span></li>
-                    </ul>
+                <h3>
+                    <span class="lang-en">{{ strings_en.accordion_limitations }}</span>
+                    <span class="lang-fr">{{ strings_fr.accordion_limitations }}</span>
+                </h3>
+                <div class="limits-paragraphs">
+                    <p class="limit-paragraph">
+                        <span class="lang-en"><strong>{{ strings_en.method_limit_1_title }}.</strong> {{ strings_en.method_limit_1 }}</span>
+                        <span class="lang-fr"><strong>{{ strings_fr.method_limit_1_title }}.</strong> {{ strings_fr.method_limit_1 }}</span>
+                    </p>
+                    <p class="limit-paragraph">
+                        <span class="lang-en"><strong>{{ strings_en.method_limit_2_title }}.</strong> {{ strings_en.method_limit_2 }}</span>
+                        <span class="lang-fr"><strong>{{ strings_fr.method_limit_2_title }}.</strong> {{ strings_fr.method_limit_2 }}</span>
+                    </p>
+                    <p class="limit-paragraph">
+                        <span class="lang-en"><strong>{{ strings_en.method_limit_3_title }}.</strong> {{ strings_en.method_limit_3 }}</span>
+                        <span class="lang-fr"><strong>{{ strings_fr.method_limit_3_title }}.</strong> {{ strings_fr.method_limit_3 }}</span>
+                    </p>
+                    <p class="limit-paragraph">
+                        <span class="lang-en"><strong>{{ strings_en.method_limit_4_title }}.</strong> {{ strings_en.method_limit_4 }}</span>
+                        <span class="lang-fr"><strong>{{ strings_fr.method_limit_4_title }}.</strong> {{ strings_fr.method_limit_4 }}</span>
+                    </p>
+                    <p class="limit-paragraph">
+                        <span class="lang-en"><strong>{{ strings_en.method_limit_5_title }}.</strong> {{ strings_en.method_limit_5 }}</span>
+                        <span class="lang-fr"><strong>{{ strings_fr.method_limit_5_title }}.</strong> {{ strings_fr.method_limit_5 }}</span>
+                    </p>
+                    <p class="limit-paragraph">
+                        <span class="lang-en"><strong>{{ strings_en.method_limit_6_title }}.</strong> {{ strings_en.method_limit_6 }}</span>
+                        <span class="lang-fr"><strong>{{ strings_fr.method_limit_6_title }}.</strong> {{ strings_fr.method_limit_6 }}</span>
+                    </p>
                 </div>
             </div>
         </section>

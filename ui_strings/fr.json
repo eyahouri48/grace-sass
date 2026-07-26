@@ -48,12 +48,12 @@
   "ts_context": "Proxy GWSA observ\u00e9 (GRACE moins r\u00e9serves de surface GLDAS) avec bande d'incertitude, droite de tendance et \u00e9ventail de pr\u00e9vision. La lacune inter-missions 2017\u20132018 est interpol\u00e9e et signal\u00e9e.",
   "ts_ylabel": "Anomalie de stock d'eau souterraine (mm)",
   "ts_observed": "Observ\u00e9 (proxy GWSA)",
-  "ts_imputed": "Interpol\u00e9 (lacunes combl\u00e9es)",
+  "ts_imputed": "Lacunes combl\u00e9es",
   "ts_uncertainty": "Incertitude (\u00b11\u03c3)",
   "ts_gap_label": "Lacune inter-missions",
   "ts_trend_line": "Tendance OLS (HAC)",
   "forecast_validated": "Pr\u00e9vision (valid\u00e9e, \u226424 mois)",
-  "forecast_extrapolation": "Sc\u00e9nario (extrapolation, >24 mois)",
+  "forecast_extrapolation": "Sc\u00e9nario (>24 mois)",
   "forecast_ci": "Intervalle de pr\u00e9diction \u00e0 95 %",
   "forecast_cutoff": "Limite de l'horizon valid\u00e9",
 
@@ -129,7 +129,7 @@
   "method_limit_3": "Les pr\u00e9visions supposent la stationnarit\u00e9 \u2014 ne peuvent anticiper les changements de politique ou de pr\u00e9l\u00e8vement",
   "method_limit_4": "Lacune inter-missions 2017\u20132018 combl\u00e9e par interpolation (signal\u00e9e dans toutes les analyses)",
   "method_limit_5": "Non-s\u00e9parabilit\u00e9 des aquif\u00e8res du Continental Intercalaire et du Complexe Terminal \u00e0 cette r\u00e9solution",
-  "method_limit_6": "Les chotts sahariens (Jerid, Melrhir) contribuent un signal d'eau de surface non mod\u00e9lis\u00e9 par GLDAS qui reste dans le proxy",
+  "method_limit_6": "Malgr\u00e9 le filtrage CRI, des fuites de signal entre mascons adjacents peuvent biaiser les estimations \u00e0 l'\u00e9chelle du bassin \u2014 notamment pr\u00e8s des chotts sahariens (Jerid, Melrhir), qui contribuent \u00e9galement un signal d'eau de surface non mod\u00e9lis\u00e9",
 
   "scenario_multi_title": "Trois trajectoires possibles pour les cinq prochaines ann\u00e9es",
   "scenario_multi_context": "La poursuite de la tendance actuelle est le sc\u00e9nario central. Les sc\u00e9narios s\u00e9cheresse et gestion renforc\u00e9e encadrent le champ des possibles \u2014 ce ne sont pas des pr\u00e9visions valid\u00e9es.",
@@ -140,13 +140,13 @@
   "decision_mini_bar_title": "Lecture d\u00e9cisionnelle : niveau moyen annuel",
 
   "decision_depletion_dss": "D\u00e9pl\u00e9tion confirm\u00e9e",
-  "decision_depletion_dss_text": "Depuis le d\u00e9but des ann\u00e9es 2000, le SASS a perdu ~75 mm de hauteur d\u2019eau \u00e9quivalente, \u00e0 un rythme de ~4,5 mm/an (statistiquement significatif, Mann-Kendall p < 0,001). Cela correspond \u00e0 environ 3\u20134 km\u00b3/an de variation de stock sur l\u2019ensemble du bassin.",
+  "decision_depletion_dss_text": "Le SASS a perdu environ 75 mm de hauteur d\u2019eau \u00e9quivalente depuis la p\u00e9riode de r\u00e9f\u00e9rence 2004\u20132009. Au rythme observ\u00e9 de ~4,5 mm/an, le d\u00e9ficit d\u00e9passe l\u2019\u00e9cart net pr\u00e9l\u00e8vements-recharge estim\u00e9 par l\u2019OSS (~1\u20132 km\u00b3/an), sugg\u00e9rant une pression croissante sur la ressource.",
   "decision_forecast_dss": "Perspective \u00e0 court terme valid\u00e9e",
-  "decision_forecast_dss_text": "Une pr\u00e9vision Prophet \u00e0 24 mois, valid\u00e9e par validation crois\u00e9e (MAE \u2248 6 mm), indique une poursuite du d\u00e9clin dans les conditions actuelles. Au-del\u00e0 de 24 mois, les projections sont des sc\u00e9narios exploratoires, pas des pr\u00e9visions valid\u00e9es.",
+  "decision_forecast_dss_text": "La pr\u00e9vision \u00e0 24 mois, valid\u00e9e par validation crois\u00e9e \u00e0 origine glissante (MAE \u2248 6 mm), projette la poursuite du d\u00e9clin. Au-del\u00e0 de 24 mois, les projections sont des extrapolations de sc\u00e9narios \u2014 pas des pr\u00e9visions valid\u00e9es.",
   "decision_fossil_dss": "Pilot\u00e9e par les pr\u00e9l\u00e8vements, pas par le climat",
-  "decision_fossil_dss_text": "La d\u00e9composition STL ne montre quasiment aucun cycle saisonnier. Le d\u00e9clin est pilot\u00e9 par le pompage d\u2019un aquif\u00e8re fossile, non par la s\u00e9cheresse ou la variabilit\u00e9 pluviom\u00e9trique. La tendance ne s\u2019inversera pas sans gestion active.",
+  "decision_fossil_dss_text": "La pluviom\u00e9trie \u00e0 l\u2019\u00e9chelle du bassin montre un couplage n\u00e9gligeable avec le changement de stock. La d\u00e9pl\u00e9tion est pilot\u00e9e par le pompage, pas par la s\u00e9cheresse \u2014 elle ne se corrigera pas d\u2019elle-m\u00eame sans intervention politique.",
   "decision_resolution_dss": "Mesure int\u00e9gr\u00e9e en colonne",
-  "decision_resolution_dss_text": "GRACE mesure le changement total de la colonne d\u2019eau \u00e0 une r\u00e9solution de ~300 km. Le proxy d\u2019eaux souterraines (TWSA moins les r\u00e9serves de surface GLDAS) est une estimation de premier ordre \u2014 les d\u00e9coupages infra-bassin ou par pays sont indicatifs, pas quantitatifs.",
+  "decision_resolution_dss_text": "GRACE mesure le stockage total d\u2019eau. Le proxy ne peut pas distinguer les couches du Continental Intercalaire et du Complexe Terminal. Les d\u00e9coupages par pays couvrent trop peu de mascons pour \u00eatre quantitatifs.",
   "decision_utility_title": "Utilit\u00e9 du stage",
   "decision_utility_text": "Transformer une donn\u00e9e satellite complexe en un outil institutionnel lisible, reproductible et partageable pour la veille strat\u00e9gique de l\u2019OSS.",
 
@@ -209,5 +209,14 @@
   "expert_forecast_title": "Jalons de pr\u00e9vision",
 
   "section_expert_scenarios": "Sc\u00e9narios & Pr\u00e9vision",
-  "section_expert_decomposition": "D\u00e9composition du signal"
+  "section_expert_decomposition": "D\u00e9composition du signal",
+
+  "map_mascon_legend": "R\u00e9solution de mesure GRACE (~300 km)",
+
+  "method_limit_1_title": "R\u00e9solution spatiale",
+  "method_limit_2_title": "Proxy non valid\u00e9",
+  "method_limit_3_title": "Hypoth\u00e8se de stationnarit\u00e9",
+  "method_limit_4_title": "Lacune inter-missions",
+  "method_limit_5_title": "Non-s\u00e9parabilit\u00e9 des aquif\u00e8res",
+  "method_limit_6_title": "Fuite CRI"
 }

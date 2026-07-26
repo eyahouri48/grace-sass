@@ -15,9 +15,6 @@ import xarray as xr
 import geopandas as gpd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from scipy.ndimage import zoom as scipy_zoom
-from rasterio.features import rasterize
-from rasterio.transform import from_bounds
 
 from pipeline import config
 from pipeline.trend import mann_kendall_sen, ols_trend_hac, compute_aoi_area_m2, mm_to_km3
@@ -37,7 +34,13 @@ def load_strings(lang: str = "en") -> dict:
 
 def load_data() -> pd.DataFrame:
     """Charge le cache Parquet principal."""
-    return pd.read_parquet(config.SERIES_PARQUET)
+    path = config.SERIES_PARQUET
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Cache Parquet introuvable : {path}\n"
+            "Lancez d'abord le pipeline d'ingestion (uv run python -m pipeline.ingest)."
+        )
+    return pd.read_parquet(path)
 
 
 def load_freshness(df: pd.DataFrame = None) -> dict:
@@ -94,7 +97,7 @@ def compute_kpis(df: pd.DataFrame) -> dict:
     mk_pvalue = mk_result["mk_pvalue"]
 
     # Prévision à 24 mois
-    scenarios = build_scenarios(gwsa_mm=df["gwsa_mm"], validated_mae_mm=6.1)
+    scenarios = build_scenarios(gwsa_mm=df["gwsa_mm"], validated_mae_mm=config.VALIDATED_MAE_MM)
     summary = get_scenario_summary(scenarios)
     row_24 = summary[summary["horizon_months"] == 24]
     forecast_24_abs = row_24.iloc[0]["yhat_mm"] if not row_24.empty else last_anomaly
@@ -204,7 +207,7 @@ def make_timeseries_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
 
     # Zone grisée lacune 2017-2018
     fig.add_vrect(
-        x0="2017-06-01", x1="2018-06-01",
+        x0=config.GAP_START, x1=config.GAP_END,
         fillcolor=config.COLORS["gap_zone"], opacity=0.9,
         layer="below", line_width=0,
         annotation_text=strings["ts_gap_label"],
@@ -269,13 +272,13 @@ def make_timeseries_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
 
     # ── Annotations missions GRACE / GRACE-FO ──
     fig.add_annotation(
-        x="2003-06-01", y=1, yref="paper", yanchor="bottom",
+        x=config.GRACE_MISSION_LABEL_DATE, y=1, yref="paper", yanchor="bottom",
         text="GRACE", showarrow=False,
         font=dict(size=10, color=config.COLORS["text_light"]),
         bgcolor="rgba(255,255,255,0.7)",
     )
     fig.add_annotation(
-        x="2019-06-01", y=1, yref="paper", yanchor="bottom",
+        x=config.GRACEFO_MISSION_LABEL_DATE, y=1, yref="paper", yanchor="bottom",
         text="GRACE-FO", showarrow=False,
         font=dict(size=10, color=config.COLORS["text_light"]),
         bgcolor="rgba(255,255,255,0.7)",
@@ -288,7 +291,8 @@ def make_timeseries_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
         font=dict(family="Inter, system-ui, sans-serif", size=13,
                   color=config.COLORS["text"]),
         legend=dict(orientation="h", yanchor="bottom", y=1.02,
-                    xanchor="left", x=0, font_size=11),
+                    xanchor="center", x=0.5, font_size=11,
+                    entrywidth=0.22, entrywidthmode="fraction"),
         margin=dict(l=60, r=20, t=50, b=40),
         hovermode="x unified",
         height=560,
@@ -300,7 +304,7 @@ def _add_forecast(fig: go.Figure, df: pd.DataFrame, strings: dict):
     """Ajoute le fan chart (validé + extrapolation) au graphique."""
     scenarios = build_scenarios(
         gwsa_mm=df["gwsa_mm"],
-        validated_mae_mm=6.1,
+        validated_mae_mm=config.VALIDATED_MAE_MM,
     )
     forecast_df = scenarios["forecast_df"]
 
@@ -570,7 +574,7 @@ def make_aoi_map(strings: dict) -> go.Figure:
             lon=rect_lons, lat=rect_lats,
             mode="lines",
             line=dict(width=1, color=config.COLORS["text_light"], dash="dash"),
-            name="GRACE measurement resolution (~300 km)" if is_first else "",
+            name=strings.get("map_mascon_legend", "GRACE measurement resolution (~300 km)") if is_first else "",
             legendgroup="mascon",
             showlegend=is_first,
             hovertemplate=(
@@ -590,9 +594,9 @@ def make_aoi_map(strings: dict) -> go.Figure:
     fig.add_trace(go.Scattergeo(
         lon=lons_aoi, lat=lats_aoi,
         mode="lines",
-        line=dict(width=2.8, color="#1B3A4B"),
+        line=dict(width=2.8, color=config.COLORS["primary"]),
         fill="toself",
-        fillcolor="rgba(200, 210, 218, 0.25)",
+        fillcolor=config.COLORS["primary_bg"],
         name="SASS / NWSAS",
         hovertemplate="SASS<br>%{lon:.2f}°E, %{lat:.2f}°N<extra></extra>",
     ))
@@ -610,12 +614,12 @@ def make_aoi_map(strings: dict) -> go.Figure:
         lat=[c["lat"] for c in cities],
         mode="markers+text",
         marker=dict(
-            size=6, color="#0F172A", symbol="circle",
-            line=dict(width=1.2, color="white"),
+            size=6, color=config.COLORS["text"], symbol="circle",
+            line=dict(width=1.2, color=config.COLORS["bg_card"]),
         ),
         text=[c["name"] for c in cities],
         textposition="top center",
-        textfont=dict(size=9, color="#1A2526", family="Inter, sans-serif"),
+        textfont=dict(size=9, color=config.COLORS["text"], family="Inter, sans-serif"),
         name=strings.get("map_cities", "Cities"),
         hovertemplate="%{text}<br>%{lon:.2f}°E, %{lat:.2f}°N<extra></extra>",
     ))
@@ -683,11 +687,18 @@ def make_annual_bar_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
     vmin, vmax = vals.min(), vals.max()
     span = vmax - vmin if vmax != vmin else 1.0
 
+    def _hex_to_rgb(h: str) -> tuple[int, int, int]:
+        h = h.lstrip("#")
+        return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+    rgb_lo = _hex_to_rgb(config.COLORS["alert"])
+    rgb_hi = _hex_to_rgb(config.COLORS["primary_light"])
+
     def _gradient_color(v):
         """Interpolate from alert (red, low) to primary_light (blue, high)."""
         t = (v - vmin) / span  # 0 = min (red), 1 = max (blue)
-        r_lo, g_lo, b_lo = 196, 69, 54    # alert #C44536
-        r_hi, g_hi, b_hi = 61, 124, 140   # primary_light #3D7C8C
+        r_lo, g_lo, b_lo = rgb_lo
+        r_hi, g_hi, b_hi = rgb_hi
         r = int(r_lo + (r_hi - r_lo) * t)
         g = int(g_lo + (g_hi - g_lo) * t)
         b = int(b_lo + (b_hi - b_lo) * t)
@@ -760,91 +771,6 @@ def make_seasonal_bar_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
     return fig
 
 
-def make_scenario_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
-    """Graphique dédié prévision : 5 ans historique + 5 ans prévision avec IC."""
-    scenarios = build_scenarios(gwsa_mm=df["gwsa_mm"], validated_mae_mm=6.1)
-    forecast_df = scenarios["forecast_df"]
-    last_obs_date = scenarios["last_obs_date"]
-    cutoff_date = scenarios["cutoff_date"]
-
-    # 5 dernières années d'observations
-    obs_start = last_obs_date - pd.DateOffset(years=5)
-    obs = df[~df["is_imputed"]].copy()
-    obs_recent = obs.loc[obs_start:]
-
-    validated = forecast_df[forecast_df["zone"] == "validated"].copy()
-    extrapol = forecast_df[forecast_df["zone"] == "extrapolation"].copy()
-
-    fig = go.Figure()
-
-    # Observations récentes
-    fig.add_trace(go.Scatter(
-        x=obs_recent.index, y=obs_recent["gwsa_mm"],
-        mode="lines",
-        name=strings.get("ts_observed", "Observed"),
-        line=dict(color=config.COLORS["primary"], width=2),
-        hovertemplate="%{x|%b %Y}: %{y:.1f} mm<extra></extra>",
-    ))
-
-    # Bande IC validée
-    if not validated.empty:
-        fig.add_trace(go.Scatter(
-            x=pd.concat([validated["ds"], validated["ds"][::-1]]),
-            y=pd.concat([validated["yhat_upper"], validated["yhat_lower"][::-1]]),
-            fill="toself", fillcolor=config.COLORS["primary_bg"],
-            line=dict(width=0),
-            name=strings.get("forecast_ci", "95% CI"),
-            showlegend=True, hoverinfo="skip",
-        ))
-        fig.add_trace(go.Scatter(
-            x=validated["ds"], y=validated["yhat"],
-            mode="lines",
-            name=strings.get("forecast_validated", "Validated forecast"),
-            line=dict(color=config.COLORS["primary_light"], width=2.5),
-            hovertemplate="%{x|%b %Y}: %{y:.1f} mm<extra></extra>",
-        ))
-
-    # Bande IC extrapolation
-    if not extrapol.empty:
-        fig.add_trace(go.Scatter(
-            x=pd.concat([extrapol["ds"], extrapol["ds"][::-1]]),
-            y=pd.concat([extrapol["yhat_upper"], extrapol["yhat_lower"][::-1]]),
-            fill="toself", fillcolor=config.COLORS["warn_light"],
-            line=dict(width=0), showlegend=False, hoverinfo="skip",
-        ))
-        fig.add_trace(go.Scatter(
-            x=extrapol["ds"], y=extrapol["yhat"],
-            mode="lines",
-            name=strings.get("forecast_extrapolation", "Extrapolation"),
-            line=dict(color=config.COLORS["extrapolation"], width=2, dash="dash"),
-            hovertemplate="%{x|%b %Y}: %{y:.1f} mm<extra></extra>",
-        ))
-
-    # Ligne de séparation
-    fig.add_vline(
-        x=cutoff_date,
-        line=dict(color=config.COLORS["text_light"], width=1, dash="dashdot"),
-        annotation_text=strings.get("forecast_cutoff", "Validated limit"),
-        annotation_position="top right",
-        annotation_font_size=10,
-        annotation_font_color=config.COLORS["text_mid"],
-    )
-
-    fig.update_layout(
-        yaxis_title=strings.get("scenario_ylabel", "GWSA anomaly (mm)"),
-        xaxis_title=None,
-        template="plotly_white",
-        font=dict(family="Inter, system-ui, sans-serif", size=13,
-                  color=config.COLORS["text"]),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02,
-                    xanchor="left", x=0, font_size=11),
-        margin=dict(l=60, r=20, t=40, b=40),
-        hovermode="x unified",
-        height=380,
-    )
-    return fig
-
-
 # ── Tableaux de données pour le template ──────────────────────
 
 def compute_trend_table(df: pd.DataFrame) -> dict:
@@ -867,7 +793,7 @@ def compute_trend_table(df: pd.DataFrame) -> dict:
 
 def compute_forecast_milestones(df: pd.DataFrame) -> list[dict]:
     """Calcule le tableau des jalons de prévision (12, 24, 36, 48, 60 mois)."""
-    scenarios = build_scenarios(gwsa_mm=df["gwsa_mm"], validated_mae_mm=6.1)
+    scenarios = build_scenarios(gwsa_mm=df["gwsa_mm"], validated_mae_mm=config.VALIDATED_MAE_MM)
     summary = get_scenario_summary(scenarios)
 
     milestones = []
@@ -886,7 +812,7 @@ def compute_forecast_milestones(df: pd.DataFrame) -> list[dict]:
 
 def make_decision_mini_bar(df: pd.DataFrame, strings: dict) -> go.Figure:
     """Mini bar chart : niveaux annuels moyens projetés (~7 barres, panneau décideur)."""
-    scenarios = build_scenarios(gwsa_mm=df["gwsa_mm"], validated_mae_mm=6.1)
+    scenarios = build_scenarios(gwsa_mm=df["gwsa_mm"], validated_mae_mm=config.VALIDATED_MAE_MM)
     forecast_df = scenarios["forecast_df"]
     last_obs_date = scenarios["last_obs_date"]
 
@@ -907,21 +833,32 @@ def make_decision_mini_bar(df: pd.DataFrame, strings: dict) -> go.Figure:
     vmin, vmax = vals.min(), vals.max()
     span = vmax - vmin if vmax != vmin else 1.0
 
-    # Gradient alert (#B7410E) → primary_light (#4A90A4)
+    # Gradient alert → primary_light
+    def _hex_rgb(h: str) -> tuple[int, int, int]:
+        h = h.lstrip("#")
+        return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+    lo_r, lo_g, lo_b = _hex_rgb(config.COLORS["alert"])
+    hi_r, hi_g, hi_b = _hex_rgb(config.COLORS["primary_light"])
     colors = []
     for v in vals:
         t = (v - vmin) / span
-        r = int(183 + (74 - 183) * t)
-        g = int(65 + (144 - 65) * t)
-        b = int(14 + (164 - 14) * t)
+        r = int(lo_r + (hi_r - lo_r) * t)
+        g = int(lo_g + (hi_g - lo_g) * t)
+        b = int(lo_b + (hi_b - lo_b) * t)
         colors.append(f"rgb({r},{g},{b})")
+
+    # Compute km³ equivalents for secondary labels
+    area_m2 = compute_aoi_area_m2(config.AOI_GEOJSON)
+    km3_vals = [v * area_m2 / 1e12 for v in vals]
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=[str(y) for y in combined.index],
         y=combined.values,
         marker_color=colors,
-        text=[f"{v:.0f} mm" for v in combined.values],
+        text=[f"{v:.0f} mm<br><span style='font-size:7px;color:#6B7280'>{k:.1f} km³</span>"
+              for v, k in zip(vals, km3_vals)],
         textposition="outside",
         textfont=dict(size=9),
         hovertemplate="%{x}: %{y:.1f} mm<extra></extra>",
@@ -931,7 +868,7 @@ def make_decision_mini_bar(df: pd.DataFrame, strings: dict) -> go.Figure:
         font=dict(family="Inter, system-ui, sans-serif", size=11,
                   color=config.COLORS["text"]),
         margin=dict(l=35, r=10, t=10, b=25),
-        height=180,
+        height=200,
         showlegend=False,
         yaxis_title=strings.get("ts_ylabel", "mm"),
         yaxis=dict(title_font_size=9),
@@ -945,7 +882,7 @@ def make_multi_scenario_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
     multi = build_multi_scenarios(
         gwsa_mm=df["gwsa_mm"],
         is_imputed=df["is_imputed"],
-        validated_mae_mm=6.1,
+        validated_mae_mm=config.VALIDATED_MAE_MM,
     )
     central_df = multi["central_df"]
     dry_df = multi["dry_df"]
@@ -1021,7 +958,8 @@ def make_multi_scenario_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
         font=dict(family="Inter, system-ui, sans-serif", size=13,
                   color=config.COLORS["text"]),
         legend=dict(orientation="h", yanchor="bottom", y=1.02,
-                    xanchor="left", x=0, font_size=11),
+                    xanchor="center", x=0.5, font_size=11,
+                    entrywidth=0.22, entrywidthmode="fraction"),
         margin=dict(l=60, r=20, t=40, b=40),
         hovermode="x unified",
         height=380,
@@ -1036,7 +974,7 @@ def compute_scenario_comparison(df: pd.DataFrame) -> list[dict]:
     multi = build_multi_scenarios(
         gwsa_mm=df["gwsa_mm"],
         is_imputed=df["is_imputed"],
-        validated_mae_mm=6.1,
+        validated_mae_mm=config.VALIDATED_MAE_MM,
     )
     area_m2 = compute_aoi_area_m2(config.AOI_GEOJSON)
 
@@ -1065,7 +1003,7 @@ def make_expert_scenario_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
     multi = build_multi_scenarios(
         gwsa_mm=df["gwsa_mm"],
         is_imputed=df["is_imputed"],
-        validated_mae_mm=6.1,
+        validated_mae_mm=config.VALIDATED_MAE_MM,
     )
     central_df = multi["central_df"]
     dry_df = multi["dry_df"]
@@ -1134,7 +1072,8 @@ def make_expert_scenario_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
         font=dict(family="Inter, system-ui, sans-serif", size=13,
                   color=config.COLORS["text"]),
         legend=dict(orientation="h", yanchor="bottom", y=1.02,
-                    xanchor="left", x=0, font_size=11),
+                    xanchor="center", x=0.5, font_size=11,
+                    entrywidth=0.22, entrywidthmode="fraction"),
         margin=dict(l=60, r=20, t=40, b=40),
         hovermode="x unified",
         height=420,

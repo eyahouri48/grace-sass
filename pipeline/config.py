@@ -98,7 +98,16 @@ PROPHET_CHANGEPOINT_PRIOR_SCALE = 0.05  # défaut Prophet — curseur rigidité/
 FORECAST_HORIZON_MONTHS = 24   # horizon validé par la CV
 
 SCENARIO_HORIZON_MONTHS = 60            # extrapolation = scénario, PAS prévision
+VALIDATED_MAE_MM = 6.1                  # MAE de la CV à origine glissante (§7.3)
 MIN_MASCONS_PER_COUNTRY = 3             # règle §6.1 pour la subdivision pays
+
+# ---------------------------------------------------------------------------
+# Dates de lacune inter-missions et annotations (spec §4)
+# ---------------------------------------------------------------------------
+GAP_START = "2017-06-01"                # début lacune GRACE → GRACE-FO
+GAP_END   = "2018-06-01"               # fin lacune
+GRACE_MISSION_LABEL_DATE  = "2003-06-01"   # annotation axe chronologique
+GRACEFO_MISSION_LABEL_DATE = "2019-06-01"  # annotation axe chronologique
 
 
 
@@ -145,4 +154,10 @@ COLORS = {
     # ── Scénarios ──
     "scenario_dry":   "#B7410E",   # brique — scénario sécheresse
     "scenario_wet":   "#4E7A5B",   # oasis — scénario gestion renforcée
+
+    # ── Header / UI chrome ──
+    "header":         "#3D4F2F",   # vert olive profond — fond du header
+    "header_light":   "#556B2F",   # vert olive clair — dégradé header
+    "header_bg":      "#F4F6F0",   # fond barre de fraîcheur
+    "header_accent":  "#A3B18A",   # vert doux — marqueurs insight/forecast
 }

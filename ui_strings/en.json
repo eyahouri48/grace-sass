@@ -48,12 +48,12 @@
   "ts_context": "Observed GWSA proxy (GRACE minus GLDAS surface stores) with uncertainty band, trend line, and forecast fan chart. The 2017\u20132018 inter-mission gap is interpolated and flagged.",
   "ts_ylabel": "Groundwater storage anomaly (mm)",
   "ts_observed": "Observed (GWSA proxy)",
-  "ts_imputed": "Interpolated (gap-filled)",
+  "ts_imputed": "Gap-filled",
   "ts_uncertainty": "Uncertainty (\u00b11\u03c3)",
   "ts_gap_label": "Inter-mission gap",
   "ts_trend_line": "OLS trend (HAC)",
   "forecast_validated": "Forecast (validated, \u226424 mo.)",
-  "forecast_extrapolation": "Scenario (extrapolation, >24 mo.)",
+  "forecast_extrapolation": "Scenario (>24 mo.)",
   "forecast_ci": "95% prediction interval",
   "forecast_cutoff": "Validated horizon limit",
 
@@ -129,7 +129,7 @@
   "method_limit_3": "Forecasts assume stationarity \u2014 cannot anticipate policy or pumping shifts",
   "method_limit_4": "2017\u20132018 inter-mission gap filled by interpolation (flagged in all analyses)",
   "method_limit_5": "Non-separability of Continental Intercalaire and Complexe Terminal aquifers at this resolution",
-  "method_limit_6": "Saharan chotts (Jerid, Melrhir) contribute an unmodelled surface-water signal that remains in the proxy",
+  "method_limit_6": "Despite CRI filtering, signal leakage between adjacent mascon cells can bias basin-scale estimates — notably near the Saharan chotts (Jerid, Melrhir), which also contribute an unmodelled surface-water signal",
 
   "scenario_multi_title": "Three possible trajectories over the next five years",
   "scenario_multi_context": "Trend continuation is the central scenario. Dry-year and enhanced-management scenarios bound the range of possibilities \u2014 these are not validated forecasts.",
@@ -140,13 +140,13 @@
   "decision_mini_bar_title": "Decision reading: projected annual level",
 
   "decision_depletion_dss": "Depletion confirmed",
-  "decision_depletion_dss_text": "Since the early 2000s the SASS has lost ~75 mm of equivalent water height, at a rate of ~4.5 mm/yr (statistically significant, Mann-Kendall p < 0.001). This corresponds to roughly 3\u20134 km\u00b3/yr of storage change across the basin.",
+  "decision_depletion_dss_text": "The SASS has lost approximately 75 mm of equivalent water height since the 2004\u20132009 baseline. At the observed rate of ~4.5 mm/year, the deficit exceeds the net abstraction-recharge gap estimated by OSS (~1\u20132 km\u00b3/yr), suggesting accelerating pressure on the resource.",
   "decision_forecast_dss": "Validated short-term outlook",
-  "decision_forecast_dss_text": "A 24-month Prophet forecast, cross-validated with MAE \u2248 6 mm, indicates continued decline under current conditions. Beyond 24 months the projections are exploratory scenarios, not validated forecasts.",
+  "decision_forecast_dss_text": "The 24-month forecast, validated by rolling-origin cross-validation (MAE \u2248 6 mm), projects continued decline. Beyond 24 months, projections are scenario extrapolations \u2014 not validated forecasts.",
   "decision_fossil_dss": "Abstraction-driven, not climate-driven",
-  "decision_fossil_dss_text": "STL decomposition shows virtually no seasonal cycle. The decline is driven by pumping from a fossil aquifer, not by drought or rainfall variability. This means the trend will not reverse without active management.",
+  "decision_fossil_dss_text": "Basin-scale rainfall shows negligible coupling with storage change. The depletion is driven by pumping, not drought \u2014 meaning it will not self-correct without policy intervention.",
   "decision_resolution_dss": "Column-integrated measurement",
-  "decision_resolution_dss_text": "GRACE measures total water-column change at ~300 km resolution. The groundwater proxy (TWSA minus GLDAS surface stores) is a first-order estimate \u2014 sub-basin or per-country splits are indicative, not quantitative.",
+  "decision_resolution_dss_text": "GRACE senses total water storage. The proxy cannot distinguish between the Continental Intercalaire and Complexe Terminal layers. Per-country splits cover too few mascons to be quantitative.",
   "decision_utility_title": "Utility of this work",
   "decision_utility_text": "Transform a complex satellite dataset into a readable, reproducible, and shareable institutional tool for the strategic monitoring of the SASS.",
 
@@ -209,5 +209,14 @@
   "expert_forecast_title": "Forecast milestones",
 
   "section_expert_scenarios": "Scenarios & Forecast",
-  "section_expert_decomposition": "Signal Decomposition"
+  "section_expert_decomposition": "Signal Decomposition",
+
+  "map_mascon_legend": "GRACE measurement resolution (~300 km)",
+
+  "method_limit_1_title": "Spatial resolution",
+  "method_limit_2_title": "Unvalidated proxy",
+  "method_limit_3_title": "Stationarity assumption",
+  "method_limit_4_title": "Inter-mission gap",
+  "method_limit_5_title": "Aquifer non-separability",
+  "method_limit_6_title": "CRI leakage"
 }
