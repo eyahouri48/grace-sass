@@ -143,7 +143,7 @@ def compute_kpis(df: pd.DataFrame) -> dict:
         interp_key = "above"
 
     # Forecast CI moyen (from scenario data)
-    ci_vals = forecast_df = scenarios["forecast_df"]
+    ci_vals = scenarios["forecast_df"]
     validated_rows = ci_vals[ci_vals["zone"] == "validated"]
     if not validated_rows.empty:
         ci_avg = (validated_rows["yhat_upper"] - validated_rows["yhat_lower"]).mean()
@@ -167,7 +167,7 @@ def compute_kpis(df: pd.DataFrame) -> dict:
         "kpi_vigilance": vigilance,
         # Technique (disponible pour le template)
         "kpi_mk_trend": mk_trend,
-        "kpi_mk_pvalue": f"< 0.001" if mk_pvalue < 0.001 else f"= {mk_pvalue:.3f}",
+        "kpi_mk_pvalue": "< 0.001" if mk_pvalue < 0.001 else f"= {mk_pvalue:.3f}",
         "seasonal_amplitude_mm": f"{seasonal_amplitude:.1f}",
         # ── Contextuels (nouveaux) ──
         "kpi_delta_month": f"{delta_month:+.1f}",
@@ -782,11 +782,11 @@ def compute_trend_table(df: pd.DataFrame) -> dict:
     return {
         "ols_slope_mm": f"{ols['slope_mm_yr']:+.2f}",
         "ols_ci": f"[{ols['ci_lower_mm_yr']:+.2f}, {ols['ci_upper_mm_yr']:+.2f}]",
-        "ols_pvalue": f"< 0.001" if ols["pvalue"] < 0.001 else f"{ols['pvalue']:.3f}",
+        "ols_pvalue": "< 0.001" if ols["pvalue"] < 0.001 else f"{ols['pvalue']:.3f}",
         "ols_slope_km3": f"{mm_to_km3(ols['slope_mm_yr'], area_m2):+.2f}",
         "sen_slope_mm": f"{mk_sen['sen_slope_mm_yr']:+.2f}",
         "sen_ci": "\u2014",
-        "sen_pvalue": f"< 0.001" if mk_sen["mk_pvalue"] < 0.001 else f"{mk_sen['mk_pvalue']:.3f}",
+        "sen_pvalue": "< 0.001" if mk_sen["mk_pvalue"] < 0.001 else f"{mk_sen['mk_pvalue']:.3f}",
         "sen_slope_km3": f"{mm_to_km3(mk_sen['sen_slope_mm_yr'], area_m2):+.2f}",
     }
 
@@ -814,7 +814,6 @@ def make_decision_mini_bar(df: pd.DataFrame, strings: dict) -> go.Figure:
     """Mini bar chart : niveaux annuels moyens projetés (~7 barres, panneau décideur)."""
     scenarios = build_scenarios(gwsa_mm=df["gwsa_mm"], validated_mae_mm=config.VALIDATED_MAE_MM)
     forecast_df = scenarios["forecast_df"]
-    last_obs_date = scenarios["last_obs_date"]
 
     # Années observées récentes (2 dernières)
     obs = df[~df["is_imputed"]].copy()
