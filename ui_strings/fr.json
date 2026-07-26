@@ -139,15 +139,14 @@
 
   "decision_mini_bar_title": "Lecture d\u00e9cisionnelle : niveau moyen annuel",
 
-  "decision_monitoring": "Suivi r\u00e9gulier",
-  "decision_monitoring_text": "Disposer d\u2019un signal mensuel consolid\u00e9 pour le SASS. La fr\u00e9quence mensuelle de GRACE permet un suivi quasi temps r\u00e9el de l\u2019anomalie de stockage \u00e0 l\u2019\u00e9chelle du bassin.",
-  "decision_anticipation": "Anticipation",
-  "decision_anticipation_text": "Visualiser plusieurs trajectoires possibles sur 24 \u00e0 60 mois. L\u2019horizon valid\u00e9 (24 mois, MAE \u2248 6 mm) fournit une projection fiable ; au-del\u00e0, les sc\u00e9narios encadrent l\u2019incertitude.",
-  "decision_dialogue": "Dialogue r\u00e9gional",
-  "decision_dialogue_text": "Produire un support objectif pour les \u00e9changes entre pays concern\u00e9s. Les indicateurs GRACE sont ind\u00e9pendants des d\u00e9clarations nationales \u2014 un point de r\u00e9f\u00e9rence neutre pour le M\u00e9canisme de Concertation tripartite.",
-  "decision_capitalisation": "Capitalisation OSS",
-  "decision_capitalisation_text": "Pr\u00e9parer une extension future vers d\u2019autres aquif\u00e8res transfrontaliers. La cha\u00eene est con\u00e7ue pour \u00eatre appliqu\u00e9e \u00e0 l\u2019ITTAS et aux autres syst\u00e8mes du portefeuille OSS.",
-  "decision_limits_inline": "Limites int\u00e9gr\u00e9es : r\u00e9solution GRACE grossi\u00e8re (~300 km), interpr\u00e9tation \u00e0 l\u2019\u00e9chelle du bassin uniquement. Approximation TWSA \u2212 GLDAS non valid\u00e9e in situ. Lacune inter-missions 2017\u20132018 interpol\u00e9e. Non-s\u00e9parabilit\u00e9 CI/CT \u00e0 cette r\u00e9solution.",
+  "decision_depletion_dss": "D\u00e9pl\u00e9tion confirm\u00e9e",
+  "decision_depletion_dss_text": "Depuis le d\u00e9but des ann\u00e9es 2000, le SASS a perdu ~75 mm de hauteur d\u2019eau \u00e9quivalente, \u00e0 un rythme de ~4,5 mm/an (statistiquement significatif, Mann-Kendall p < 0,001). Cela correspond \u00e0 environ 3\u20134 km\u00b3/an de variation de stock sur l\u2019ensemble du bassin.",
+  "decision_forecast_dss": "Perspective \u00e0 court terme valid\u00e9e",
+  "decision_forecast_dss_text": "Une pr\u00e9vision Prophet \u00e0 24 mois, valid\u00e9e par validation crois\u00e9e (MAE \u2248 6 mm), indique une poursuite du d\u00e9clin dans les conditions actuelles. Au-del\u00e0 de 24 mois, les projections sont des sc\u00e9narios exploratoires, pas des pr\u00e9visions valid\u00e9es.",
+  "decision_fossil_dss": "Pilot\u00e9e par les pr\u00e9l\u00e8vements, pas par le climat",
+  "decision_fossil_dss_text": "La d\u00e9composition STL ne montre quasiment aucun cycle saisonnier. Le d\u00e9clin est pilot\u00e9 par le pompage d\u2019un aquif\u00e8re fossile, non par la s\u00e9cheresse ou la variabilit\u00e9 pluviom\u00e9trique. La tendance ne s\u2019inversera pas sans gestion active.",
+  "decision_resolution_dss": "Mesure int\u00e9gr\u00e9e en colonne",
+  "decision_resolution_dss_text": "GRACE mesure le changement total de la colonne d\u2019eau \u00e0 une r\u00e9solution de ~300 km. Le proxy d\u2019eaux souterraines (TWSA moins les r\u00e9serves de surface GLDAS) est une estimation de premier ordre \u2014 les d\u00e9coupages infra-bassin ou par pays sont indicatifs, pas quantitatifs.",
   "decision_utility_title": "Utilit\u00e9 du stage",
   "decision_utility_text": "Transformer une donn\u00e9e satellite complexe en un outil institutionnel lisible, reproductible et partageable pour la veille strat\u00e9gique de l\u2019OSS.",
 

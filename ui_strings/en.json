@@ -139,15 +139,14 @@
 
   "decision_mini_bar_title": "Decision reading: projected annual level",
 
-  "decision_monitoring": "Regular monitoring",
-  "decision_monitoring_text": "A consolidated monthly signal for the SASS. GRACE monthly frequency enables near-real-time tracking of the storage anomaly at basin scale.",
-  "decision_anticipation": "Anticipation",
-  "decision_anticipation_text": "Visualize multiple possible trajectories over 24 to 60 months. The validated horizon (24 months, MAE \u2248 6 mm) provides a reliable projection; beyond, scenarios frame the uncertainty.",
-  "decision_dialogue": "Regional dialogue",
-  "decision_dialogue_text": "An objective basis for exchanges between concerned countries. GRACE indicators are independent of national declarations \u2014 a neutral reference point for the tripartite Consultation Mechanism.",
-  "decision_capitalisation": "OSS capitalisation",
-  "decision_capitalisation_text": "Prepare a future extension to other transboundary aquifers. The pipeline is designed to be applied to ITTAS and other systems in the OSS portfolio.",
-  "decision_limits_inline": "Integrated limitations: coarse GRACE resolution (~300 km), basin-scale interpretation only. TWSA \u2212 GLDAS approximation not validated in situ. Inter-mission gap 2017\u20132018 interpolated. CI/CT non-separability at this resolution.",
+  "decision_depletion_dss": "Depletion confirmed",
+  "decision_depletion_dss_text": "Since the early 2000s the SASS has lost ~75 mm of equivalent water height, at a rate of ~4.5 mm/yr (statistically significant, Mann-Kendall p < 0.001). This corresponds to roughly 3\u20134 km\u00b3/yr of storage change across the basin.",
+  "decision_forecast_dss": "Validated short-term outlook",
+  "decision_forecast_dss_text": "A 24-month Prophet forecast, cross-validated with MAE \u2248 6 mm, indicates continued decline under current conditions. Beyond 24 months the projections are exploratory scenarios, not validated forecasts.",
+  "decision_fossil_dss": "Abstraction-driven, not climate-driven",
+  "decision_fossil_dss_text": "STL decomposition shows virtually no seasonal cycle. The decline is driven by pumping from a fossil aquifer, not by drought or rainfall variability. This means the trend will not reverse without active management.",
+  "decision_resolution_dss": "Column-integrated measurement",
+  "decision_resolution_dss_text": "GRACE measures total water-column change at ~300 km resolution. The groundwater proxy (TWSA minus GLDAS surface stores) is a first-order estimate \u2014 sub-basin or per-country splits are indicative, not quantitative.",
   "decision_utility_title": "Utility of this work",
   "decision_utility_text": "Transform a complex satellite dataset into a readable, reproducible, and shareable institutional tool for the strategic monitoring of the SASS.",
 

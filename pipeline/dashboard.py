@@ -226,7 +226,7 @@ def make_timeseries_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
             fillcolor=config.COLORS["primary_bg"],
             line=dict(width=0),
             name=strings.get("ts_uncertainty", "Uncertainty"),
-            showlegend=True,
+            showlegend=False,
             hoverinfo="skip",
         ))
 
@@ -261,6 +261,7 @@ def make_timeseries_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
         name=strings["ts_trend_line"],
         line=dict(color=config.COLORS["trend_line"], width=2, dash="dash"),
         hovertemplate="Trend: %{y:.1f} mm<extra></extra>",
+        showlegend=False,
     ))
 
     # Fan chart prévision
@@ -312,7 +313,7 @@ def _add_forecast(fig: go.Figure, df: pd.DataFrame, strings: dict):
             y=pd.concat([validated["yhat_upper"], validated["yhat_lower"][::-1]]),
             fill="toself", fillcolor=config.COLORS["primary_bg"],
             line=dict(width=0), name=strings["forecast_ci"],
-            showlegend=True, hoverinfo="skip",
+            showlegend=False, hoverinfo="skip",
         ))
         fig.add_trace(go.Scatter(
             x=validated["ds"], y=validated["yhat"],
@@ -556,27 +557,20 @@ def make_aoi_map(strings: dict) -> go.Figure:
     aoi = gpd.read_file(config.AOI_GEOJSON)
     poly = aoi.geometry.iloc[0]
 
-    # ── 1. Real mascon cells (~3° each) ──
+    # ── 1. Real mascon cells (~3° each) — dashed grey outlines ──
     mascon_cells = _get_mascon_cells(poly)
     for i, cell in enumerate(mascon_cells):
         is_first = (i == 0)
-        # Rectangle outline for each mascon
         rect_lons = [cell["lon_min"], cell["lon_max"], cell["lon_max"],
                      cell["lon_min"], cell["lon_min"]]
         rect_lats = [cell["lat_min"], cell["lat_min"], cell["lat_max"],
                      cell["lat_max"], cell["lat_min"]]
 
-        # Color intensity by overlap percentage
-        alpha = 0.06 + 0.14 * cell["overlap"]  # 6-20%
-        fill_c = f"rgba(74, 144, 164, {alpha:.2f})"
-
         fig.add_trace(go.Scattergeo(
             lon=rect_lons, lat=rect_lats,
             mode="lines",
-            line=dict(width=0.8, color="rgba(0,0,0,0.20)"),
-            fill="toself",
-            fillcolor=fill_c,
-            name=f"Mascon ~3° ({len(mascon_cells)} cells)" if is_first else "",
+            line=dict(width=1, color=config.COLORS["text_light"], dash="dash"),
+            name="GRACE measurement resolution (~300 km)" if is_first else "",
             legendgroup="mascon",
             showlegend=is_first,
             hovertemplate=(
@@ -635,22 +629,26 @@ def make_aoi_map(strings: dict) -> go.Figure:
         center=dict(lon=center_lon, lat=center_lat),
         lonaxis=dict(
             range=[config.BBOX_LON_MIN - 2, config.BBOX_LON_MAX + 2],
-            showgrid=True, gridwidth=0.4,
-            gridcolor="rgba(0,0,0,0.08)", dtick=5,
+            showgrid=True, gridwidth=0.5,
+            gridcolor=config.COLORS["border"], dtick=5,
         ),
         lataxis=dict(
             range=[config.BBOX_LAT_MIN - 2, config.BBOX_LAT_MAX + 2],
-            showgrid=True, gridwidth=0.4,
-            gridcolor="rgba(0,0,0,0.08)", dtick=5,
+            showgrid=True, gridwidth=0.5,
+            gridcolor=config.COLORS["border"], dtick=5,
         ),
-        showland=True, landcolor="#F0F0EC",
-        showocean=True, oceancolor="#DCEAF7",
-        showlakes=True, lakecolor="#DCEAF7",
-        showcountries=True, countrycolor="#AAAAAA", countrywidth=0.8,
-        showcoastlines=True, coastlinecolor="#999999", coastlinewidth=0.8,
+        showland=True, landcolor=config.COLORS["bg_page"],
+        showocean=True, oceancolor=config.COLORS["bg_page"],
+        showlakes=False,
+        showcountries=True,
+        countrycolor=config.COLORS["primary_light"],
+        countrywidth=1.2,
+        showcoastlines=True,
+        coastlinecolor=config.COLORS["primary_light"],
+        coastlinewidth=1.0,
         showsubunits=False,
         showrivers=False,
-        bgcolor="rgba(0,0,0,0)",
+        bgcolor=config.COLORS["bg_page"],
     )
 
     # ── 5. Layout ──
@@ -666,7 +664,8 @@ def make_aoi_map(strings: dict) -> go.Figure:
             bgcolor="rgba(255,255,255,0.85)",
             bordercolor="rgba(0,0,0,0.1)", borderwidth=1,
         ),
-        paper_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor=config.COLORS["bg_page"],
+        plot_bgcolor=config.COLORS["bg_page"],
     )
 
     return fig
@@ -922,7 +921,7 @@ def make_decision_mini_bar(df: pd.DataFrame, strings: dict) -> go.Figure:
         x=[str(y) for y in combined.index],
         y=combined.values,
         marker_color=colors,
-        text=[f"{v:.0f}" for v in combined.values],
+        text=[f"{v:.0f} mm" for v in combined.values],
         textposition="outside",
         textfont=dict(size=9),
         hovertemplate="%{x}: %{y:.1f} mm<extra></extra>",

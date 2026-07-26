@@ -14,7 +14,8 @@
       "Bash(ncdump -h data/raw/mascon_cri.nc)",
       "Bash(/c/Users/user/Desktop/grace-sass/README_MASCON_HEATMAP.txt:*)",
       "Bash(/c/Users/user/Desktop/grace-sass/DELIVERABLES.txt:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(uv run:*)"
     ]
   }
 }
