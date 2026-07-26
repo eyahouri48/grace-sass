@@ -1,4 +1,4 @@
-# GRACE/SASS — Groundwater-Storage Monitoring & Forecasting
+# GRACE/SASS : Groundwater-Storage Monitoring & Forecasting
 
 Pipeline Python reproductible + tableau de bord pour le suivi (« veille »)
 et la prévision (« perspectives ») du stockage des eaux souterraines du
