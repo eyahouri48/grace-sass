@@ -64,49 +64,53 @@ make clean           # supprime les fichiers temporaires
 
 ## Architecture du pipeline
 
+```
 ┌───────────────────────────────────────────────────┐
-│ PRÉSENTATION Plotly (HTML statique, Path A) │
-│ • série temporelle GWSA + prévision + IC │
-│ • KPI : tendance (mm/an, km³/an), p-value MK │
-│ • carte AOI / grille mascons │
-│ • horodatage de fraîcheur à 3 lignes │
+│  PRÉSENTATION  Plotly (HTML statique, Path A)     │
+│   • série temporelle GWSA + prévision + IC        │
+│   • KPI : tendance (mm/an, km³/an), p-value MK   │
+│   • carte AOI / grille mascons                    │
+│   • horodatage de fraîcheur à 3 lignes            │
 ├───────────────────────────────────────────────────┤
-│ ANALYSE modules Python testables │
-│ • proxy.py (TWSA − GLDAS → gwsa_mm) │
-│ • trend.py (OLS+HAC, Sen, MK saisonnier) │
-│ • decomposition.py (STL) │
-│ • forecast.py (Prophet, SARIMA, CV glissante) │
+│  ANALYSE  modules Python testables                │
+│   • proxy.py  (TWSA − GLDAS → gwsa_mm)           │
+│   • trend.py  (OLS+HAC, Sen, MK saisonnier)      │
+│   • decomposition.py  (STL)                       │
+│   • forecast.py  (Prophet, SARIMA, CV glissante)  │
 ├───────────────────────────────────────────────────┤
-│ INGESTION/CACHE │
-│ • GRACE mascon CRI via HTTPS → Parquet │
-│ • GLDAS-Noah via OPeNDAP/HTTPS → Parquet │
-│ • Actualisation automatique (GitHub Actions) │
+│  INGESTION/CACHE                                  │
+│   • GRACE mascon CRI via HTTPS → Parquet          │
+│   • GLDAS-Noah via OPeNDAP/HTTPS → Parquet       │
+│   • Actualisation automatique (GitHub Actions)    │
 └───────────────────────────────────────────────────┘
+```
 
 
 ## Structure du dépôt
 
+```
 grace-sass/
-├── pipeline/ # code source du pipeline
-│ ├── config.py # toutes les constantes (chemins, seuils, palette)
-│ ├── ingest_grace.py # ingestion GRACE (HTTPS + clip AOI)
-│ ├── ingest_gldas.py # ingestion GLDAS (OPeNDAP / HTTPS)
-│ ├── proxy.py # proxy GWSA = TWSA − anomalie GLDAS
-│ ├── preprocessing.py # réindexation, lacunes, is_imputed
-│ ├── trend.py # OLS+HAC, Mann-Kendall, Sen, volume
-│ ├── indicators.py # z-score, percentile
-│ ├── decomposition.py # STL (period=12)
-│ ├── forecast.py # Prophet, SARIMA, validation glissante
-│ ├── scenarios.py # cadrage scénarios (validé vs extrapolation)
-│ ├── refresh.py # actualisation append-only (CI)
-│ └── build_dashboard.py # rendu HTML statique (Path A)
-├── ui_strings/ # libellés bilingues EN/FR
-├── tests/ # suite de tests (100 % hors ligne)
-├── data/ # cache Parquet (committé) + last_refresh.json
-├── docs/ # dashboard statique (cible GitHub Pages)
-├── sass.geojson # emprise AOI du SASS
-├── pyproject.toml # dépendances (uv)
-└── Makefile # commandes documentées
+├── pipeline/                # code source du pipeline
+│   ├── config.py            # toutes les constantes (chemins, seuils, palette)
+│   ├── ingest_grace.py      # ingestion GRACE (HTTPS + clip AOI)
+│   ├── ingest_gldas.py      # ingestion GLDAS (OPeNDAP / HTTPS)
+│   ├── proxy.py             # proxy GWSA = TWSA − anomalie GLDAS
+│   ├── preprocessing.py     # réindexation, lacunes, is_imputed
+│   ├── trend.py             # OLS+HAC, Mann-Kendall, Sen, volume
+│   ├── indicators.py        # z-score, percentile
+│   ├── decomposition.py     # STL (period=12)
+│   ├── forecast.py          # Prophet, SARIMA, validation glissante
+│   ├── scenarios.py         # cadrage scénarios (validé vs extrapolation)
+│   ├── refresh.py           # actualisation append-only (CI)
+│   └── build_dashboard.py   # rendu HTML statique (Path A)
+├── ui_strings/              # libellés bilingues EN/FR
+├── tests/                   # suite de tests (100 % hors ligne)
+├── data/                    # cache Parquet (committé) + last_refresh.json
+├── docs/                    # dashboard statique (cible GitHub Pages)
+├── sass.geojson             # emprise AOI du SASS
+├── pyproject.toml           # dépendances (uv)
+└── Makefile                 # commandes documentées
+```
 
 
 ## Données
