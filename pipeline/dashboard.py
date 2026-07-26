@@ -957,9 +957,9 @@ def make_multi_scenario_figure(df: pd.DataFrame, strings: dict) -> go.Figure:
         font=dict(family="Inter, system-ui, sans-serif", size=13,
                   color=config.COLORS["text"]),
         legend=dict(orientation="h", yanchor="bottom", y=1.02,
-                    xanchor="center", x=0.5, font_size=11,
-                    entrywidth=0.22, entrywidthmode="fraction"),
-        margin=dict(l=60, r=20, t=40, b=40),
+                    xanchor="center", x=0.5, font_size=10,
+                    entrywidth=130),
+        margin=dict(l=60, r=20, t=60, b=40),
         hovermode="x unified",
         height=380,
     )
