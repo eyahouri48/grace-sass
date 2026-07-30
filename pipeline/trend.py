@@ -8,11 +8,11 @@ Spec §6.1 — observed months only (is_imputed == False).
 """
 
 
-import pandas as pd
 import geopandas as gpd
-from pyproj import Geod
-import statsmodels.api as sm
+import pandas as pd
 import pymannkendall as mk
+import statsmodels.api as sm
+from pyproj import Geod
 
 from pipeline.config import AOI_GEOJSON, HAC_MAXLAGS
 

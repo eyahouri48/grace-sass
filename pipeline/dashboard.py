@@ -9,19 +9,18 @@ build_dashboard.py l'orchestre pour produire docs/index.html.
 
 import json
 
+import geopandas as gpd
 import numpy as np
 import pandas as pd
-import xarray as xr
-import geopandas as gpd
 import plotly.graph_objects as go
+import xarray as xr
 from plotly.subplots import make_subplots
 
 from pipeline import config
-from pipeline.trend import mann_kendall_sen, ols_trend_hac, compute_aoi_area_m2, mm_to_km3
+from pipeline.decomposition import run_decomposition_diagnostics, run_stl
 from pipeline.indicators import compute_zscore
-from pipeline.decomposition import run_stl, run_decomposition_diagnostics
-from pipeline.scenarios import build_scenarios, get_scenario_summary, build_multi_scenarios
-
+from pipeline.scenarios import build_multi_scenarios, build_scenarios, get_scenario_summary
+from pipeline.trend import compute_aoi_area_m2, mann_kendall_sen, mm_to_km3, ols_trend_hac
 
 # ── Chargement des données ────────────────────────────────────
 
@@ -49,7 +48,7 @@ def load_data() -> pd.DataFrame:
 
     # Appliquer le prétraitement si is_imputed n'existe pas encore
     if "is_imputed" not in df.columns:
-        from pipeline.preprocessing import reindex_monthly, interpolate_gaps
+        from pipeline.preprocessing import interpolate_gaps, reindex_monthly
         df = reindex_monthly(df)
         df = interpolate_gaps(df)
 

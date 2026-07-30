@@ -13,16 +13,23 @@ from jinja2 import Template
 
 from pipeline import config
 from pipeline.dashboard import (
-    load_data, load_strings, load_freshness,
-    compute_kpis, make_sparkline_data,
-    compute_trend_table, compute_forecast_milestones,
+    compute_forecast_milestones,
+    compute_kpis,
     compute_scenario_comparison,
-    make_timeseries_figure, make_stl_figure,
-    make_seasonal_bar_figure, make_annual_bar_figure,
-    make_gldas_contribution_figure,
+    compute_trend_table,
+    load_data,
+    load_freshness,
+    load_strings,
+    make_annual_bar_figure,
     make_aoi_map,
-    make_multi_scenario_figure, make_decision_mini_bar,
+    make_decision_mini_bar,
     make_expert_scenario_figure,
+    make_gldas_contribution_figure,
+    make_multi_scenario_figure,
+    make_seasonal_bar_figure,
+    make_sparkline_data,
+    make_stl_figure,
+    make_timeseries_figure,
 )
 
 

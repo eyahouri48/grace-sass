@@ -102,7 +102,7 @@ def refresh_gldas() -> int:
     int
         Nombre de mois GLDAS nouveaux ajoutés.
     """
-    from pipeline.ingest_gldas import ingest_gldas, GLDAS_PARQUET
+    from pipeline.ingest_gldas import GLDAS_PARQUET, ingest_gldas
 
     # Compter les mois avant
     n_before = 0
