@@ -64,16 +64,27 @@ def load_freshness(df: pd.DataFrame = None) -> dict:
         if all(v != "N/A" for v in data.values()):
             return data
 
-    # Dériver les dates depuis le DataFrame si disponible
+    # Dériver les dates depuis les caches individuels
     if df is not None:
+        from pipeline.config import DATA_DIR
+        twsa_cache = DATA_DIR / "twsa_cm.parquet"
+        gldas_cache = DATA_DIR / "gldas_mm.parquet"
         obs = df[~df["is_imputed"]]
-        last_obs = obs.index[-1].strftime("%Y-%m")
-        last_all = df.index[-1].strftime("%Y-%m")
-        # GRACE et GLDAS ont la même couverture dans notre pipeline
+        last_common = obs.index[-1].strftime("%Y-%m")
+        last_grace = last_common
+        last_gldas = last_common
+        if twsa_cache.exists():
+            twsa = pd.read_parquet(twsa_cache)["twsa_cm"].dropna()
+            if not twsa.empty:
+                last_grace = twsa.index.max().strftime("%Y-%m")
+        if gldas_cache.exists():
+            gldas = pd.read_parquet(gldas_cache)["gldas_mm"].dropna()
+            if not gldas.empty:
+                last_gldas = gldas.index.max().strftime("%Y-%m")
         return {
-            "last_grace_month": last_obs,
-            "last_gldas_month": last_obs,
-            "last_common_month": last_all,
+            "last_grace_month": last_grace,
+            "last_gldas_month": last_gldas,
+            "last_common_month": last_common,
         }
 
     return {
@@ -186,8 +197,12 @@ def compute_kpis(df: pd.DataFrame) -> dict:
         "kpi_rank": rank,
         "kpi_rank_total": rank_total,
         "kpi_interp_key": interp_key,
-        "kpi_forecast_mae": "6.1",
+        "kpi_forecast_mae": f"{config.VALIDATED_MAE_MM:.1f}",
         "kpi_forecast_ci_avg": f"{ci_avg:.0f}",
+        # DSS narrative text variables (dynamic, not hardcoded)
+        "dss_last_anomaly": f"{abs(last_anomaly):.0f}",
+        "dss_trend_rate": f"{abs(trend_rate_mm):.1f}",
+        "dss_mae": f"{config.VALIDATED_MAE_MM:.0f}",
     }
 
 

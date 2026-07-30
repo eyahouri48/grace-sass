@@ -10,21 +10,20 @@ Ce module contient :
 - La production de la prévision finale avec intervalle d'incertitude
 """
 
+import numpy as np
 import pandas as pd
 from prophet import Prophet
 from prophet.diagnostics import cross_validation, performance_metrics
-from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
-import numpy as np
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 from pipeline.config import (
+    CV_HORIZON,
     CV_INITIAL,
     CV_PERIOD,
-    CV_HORIZON,
-    PROPHET_CHANGEPOINT_PRIOR_SCALE,
     FORECAST_HORIZON_MONTHS,
+    PROPHET_CHANGEPOINT_PRIOR_SCALE,
 )
-
 
 # ── 1. Préparation des données ──────────────────────────────────
 

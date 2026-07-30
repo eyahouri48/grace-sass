@@ -9,6 +9,7 @@ Spec §6.1 — observed months only (is_imputed == False).
 
 
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 import pymannkendall as mk
 import statsmodels.api as sm
@@ -130,11 +131,17 @@ def mann_kendall_sen(
         mk_trend ('increasing'/'decreasing'/'no trend'),
         mk_pvalue, mk_z, sen_slope_mm_month, sen_slope_mm_yr
     """
-    # --- Filtrer les mois observés ---
-    obs = series[~is_imputed].dropna()
+    # --- Série complète avec NaN pour les mois imputés ---
+    # On garde la structure mensuelle intacte (position i = mois i mod 12)
+    # pour que seasonal_test compare les bons mois entre eux.
+    # pymannkendall gère les NaN nativement.
+    full = series.copy()
+    full[is_imputed] = np.nan
+    full_index = pd.date_range(full.index.min(), full.index.max(), freq="MS")
+    full = full.reindex(full_index)
 
     # --- MK saisonnier (period=12 pour le cycle annuel) ---
-    result = mk.seasonal_test(obs.values, period=12)
+    result = mk.seasonal_test(full.values, period=12)
 
     return {
         "mk_trend": result.trend,            # 'decreasing', 'increasing', 'no trend'

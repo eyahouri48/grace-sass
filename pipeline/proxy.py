@@ -12,7 +12,6 @@ import pandas as pd
 
 from pipeline.config import BASELINE_END, BASELINE_START, DATA_DIR, SERIES_PARQUET
 
-
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------

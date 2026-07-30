@@ -3,16 +3,19 @@
 moyenne de bassin pondérée cos-lat → twsa_cm en Parquet."""
 
 import logging
-import numpy as np
-import xarray as xr
-import geopandas as gpd
-import pandas as pd
 from pathlib import Path
+
+import geopandas as gpd
+import numpy as np
+import pandas as pd
+import xarray as xr
 
 from pipeline.config import (
     AOI_GEOJSON,
-    BBOX_LAT_MIN, BBOX_LAT_MAX,
-    BBOX_LON_MIN, BBOX_LON_MAX,
+    BBOX_LAT_MAX,
+    BBOX_LAT_MIN,
+    BBOX_LON_MAX,
+    BBOX_LON_MIN,
     DATA_DIR,
     RAW_DIR,
 )

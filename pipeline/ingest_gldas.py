@@ -16,11 +16,14 @@ import shutil
 from pathlib import Path
 
 import earthaccess
+import geopandas as gpd
 import numpy as np
 import pandas as pd
+import rioxarray  # noqa: F401 — active l'accesseur .rio
 import xarray as xr
 
 from pipeline.config import (
+    AOI_GEOJSON,
     BBOX_LAT,
     BBOX_LON,
     DATA_DIR,
@@ -92,6 +95,12 @@ def process_one_granule(nc_path: Path) -> dict | None:
         total = box.to_array(dim="component").sum(
             dim="component", skipna=False
         )
+
+        # --- Découpe au polygone exact (comme GRACE — spec §3) ---
+        aoi = gpd.read_file(AOI_GEOJSON)
+        total = total.rio.set_spatial_dims(x_dim="lon", y_dim="lat")
+        total = total.rio.write_crs("EPSG:4326")
+        total = total.rio.clip(aoi.geometry, aoi.crs, all_touched=True, drop=False)
 
         # --- Moyenne de bassin pondérée par cosinus de latitude ---
         weights = np.cos(np.deg2rad(total.lat))

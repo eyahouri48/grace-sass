@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="Logo-OSS_Vect_Fr.png">
     <title>SASS - Decision-Support Tool</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -133,19 +134,6 @@
         .ui-card .js-plotly-plot, .ui-card .plotly { width: 100% !important; }
         .panel-context { font-size: 0.75rem; color: var(--c-text-mid); line-height: 1.5; max-width: 720px; margin-bottom: 10px; }
 
-        /* ── INSIGHT STRIP (professional markers) ─────── */
-        .insight-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
-        @media (max-width: 768px) { .insight-strip { grid-template-columns: 1fr 1fr; } }
-        .insight-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--c-primary-bg); border-radius: 6px; border: 1px solid var(--c-border); }
-        .insight-marker {
-            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-        }
-        .insight-marker.m-trend { background: var(--c-primary); }
-        .insight-marker.m-governance { background: var(--c-positive); }
-        .insight-marker.m-forecast { background: var(--c-primary-accent); }
-        .insight-marker.m-transparency { background: var(--c-text-light); }
-        .insight-label { font-size: 0.7rem; font-weight: 600; color: var(--c-text-mid); line-height: 1.3; }
-
         /* ── GRID LAYOUTS ──────────────────────────────── */
         .grid-2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
         .grid-3-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin-bottom: 16px; }
@@ -246,7 +234,7 @@
 <!-- ================================================================ -->
 <header class="oss-navbar">
     <div class="nav-brand">
-        <img src="logo.png" alt="OSS Logo" class="oss-logo-transparent" onerror="this.style.display='none'">
+        <img src="Logo-OSS_Vect_Fr.png" alt="OSS Logo" class="oss-logo-transparent" onerror="this.style.display='none'">
         <div class="brand-titles">
             <span class="org-subtitle">
                 <span class="lang-en">SAHARA AND SAHEL OBSERVATORY</span>
@@ -452,37 +440,6 @@
                     <span class="lang-fr">{{ strings_fr.ts_title }}</span>
                 </h3>
                 <div class="chart-box">{{ fig_timeseries | safe }}</div>
-                <!-- Insight strip: 4 compact items with colored dots -->
-                <div class="insight-strip">
-                    <div class="insight-item">
-                        <span class="insight-marker m-trend"></span>
-                        <span class="insight-label">
-                            <span class="lang-en">{{ strings_en.insight_strip_trend }}</span>
-                            <span class="lang-fr">{{ strings_fr.insight_strip_trend }}</span>
-                        </span>
-                    </div>
-                    <div class="insight-item">
-                        <span class="insight-marker m-governance"></span>
-                        <span class="insight-label">
-                            <span class="lang-en">{{ strings_en.insight_strip_governance }}</span>
-                            <span class="lang-fr">{{ strings_fr.insight_strip_governance }}</span>
-                        </span>
-                    </div>
-                    <div class="insight-item">
-                        <span class="insight-marker m-forecast"></span>
-                        <span class="insight-label">
-                            <span class="lang-en">{{ strings_en.insight_strip_forecast }}</span>
-                            <span class="lang-fr">{{ strings_fr.insight_strip_forecast }}</span>
-                        </span>
-                    </div>
-                    <div class="insight-item">
-                        <span class="insight-marker m-transparency"></span>
-                        <span class="insight-label">
-                            <span class="lang-en">{{ strings_en.insight_strip_transparency }}</span>
-                            <span class="lang-fr">{{ strings_fr.insight_strip_transparency }}</span>
-                        </span>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -505,8 +462,8 @@
                     <div class="chart-box">{{ fig_multi_scenario | safe }}</div>
                     <div class="forecast-quality">
                         &#10003;
-                        <span class="lang-en">{{ strings_en.forecast_mae_text }} &middot; CI avg. &plusmn; {{ kpi_forecast_ci_avg }} mm</span>
-                        <span class="lang-fr">{{ strings_fr.forecast_mae_text }} &middot; IC moy. &plusmn; {{ kpi_forecast_ci_avg }} mm</span>
+                        <span class="lang-en">MAE &asymp; {{ dss_mae }} mm (cross-validated) &middot; CI avg. &plusmn; {{ kpi_forecast_ci_avg }} mm</span>
+                        <span class="lang-fr">MAE &asymp; {{ dss_mae }} mm (valid&eacute;e par CV) &middot; IC moy. &plusmn; {{ kpi_forecast_ci_avg }} mm</span>
                     </div>
                 </div>
                 <div class="ui-card">
@@ -590,12 +547,12 @@
                     </h3>
                     <div class="dss-paragraphs">
                         <p class="dss-paragraph">
-                            <span class="lang-en"><strong>{{ strings_en.decision_depletion_dss }}.</strong> {{ strings_en.decision_depletion_dss_text }}</span>
-                            <span class="lang-fr"><strong>{{ strings_fr.decision_depletion_dss }}.</strong> {{ strings_fr.decision_depletion_dss_text }}</span>
+                            <span class="lang-en"><strong>{{ strings_en.decision_depletion_dss }}.</strong> The SASS has lost approximately {{ dss_last_anomaly }} mm of equivalent water height since the 2004&ndash;2009 baseline. At the observed rate of ~{{ dss_trend_rate }} mm/year, the deficit exceeds the net abstraction-recharge gap estimated by OSS (~1&ndash;2 km&sup3;/yr), suggesting accelerating pressure on the resource.</span>
+                            <span class="lang-fr"><strong>{{ strings_fr.decision_depletion_dss }}.</strong> Le SASS a perdu environ {{ dss_last_anomaly }} mm de hauteur d&rsquo;eau &eacute;quivalente depuis la p&eacute;riode de r&eacute;f&eacute;rence 2004&ndash;2009. Au rythme observ&eacute; de ~{{ dss_trend_rate }} mm/an, le d&eacute;ficit d&eacute;passe l&rsquo;&eacute;cart net pr&eacute;l&egrave;vements-recharge estim&eacute; par l&rsquo;OSS (~1&ndash;2 km&sup3;/an), sugg&eacute;rant une pression croissante sur la ressource.</span>
                         </p>
                         <p class="dss-paragraph">
-                            <span class="lang-en"><strong>{{ strings_en.decision_forecast_dss }}.</strong> {{ strings_en.decision_forecast_dss_text }}</span>
-                            <span class="lang-fr"><strong>{{ strings_fr.decision_forecast_dss }}.</strong> {{ strings_fr.decision_forecast_dss_text }}</span>
+                            <span class="lang-en"><strong>{{ strings_en.decision_forecast_dss }}.</strong> The 24-month forecast, validated by rolling-origin cross-validation (MAE &asymp; {{ dss_mae }} mm), projects continued decline. Beyond 24 months, projections are scenario extrapolations &mdash; not validated forecasts.</span>
+                            <span class="lang-fr"><strong>{{ strings_fr.decision_forecast_dss }}.</strong> La pr&eacute;vision &agrave; 24 mois, valid&eacute;e par validation crois&eacute;e &agrave; origine glissante (MAE &asymp; {{ dss_mae }} mm), projette la poursuite du d&eacute;clin. Au-del&agrave; de 24 mois, les projections sont des extrapolations de sc&eacute;narios &mdash; pas des pr&eacute;visions valid&eacute;es.</span>
                         </p>
                         <p class="dss-paragraph">
                             <span class="lang-en"><strong>{{ strings_en.decision_fossil_dss }}.</strong> {{ strings_en.decision_fossil_dss_text }}</span>

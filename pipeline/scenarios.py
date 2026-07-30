@@ -12,8 +12,8 @@ from prophet import Prophet
 
 from pipeline.config import (
     FORECAST_HORIZON_MONTHS,
-    SCENARIO_HORIZON_MONTHS,
     PROPHET_CHANGEPOINT_PRIOR_SCALE,
+    SCENARIO_HORIZON_MONTHS,
 )
 
 

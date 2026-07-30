@@ -14,7 +14,7 @@ import pandas as pd
 from statsmodels.tsa.seasonal import STL
 from statsmodels.tsa.stattools import acf, pacf
 
-from pipeline.config import STL_PERIOD, STL_SEASONAL, STL_ROBUST, ACF_NLAGS
+from pipeline.config import ACF_NLAGS, STL_PERIOD, STL_ROBUST, STL_SEASONAL
 
 
 def run_stl(series: pd.Series) -> pd.DataFrame:

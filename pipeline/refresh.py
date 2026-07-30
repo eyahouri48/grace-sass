@@ -154,12 +154,17 @@ def write_refresh_metadata(n_grace_new: int, n_gldas_new: int) -> dict:
     last_gldas = None
     last_common = None
 
+    # Lire les dates depuis les caches individuels (pas le combiné)
+    # pour refléter la vraie couverture de chaque source
+    twsa_cache = config.DATA_DIR / "twsa_cm.parquet"
+    gldas_cache = config.DATA_DIR / "gldas_mm.parquet"
+    if twsa_cache.exists():
+        last_grace = _last_valid_month(pd.read_parquet(twsa_cache)["twsa_cm"])
+    if gldas_cache.exists():
+        last_gldas = _last_valid_month(pd.read_parquet(gldas_cache)["gldas_mm"])
+
     if config.SERIES_PARQUET.exists():
         df = pd.read_parquet(config.SERIES_PARQUET)
-        if "twsa_cm" in df.columns:
-            last_grace = _last_valid_month(df["twsa_cm"])
-        if "gldas_anom_mm" in df.columns:
-            last_gldas = _last_valid_month(df["gldas_anom_mm"])
         if "gwsa_mm" in df.columns:
             last_common = _last_valid_month(df["gwsa_mm"])
 

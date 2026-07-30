@@ -9,7 +9,7 @@ uniquement les mois observés (is_imputed == False).
 import numpy as np
 import pandas as pd
 
-from pipeline.config import BASELINE_START, BASELINE_END
+from pipeline.config import BASELINE_END, BASELINE_START
 
 
 def compute_zscore(
