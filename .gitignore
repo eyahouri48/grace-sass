@@ -11,3 +11,4 @@ notebooks/.ipynb_checkpoints/
 data/raw/
 # Notes and tests - moez
 notes_ML/
+.claude
