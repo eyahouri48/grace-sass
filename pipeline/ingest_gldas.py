@@ -117,7 +117,8 @@ def process_one_granule(nc_path: Path) -> dict | None:
         # --- Garde-fou : rejeter les valeurs physiquement impossibles ---
         # Le stockage de surface total (sol + neige + canopée) sur le SASS
         # est typiquement 200–350 mm. Au-delà de 0–2000 mm, c'est un artefact.
-        if basin_mean < 0 or basin_mean > 2000:
+        import math
+        if math.isnan(basin_mean) or basin_mean < 0 or basin_mean > 2000:
             logger.warning(
                 "Valeur GLDAS aberrante rejetée pour %s : %.1f mm",
                 nc_path.name, basin_mean,
