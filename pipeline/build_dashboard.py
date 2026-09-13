@@ -6,6 +6,7 @@ Charge les données, appelle les fonctions de dashboard.py,
 remplit le template HTML, et écrit docs/index.html.
 """
 
+from datetime import datetime, timezone
 from pathlib import Path
 
 import plotly.io as pio
@@ -31,6 +32,30 @@ from pipeline.dashboard import (
     make_stl_figure,
     make_timeseries_figure,
 )
+
+
+def _compute_sync_status(freshness: dict) -> dict:
+    """Détermine le statut SYNC à partir de la fraîcheur et des erreurs."""
+    now = datetime.now(timezone.utc)
+
+    if freshness.get("grace_status") == "error" or \
+       freshness.get("gldas_status") == "error":
+        return {"label": "error"}
+
+    thresholds = [
+        ("last_grace_month", config.GRACE_EXPECTED_LAG_MONTHS),
+        ("last_gldas_month", config.GLDAS_EXPECTED_LAG_MONTHS),
+    ]
+    for key, max_lag in thresholds:
+        month_str = freshness.get(key)
+        if not month_str or month_str == "N/A":
+            return {"label": "stale"}
+        last = datetime.strptime(month_str, "%Y-%m").replace(tzinfo=timezone.utc)
+        age_months = (now.year - last.year) * 12 + (now.month - last.month)
+        if age_months > max_lag:
+            return {"label": "stale"}
+
+    return {"label": "ok"}
 
 
 def build():
@@ -68,6 +93,7 @@ def build():
 
     # Date de dernière mise à jour (dernier mois observé)
     last_update_date = freshness["last_grace_month"]
+    sync_status = _compute_sync_status(freshness)
 
     print("[4/5] Assemblage du HTML...")
     tpl_path = Path(__file__).parent / "templates" / "dashboard.html"
@@ -75,6 +101,7 @@ def build():
         strings_en=strings_en, strings_fr=strings_fr,
         freshness=freshness, sparklines=sparklines,
         last_update_date=last_update_date,
+        sync_status=sync_status,
         colors=config.COLORS,
         trend_table=trend_table,
         forecast_milestones=forecast_milestones,

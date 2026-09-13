@@ -38,12 +38,6 @@ BBOX_LON_MIN, BBOX_LON_MAX = BBOX_LON
 # ---------------------------------------------------------------------------
 GRACE_COLLECTION = "TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4"
 GRACE_VAR = "lwe_thickness"             # cm, anomalie vs moyenne 2004–2009
-GRACE_URL = (
-    "https://archive.podaac.earthdata.nasa.gov/"
-    "podaac-ops-cumulus-protected/"
-    "TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4/"
-    "GRCTellus.JPL.200204_202605.GLO.RL06.3M.MSCNv04CRI.nc"
-)
 
 # ---------------------------------------------------------------------------
 # GLDAS-2.1 Noah — flux de production principal (spec §4b)
@@ -109,7 +103,13 @@ GAP_END   = "2018-06-01"               # fin lacune
 GRACE_MISSION_LABEL_DATE  = "2003-06-01"   # annotation axe chronologique
 GRACEFO_MISSION_LABEL_DATE = "2019-06-01"  # annotation axe chronologique
 
-
+# ---------------------------------------------------------------------------
+# Seuils de fraîcheur (mois de retard max avant alerte « STALE »)
+# GRACE ~2 mois de latence structurelle → alerte à 3
+# GLDAS ~4 mois de latence structurelle → alerte à 5
+# ---------------------------------------------------------------------------
+GRACE_EXPECTED_LAG_MONTHS = 3
+GLDAS_EXPECTED_LAG_MONTHS = 5
 
 # ---------------------------------------------------------------------------
 # Palette du dashboard

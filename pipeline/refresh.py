@@ -143,12 +143,22 @@ def refresh_proxy() -> None:
 
 # ── Heartbeat (last_refresh.json) ───────────────────────────────
 
-def write_refresh_metadata(n_grace_new: int, n_gldas_new: int) -> dict:
+def write_refresh_metadata(
+    n_grace_new: int,
+    n_gldas_new: int,
+    *,
+    grace_status: str = "ok",
+    gldas_status: str = "ok",
+    proxy_status: str = "ok",
+    grace_error: str | None = None,
+    gldas_error: str | None = None,
+) -> dict:
     """Écrit last_refresh.json — TOUJOURS, même si rien de nouveau.
 
     Ce fichier sert de :
     - heartbeat contre l'auto-désactivation GitHub après 60 jours
     - source pour l'horodatage de fraîcheur à 3 lignes du dashboard
+    - diagnostic de santé du pipeline (status par source)
     """
     last_grace = None
     last_gldas = None
@@ -168,6 +178,10 @@ def write_refresh_metadata(n_grace_new: int, n_gldas_new: int) -> dict:
         if "gwsa_mm" in df.columns:
             last_common = _last_valid_month(df["gwsa_mm"])
 
+    overall = "ok"
+    if grace_status == "error" or gldas_status == "error":
+        overall = "error"
+
     meta = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "last_grace_month": last_grace,
@@ -175,6 +189,12 @@ def write_refresh_metadata(n_grace_new: int, n_gldas_new: int) -> dict:
         "last_common_month": last_common,
         "grace_months_added": n_grace_new,
         "gldas_months_added": n_gldas_new,
+        "status": overall,
+        "grace_status": grace_status,
+        "gldas_status": gldas_status,
+        "proxy_status": proxy_status,
+        "grace_error": grace_error,
+        "gldas_error": gldas_error,
     }
 
     meta_path = Path(config.LAST_REFRESH_JSON)
@@ -183,8 +203,10 @@ def write_refresh_metadata(n_grace_new: int, n_gldas_new: int) -> dict:
 
     logger.info("Métadonnées écrites : %s", meta_path)
     logger.info(
-        "Fraîcheur — GRACE : %s | GLDAS : %s | proxy GWSA : %s",
-        last_grace or "∅", last_gldas or "∅", last_common or "∅",
+        "Fraîcheur — GRACE : %s (%s) | GLDAS : %s (%s) | proxy : %s",
+        last_grace or "∅", grace_status,
+        last_gldas or "∅", gldas_status,
+        last_common or "∅",
     )
     return meta
 
@@ -197,7 +219,6 @@ def refresh() -> dict:
     Ordre : GRACE → GLDAS → proxy → métadonnées.
     Chaque source est indépendante : si GRACE échoue, on garde
     le cache existant et on tente quand même GLDAS (et vice versa).
-    Exit code 0 dans tous les cas.
 
     Returns
     -------
@@ -209,40 +230,73 @@ def refresh() -> dict:
     logger.info("=" * 60)
 
     # --- GRACE (try/except : si ça échoue, on continue) ---
+    grace_status = "ok"
+    grace_error = None
     try:
         n_grace = refresh_grace()
-    except Exception:
+        if n_grace == 0:
+            grace_status = "no_new_data"
+    except Exception as exc:
         logger.exception("Échec ingestion GRACE — cache existant conservé.")
         n_grace = 0
+        grace_status = "error"
+        grace_error = str(exc)
 
     # --- GLDAS (try/except : si ça échoue, on continue) ---
+    gldas_status = "ok"
+    gldas_error = None
     try:
         n_gldas = refresh_gldas()
-    except Exception:
+        if n_gldas == 0:
+            gldas_status = "no_new_data"
+    except Exception as exc:
         logger.exception("Échec ingestion GLDAS — cache existant conservé.")
         n_gldas = 0
+        gldas_status = "error"
+        gldas_error = str(exc)
 
     # --- Proxy (seulement si les deux caches intermédiaires existent) ---
     twsa_cache = config.DATA_DIR / "twsa_cm.parquet"
     gldas_cache = config.DATA_DIR / "gldas_mm.parquet"
+    proxy_status = "ok"
 
     if twsa_cache.exists() and gldas_cache.exists():
         try:
             refresh_proxy()
         except Exception:
             logger.exception("Échec calcul proxy — cache principal inchangé.")
+            proxy_status = "error"
     else:
         logger.warning(
             "Cache(s) manquant(s) — proxy non recalculé. "
             "twsa=%s, gldas=%s",
             twsa_cache.exists(), gldas_cache.exists(),
         )
+        proxy_status = "skipped"
 
     # --- Métadonnées (TOUJOURS — heartbeat) ---
-    meta = write_refresh_metadata(n_grace, n_gldas)
+    meta = write_refresh_metadata(
+        n_grace, n_gldas,
+        grace_status=grace_status,
+        gldas_status=gldas_status,
+        proxy_status=proxy_status,
+        grace_error=grace_error,
+        gldas_error=gldas_error,
+    )
+
+    # --- Écrire un fichier sentinelle si erreur (pour le CI) ---
+    fail_flag = config.DATA_DIR / ".refresh_failed"
+    if meta["status"] == "error":
+        fail_flag.write_text("1")
+        logger.error(
+            "REFRESH ÉCHOUÉ — sentinelle écrite : %s", fail_flag
+        )
+    elif fail_flag.exists():
+        fail_flag.unlink()
 
     logger.info("=" * 60)
-    logger.info("REFRESH — terminé (GRACE +%d, GLDAS +%d)", n_grace, n_gldas)
+    logger.info("REFRESH — terminé (GRACE +%d [%s], GLDAS +%d [%s])",
+                n_grace, grace_status, n_gldas, gldas_status)
     logger.info("=" * 60)
 
     return meta

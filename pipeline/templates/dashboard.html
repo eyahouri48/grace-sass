@@ -55,7 +55,10 @@
         .status-item { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #DAD7CD; }
         .status-label { opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.6rem; }
         .status-val { font-weight: 600; color: #fff; }
-        .badge-sync { background: #8A9A5B; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 0.6rem; font-weight: 600; }
+        .badge-sync { color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 0.6rem; font-weight: 600; }
+        .badge-sync-ok { background: #8A9A5B; }
+        .badge-sync-stale { background: {{ colors.warn }}; }
+        .badge-sync-error { background: {{ colors.alert }}; }
         .btn-lang-dark { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25); padding: 5px 14px; border-radius: 3px; font-size: 0.78rem; font-weight: 600; cursor: pointer; letter-spacing: 0.5px; transition: background 0.2s; }
         .btn-lang-dark:hover { background: rgba(255,255,255,0.22); }
         @media (max-width: 640px) { .oss-navbar { padding: 10px 16px; } .main-title { font-size: 0.95rem; } .oss-logo-transparent { height: 42px; } }
@@ -257,10 +260,22 @@
                 <span class="lang-fr">DERNI&Egrave;RE MAJ :</span>
             </span>
             <span class="status-val">{{ last_update_date }}</span>
-            <span class="badge-sync">
+            {% if sync_status.label == "ok" %}
+            <span class="badge-sync badge-sync-ok">
                 <span class="lang-en">SYNC: OK &#10003;</span>
                 <span class="lang-fr">SYNC : OK &#10003;</span>
             </span>
+            {% elif sync_status.label == "stale" %}
+            <span class="badge-sync badge-sync-stale">
+                <span class="lang-en">SYNC: STALE &#9888;</span>
+                <span class="lang-fr">SYNC : OBSOL&Egrave;TE &#9888;</span>
+            </span>
+            {% else %}
+            <span class="badge-sync badge-sync-error">
+                <span class="lang-en">SYNC: ERROR &#10007;</span>
+                <span class="lang-fr">SYNC : ERREUR &#10007;</span>
+            </span>
+            {% endif %}
         </div>
         <button id="lang-toggle" class="btn-lang-dark" onclick="toggleLang()">
             <span class="lang-en">FR</span>
