@@ -1,8 +1,14 @@
 {
-  "timestamp": "2026-09-07T12:08:09.952383+00:00",
-  "last_grace_month": "2026-05",
-  "last_gldas_month": "2026-03",
-  "last_common_month": "2026-03",
-  "grace_months_added": 0,
-  "gldas_months_added": 0
+  "timestamp": "2026-09-13T07:00:48.496136+00:00",
+  "last_grace_month": "2026-07",
+  "last_gldas_month": "2026-05",
+  "last_common_month": "2026-05",
+  "grace_months_added": 2,
+  "gldas_months_added": 2,
+  "status": "ok",
+  "grace_status": "ok",
+  "gldas_status": "ok",
+  "proxy_status": "ok",
+  "grace_error": null,
+  "gldas_error": null
 }
