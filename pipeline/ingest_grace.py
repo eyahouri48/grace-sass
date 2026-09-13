@@ -119,6 +119,11 @@ def extract_twsa_basin_mean(nc_path: Path) -> pd.Series:
     lwe_clipped = lwe.rio.clip(aoi.geometry, aoi.crs, all_touched=True, drop=False)
     logger.info("Découpe AOI effectuée (all_touched=True)")
 
+    # Masquer le nodata injecté par rio.clip() (pixels hors polygone)
+    nodata = lwe_clipped.rio.nodata
+    if nodata is not None:
+        lwe_clipped = lwe_clipped.where(lwe_clipped != nodata)
+
     # 5. Moyenne pondérée par cosinus de latitude
     weights = np.cos(np.deg2rad(lwe_clipped.lat))
     twsa_cm = lwe_clipped.weighted(weights).mean(dim=["lat", "lon"]).to_series()

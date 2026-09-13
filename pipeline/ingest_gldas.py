@@ -80,12 +80,6 @@ def process_one_granule(nc_path: Path) -> dict | None:
     try:
         ds = xr.open_dataset(nc_path)
 
-        # --- Masquer les fill values (-9999) ---
-        # Certains granules récents ont des métadonnées _FillValue
-        # manquantes ou altérées, empêchant le masquage automatique
-        # par xarray. On force la conversion en NaN.
-        ds = ds.where(ds != -9999.0)
-
         # --- Sous-ensemble spatial (bbox du SASS) ---
         # GLDAS est nativement en -180/180 — pas de conversion nécessaire
         lat_min, lat_max = BBOX_LAT
@@ -108,6 +102,13 @@ def process_one_granule(nc_path: Path) -> dict | None:
         total = total.rio.write_crs("EPSG:4326")
         total = total.rio.clip(aoi.geometry, aoi.crs, all_touched=True, drop=False)
 
+        # --- Masquer le nodata injecté par rio.clip() ---
+        # rioxarray remplit les pixels hors polygone avec nodata (-9999),
+        # ce qui contaminerait la moyenne pondérée.
+        nodata = total.rio.nodata
+        if nodata is not None:
+            total = total.where(total != nodata)
+
         # --- Moyenne de bassin pondérée par cosinus de latitude ---
         weights = np.cos(np.deg2rad(total.lat))
         basin_mean = float(
@@ -115,8 +116,6 @@ def process_one_granule(nc_path: Path) -> dict | None:
         )
 
         # --- Garde-fou : rejeter les valeurs physiquement impossibles ---
-        # Le stockage de surface total (sol + neige + canopée) sur le SASS
-        # est typiquement 200–350 mm. Au-delà de 0–2000 mm, c'est un artefact.
         import math
         if math.isnan(basin_mean) or basin_mean < 0 or basin_mean > 2000:
             logger.warning(
