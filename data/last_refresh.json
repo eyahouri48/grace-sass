@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-09-14T12:24:22.449724+00:00",
+  "timestamp": "2026-09-21T12:31:02.368124+00:00",
   "last_grace_month": "2026-07",
-  "last_gldas_month": "2026-05",
-  "last_common_month": "2026-05",
+  "last_gldas_month": "2026-06",
+  "last_common_month": "2026-06",
   "grace_months_added": 0,
-  "gldas_months_added": 0,
+  "gldas_months_added": 1,
   "status": "ok",
   "grace_status": "no_new_data",
-  "gldas_status": "no_new_data",
+  "gldas_status": "ok",
   "proxy_status": "ok",
   "grace_error": null,
   "gldas_error": null
